@@ -148,16 +148,25 @@
           filtreVille.addEventListener('change', function () {
             var idVille = filtreVille.value;
             var url = '<?= BASE_URL ?>/achats/json' + (idVille ? '?id_ville=' + idVille : '');
+            
+            console.log('ID Ville sélectionné:', idVille);
+            console.log('URL appelée:', url);
 
             fetch(url)
-              .then(function (res) { return res.json(); })
+              .then(function (res) { 
+                console.log('Response status:', res.status);
+                return res.json(); 
+              })
               .then(function (data) {
+                console.log('Données reçues:', data);
                 if (data.success) {
                   updateTable(data.achats);
+                } else {
+                  console.error('Erreur API:', data);
                 }
               })
               .catch(function (err) {
-                console.error('Erreur:', err);
+                console.error('Erreur fetch:', err);
               });
           });
 
