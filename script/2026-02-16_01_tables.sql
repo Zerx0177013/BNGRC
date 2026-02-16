@@ -1,8 +1,11 @@
--- Active: 1770652281308@@127.0.0.1@3306@bngrc
+-- Active: 1765287408229@@127.0.0.1@3306@bngrc
 CREATE DATABASE IF NOT EXISTS bngrc;
 
 USE bngrc;
 
+SET FOREIGN_KEY_CHECKS = 0;
+
+DROP DATABASE bngrc;
 -- ========== REGIONS ==========
 CREATE TABLE bngrc_region_ETU003918(
     id_region INT AUTO_INCREMENT PRIMARY KEY,
@@ -65,4 +68,25 @@ CREATE OR REPLACE TABLE bngrc_dispatch_ETU003918(
     FOREIGN KEY (id_don) REFERENCES bngrc_don_ETU003918(id_don),
     FOREIGN KEY (id_besoin) REFERENCES bngrc_besoin_ETU003918(id_besoin),
     FOREIGN KEY (id_ville) REFERENCES bngrc_ville_ETU003918(id_ville)
+);
+
+-- ========== CONFIGURATION ==========
+CREATE OR REPLACE TABLE bngrc_config_ETU003918(
+    id_config INT AUTO_INCREMENT PRIMARY KEY,
+    valeur DECIMAL(10,2) NOT NULL
+);
+
+-- ========== ACHATS (achat via dons en argent) ==========
+CREATE OR REPLACE TABLE bngrc_achat_ETU003918(
+    id_achat INT AUTO_INCREMENT PRIMARY KEY,
+    id_besoin INT NOT NULL,
+    id_don INT NOT NULL,
+    id_config INT NOT NULL,
+    quantite DECIMAL(12,2) NOT NULL,
+    prix_unitaire DECIMAL(12,2) NOT NULL,
+    montant_total DECIMAL(12,2) NOT NULL,
+    date_achat DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_besoin) REFERENCES bngrc_besoin_ETU003918(id_besoin),
+    FOREIGN KEY (id_don) REFERENCES bngrc_don_ETU003918(id_don),
+    FOREIGN KEY (id_config) REFERENCES bngrc_config_ETU003918(id_config)
 );
