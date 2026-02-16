@@ -144,4 +144,4 @@
 <?php include 'footer.php'; ?>
 
 <script>var BASE_URL = '<?= BASE_URL ?>';</script>
-<script src="<?= BASE_URL ?>/assets/js/recap.js"></script>
+<script src="<?= BASE_URL ?>/public/assets/js/recap.js"></script>

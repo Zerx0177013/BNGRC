@@ -88,6 +88,6 @@
       </script>
       
       <script>window.BASE_URL = '<?= BASE_URL ?>';</script>
-      <script src="<?= BASE_URL ?>/assets/js/achats-liste.js"></script>
+      <script src="<?= BASE_URL ?>/public/assets/js/achats-liste.js"></script>
 
 <?php include __DIR__ . '/footer.php'; ?>

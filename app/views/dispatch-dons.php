@@ -470,6 +470,6 @@
         });
       </script>
       <script>var BASE_URL = '<?= BASE_URL ?>';</script>
-      <script src="<?= BASE_URL ?>/assets/js/dispatch-dons.js"></script>
+      <script src="<?= BASE_URL ?>/public/assets/js/dispatch-dons.js"></script>
 
 <?php include __DIR__ . '/footer.php'; ?>

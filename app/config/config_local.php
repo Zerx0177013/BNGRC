@@ -1,12 +1,11 @@
 <?php
 
 /**********************************************
- *      Configuration PRODUCTION (ETU003918)  *
+ *      Configuration LOCALE (Développement)  *
  **********************************************
  *
- * Configuration pour le serveur de production
- * Base de données : db_s2_ETU003918
- * Utilisateur : ETU003918
+ * Configuration pour le développement local
+ * Base de données : bngrc (localhost)
  **********************************************/
 
 /**********************************************
@@ -62,11 +61,11 @@ return [
 	 *         Database Settings          *
 	 **************************************/
 	'database' => [
-		// Configuration PRODUCTION (ETU003918)
-		'host'     => 'localhost',           // Database host
-		'dbname'   => 'db_s2_ETU003918',    // Database name
-		'user'     => 'ETU003918',          // Database user
-		'password' => 's7mSG5Zt',           // Database password
+		// Configuration LOCALE (Développement)
+		'host'     => 'localhost:3306',      // Database host
+		'dbname'   => 'bngrc',               // Database name
+		'user'     => 'root',                // Database user
+		'password' => '',                    // Database password (vide pour XAMPP/LAMPP local)
 	],
 
 	// Add more configuration sections below as needed

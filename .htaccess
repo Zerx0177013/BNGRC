@@ -1,7 +1,10 @@
 RewriteEngine On
-RewriteBase /
+
+# Ne pas rediriger les fichiers et dossiers existants
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+
+# Rediriger tout vers index.php
 RewriteRule ^(.*)$ index.php [QSA,L]
 
 # BEGIN GZIP

@@ -1,12 +1,16 @@
 <?php
 
 /**********************************************
- *      Configuration PRODUCTION (ETU003918)  *
+ *      FlightPHP Skeleton Sample Config      *
  **********************************************
  *
- * Configuration pour le serveur de production
- * Base de données : db_s2_ETU003918
- * Utilisateur : ETU003918
+ * Copy this file to config.php and update values as needed.
+ * All settings are required unless marked as optional.
+ *
+ * Example:
+ *   cp app/config/config_sample.php app/config/config.php
+ *
+ * This file is NOT tracked by git. Store sensitive credentials here.
  **********************************************/
 
 /**********************************************
@@ -62,11 +66,18 @@ return [
 	 *         Database Settings          *
 	 **************************************/
 	'database' => [
-		// Configuration PRODUCTION (ETU003918)
-		'host'     => 'localhost',           // Database host
-		'dbname'   => 'db_s2_ETU003918',    // Database name
-		'user'     => 'ETU003918',          // Database user
-		'password' => 's7mSG5Zt',           // Database password
+		// Configuration LOCALE (Développement)
+		// Pour passer en production, modifiez ces valeurs ou renommez config_production.php en config.php
+		'host'     => 'localhost:3306',      // Database host
+		'dbname'   => 'bngrc',               // Database name - LOCAL
+		'user'     => 'root',                // Database user - LOCAL
+		'password' => '',                    // Database password - LOCAL (vide pour XAMPP/LAMPP)
+		
+		// PRODUCTION (ETU003918) - Décommentez ces lignes et commentez celles du dessus pour la production
+		// 'host'     => 'localhost',
+		// 'dbname'   => 'db_s2_ETU003918',
+		// 'user'     => 'ETU003918',
+		// 'password' => 's7mSG5Zt',
 	],
 
 	// Add more configuration sections below as needed

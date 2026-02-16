@@ -126,6 +126,6 @@
       <!--end::App Main-->
 
       <script>var BASE_URL = '<?= BASE_URL ?>';</script>
-      <script src="<?= BASE_URL ?>/assets/js/don-add.js"></script>
+      <script src="<?= BASE_URL ?>/public/assets/js/don-add.js"></script>
 
 <?php include __DIR__ . '/footer.php'; ?>

@@ -86,6 +86,6 @@
         var BASE_URL = '<?= BASE_URL ?>';
         var IS_EDIT = <?= isset($region) ? 'true' : 'false' ?>;
       </script>
-      <script src="<?= BASE_URL ?>/assets/js/region-form.js"></script>
+      <script src="<?= BASE_URL ?>/public/assets/js/region-form.js"></script>
 
 <?php include __DIR__ . '/footer.php'; ?>

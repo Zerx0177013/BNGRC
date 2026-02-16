@@ -6,7 +6,7 @@
           <a href="<?= BASE_URL ?>/" class="brand-link">
             <!--begin::Brand Image-->
             <img
-              src="<?= BASE_URL ?>/assets/img/AdminLTELogo.png"
+              src="<?= BASE_URL ?>/public/assets/img/AdminLTELogo.png"
               alt="BNGRC Logo"
               class="brand-image opacity-75 shadow" />
             <!--end::Brand Image-->

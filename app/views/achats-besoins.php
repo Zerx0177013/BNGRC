@@ -203,6 +203,6 @@
       </div>
 
       <script>var BASE_URL = '<?= BASE_URL ?>';</script>
-      <script src="<?= BASE_URL ?>/assets/js/achats-besoins.js"></script>
+      <script src="<?= BASE_URL ?>/public/assets/js/achats-besoins.js"></script>
 
 <?php include __DIR__ . '/footer.php'; ?>

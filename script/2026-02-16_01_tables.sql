@@ -60,7 +60,8 @@ CREATE TABLE bngrc_don_ETU003918(
 );
 
 -- ========== DISPATCH (attribution des dons aux villes) ==========
-CREATE OR REPLACE TABLE bngrc_dispatch_ETU003918(
+DROP TABLE IF EXISTS bngrc_dispatch_ETU003918;
+CREATE TABLE bngrc_dispatch_ETU003918(
     id_dispatch INT AUTO_INCREMENT PRIMARY KEY,
     id_don INT NOT NULL,
     id_besoin INT NOT NULL,
@@ -73,13 +74,15 @@ CREATE OR REPLACE TABLE bngrc_dispatch_ETU003918(
 );
 
 -- ========== CONFIGURATION ==========
-CREATE OR REPLACE TABLE bngrc_config_ETU003918(
+DROP TABLE IF EXISTS bngrc_config_ETU003918;
+CREATE TABLE bngrc_config_ETU003918(
     id_config INT AUTO_INCREMENT PRIMARY KEY,
     valeur DECIMAL(10,2) NOT NULL
 );
 
 -- ========== ACHATS (achat via dons en argent) ==========
-CREATE OR REPLACE TABLE bngrc_achat_ETU003918(
+DROP TABLE IF EXISTS bngrc_achat_ETU003918;
+CREATE TABLE bngrc_achat_ETU003918(
     id_achat INT AUTO_INCREMENT PRIMARY KEY,
     id_besoin INT NOT NULL,
     id_don INT NOT NULL,

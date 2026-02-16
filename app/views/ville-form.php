@@ -102,6 +102,6 @@
         var BASE_URL = '<?= BASE_URL ?>';
         var IS_EDIT = <?= isset($ville) ? 'true' : 'false' ?>;
       </script>
-      <script src="<?= BASE_URL ?>/assets/js/ville-form.js"></script>
+      <script src="<?= BASE_URL ?>/public/assets/js/ville-form.js"></script>
 
 <?php include __DIR__ . '/footer.php'; ?>
