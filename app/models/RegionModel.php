@@ -1,5 +1,6 @@
 <?php
 namespace app\models;
+use PDO;
 
 class RegionModel
 {
@@ -10,44 +11,50 @@ class RegionModel
         $this->db = $db;
     }
     
-    public function getAllRegions(): array
+    public function getAllRegions()
     {
-        $stmt = $this->db->query('SELECT * FROM bngrc_region_ETU003918 ORDER BY nom_region');
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $sql = 'SELECT * FROM bngrc_region_ETU003918 ORDER BY nom_region';
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
-    public function getRegionById(int $id)
+    public function getRegionById($id)
     {
-        $stmt = $this->db->prepare('SELECT * FROM bngrc_region_ETU003918 WHERE id_region = :id');
+        $sql = 'SELECT * FROM bngrc_region_ETU003918 WHERE id_region = :id';
+        $stmt = $this->db->prepare($sql);
         $stmt->execute([':id' => $id]);
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     
-    public function createRegion(string $nom): int
+    public function createRegion($nom)
     {
-        $stmt = $this->db->prepare('INSERT INTO bngrc_region_ETU003918 (nom_region) VALUES (:nom)');
+        $sql = 'INSERT INTO bngrc_region_ETU003918 (nom_region) VALUES (:nom)';
+        $stmt = $this->db->prepare($sql);
         $stmt->execute([':nom' => $nom]);
         return (int) $this->db->lastInsertId();
     }
     
-    public function updateRegion(int $id, string $nom): bool
+    public function updateRegion($id, $nom)
     {
-        $stmt = $this->db->prepare('UPDATE bngrc_region_ETU003918 SET nom_region = :nom WHERE id_region = :id');
+        $sql = 'UPDATE bngrc_region_ETU003918 SET nom_region = :nom WHERE id_region = :id';
+        $stmt = $this->db->prepare($sql);
         return $stmt->execute([
             ':id' => $id,
             ':nom' => $nom
         ]);
     }
     
-    public function deleteRegion(int $id): bool
+    public function deleteRegion($id)
     {
-        $stmt = $this->db->prepare('DELETE FROM bngrc_region_ETU003918 WHERE id_region = :id');
+        $sql = 'DELETE FROM bngrc_region_ETU003918 WHERE id_region = :id';
+        $stmt = $this->db->prepare($sql);
         return $stmt->execute([':id' => $id]);
     }
     
-    public function getNumberOfRegions(): int
+    public function getNumberOfRegions()
     {
-        $stmt = $this->db->query('SELECT COUNT(*) FROM bngrc_region_ETU003918');
+        $sql = 'SELECT COUNT(*) FROM bngrc_region_ETU003918';
+        $stmt = $this->db->query($sql);
         return (int) $stmt->fetchColumn();
     }
 }

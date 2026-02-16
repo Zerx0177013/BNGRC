@@ -1,5 +1,6 @@
 <?php
 namespace app\models;
+use PDO;
 
 class ArticleModel
 {
@@ -10,46 +11,50 @@ class ArticleModel
         $this->db = $db;
     }
     
-    public function getAllArticles(): array
+    public function getAllArticles()
     {
-        $stmt = $this->db->query('
+        $sql = '
             SELECT a.*, c.nom_categorie 
             FROM bngrc_article_ETU003918 a
             LEFT JOIN bngrc_categorie_besoin_ETU003918 c ON a.id_categorie = c.id_categorie
             ORDER BY a.nom_article
-        ');
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        ';
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
-    public function getArticleById(int $id)
+    public function getArticleById($id)
     {
-        $stmt = $this->db->prepare('
+        $sql = '
             SELECT a.*, c.nom_categorie 
             FROM bngrc_article_ETU003918 a
             LEFT JOIN bngrc_categorie_besoin_ETU003918 c ON a.id_categorie = c.id_categorie
             WHERE a.id_article = :id
-        ');
+        ';
+        $stmt = $this->db->prepare($sql);
         $stmt->execute([':id' => $id]);
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     
-    public function getArticlesByCategorie(int $idCategorie): array
+    public function getArticlesByCategorie($idCategorie)
     {
-        $stmt = $this->db->prepare('
+        $sql = '
             SELECT * FROM bngrc_article_ETU003918 
             WHERE id_categorie = :id_categorie 
             ORDER BY nom_article
-        ');
+        ';
+        $stmt = $this->db->prepare($sql);
         $stmt->execute([':id_categorie' => $idCategorie]);
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
-    public function createArticle(string $nom, float $prix, int $idCategorie): int
+    public function createArticle($nom, $prix, $idCategorie)
     {
-        $stmt = $this->db->prepare('
+        $sql = '
             INSERT INTO bngrc_article_ETU003918 (nom_article, prix_unitaire, id_categorie) 
             VALUES (:nom, :prix, :id_categorie)
-        ');
+        ';
+        $stmt = $this->db->prepare($sql);
         $stmt->execute([
             ':nom' => $nom,
             ':prix' => $prix,
@@ -58,13 +63,14 @@ class ArticleModel
         return (int) $this->db->lastInsertId();
     }
     
-    public function updateArticle(int $id, string $nom, float $prix, int $idCategorie): bool
+    public function updateArticle($id, $nom, $prix, $idCategorie)
     {
-        $stmt = $this->db->prepare('
+        $sql = '
             UPDATE bngrc_article_ETU003918 
             SET nom_article = :nom, prix_unitaire = :prix, id_categorie = :id_categorie 
             WHERE id_article = :id
-        ');
+        ';
+        $stmt = $this->db->prepare($sql);
         return $stmt->execute([
             ':id' => $id,
             ':nom' => $nom,
@@ -73,15 +79,17 @@ class ArticleModel
         ]);
     }
     
-    public function deleteArticle(int $id): bool
+    public function deleteArticle($id)
     {
-        $stmt = $this->db->prepare('DELETE FROM bngrc_article_ETU003918 WHERE id_article = :id');
+        $sql = 'DELETE FROM bngrc_article_ETU003918 WHERE id_article = :id';
+        $stmt = $this->db->prepare($sql);
         return $stmt->execute([':id' => $id]);
     }
     
-    public function getNumberOfArticles(): int
+    public function getNumberOfArticles()
     {
-        $stmt = $this->db->query('SELECT COUNT(*) FROM bngrc_article_ETU003918');
+        $sql = 'SELECT COUNT(*) FROM bngrc_article_ETU003918';
+        $stmt = $this->db->query($sql);
         return (int) $stmt->fetchColumn();
     }
 }
