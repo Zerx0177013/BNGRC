@@ -71,6 +71,12 @@
                 </a>
               </li>
               <li class="nav-item">
+                <a href="<?= BASE_URL ?>/achats" class="nav-link <?= (isset($currentPage) && $currentPage === 'achats') ? 'active' : '' ?>">
+                  <i class="nav-icon bi bi-cart-check-fill"></i>
+                  <p>Achats</p>
+                </a>
+              </li>
+              <li class="nav-item">
                 <a href="<?= BASE_URL ?>/dispatch/besoinsParVille" class="nav-link <?= (isset($currentPage) && $currentPage === 'dispatchVilles') ? 'active' : '' ?>">
                   <i class="nav-icon bi bi-geo-fill"></i>
                   <p>Dispatch Villes</p>

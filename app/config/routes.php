@@ -8,6 +8,7 @@ use app\controllers\RegionController;
 use app\controllers\VilleController;
 use app\middlewares\SecurityHeadersMiddleware;
 use app\controllers\DispatchController ;
+use app\controllers\AchatController;
 use flight\Engine;
 use flight\net\Router;
 
@@ -95,6 +96,17 @@ $router->group('', function (Router $router) use ($app) {
 		$router->get('/history', [$dispatchController, 'renderDispatchHistory']);
 		$router->post('/execute', [$dispatchController, 'executeDispatch']);
 		$router->delete('/clear', [$dispatchController, 'clearDispatches']);
+	});
+
+	// ========== Achats ==========
+	$router->group('/achats', function (Router $router) use ($app) {
+		$achatController = new AchatController($app);
+
+		$router->get('/', [$achatController, 'renderBesoinsRestants']);
+		$router->get('/liste', [$achatController, 'renderAchatList']);
+		$router->get('/json', [$achatController, 'getAchatsJson']);
+		$router->post('/', [$achatController, 'createAchat']);
+		$router->delete('/@id', [$achatController, 'deleteAchat']);
 	});
 
 }, [SecurityHeadersMiddleware::class]);
