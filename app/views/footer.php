@@ -5,10 +5,11 @@
         <!--end::To the end-->
         <!--begin::Copyright-->
         <strong>
-          Copyright &copy; 2024-2026&nbsp;
-          <a href="<?= BASE_URL ?>/" class="text-decoration-none">BNGRC</a>.
+          <!-- Copyright &copy; 2024-2026&nbsp; -->
+          ETU0003918 Rohan - ETU000000 Randy - ETU000000 Angely
+          <!-- <a href="<?= BASE_URL ?>/" class="text-decoration-none">BNGRC</a>. -->
         </strong>
-        Tous droits réservés.
+        <!-- Tous droits réservés. -->
         <!--end::Copyright-->
       </footer>
       <!--end::Footer-->
