@@ -195,8 +195,12 @@
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: formData.toString()
               })
-              .then(function (res) { return res.json(); })
+              .then(function (res) { 
+                console.log('Response status:', res.status);
+                return res.json(); 
+              })
               .then(function (data) {
+                console.log('Response data:', data);
                 if (data.success) {
                   showAlert('success', data.message + ' (' + data.count + ' attribution(s) effectuée(s))');
                   setTimeout(function () {
@@ -208,8 +212,9 @@
                   btnDispatch.innerHTML = '<i class="bi bi-truck me-1"></i> Dispatcher les dons sélectionnés';
                 }
               })
-              .catch(function () {
-                showAlert('danger', 'Erreur réseau.');
+              .catch(function (err) {
+                console.error('Fetch error:', err);
+                showAlert('danger', 'Erreur réseau: ' + err.message);
                 btnDispatch.disabled = false;
                 btnDispatch.innerHTML = '<i class="bi bi-truck me-1"></i> Dispatcher les dons sélectionnés';
               });
