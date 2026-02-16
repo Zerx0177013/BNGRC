@@ -24,7 +24,7 @@ class BesoinModel
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
+
     /**
      * Créer un besoin
      */
@@ -84,5 +84,20 @@ class BesoinModel
         $sql = 'DELETE FROM bngrc_besoin_ETU003918 WHERE id_besoin = :id';
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([':id' => $id]);
+    }
+
+    public function getBesoinsByVille($idVille)
+    {
+        $sql = '
+            SELECT * from v_besoins_complets_ETU003918
+            WHERE id_ville = :id_ville
+            ORDER BY date_saisie ASC
+        ';
+
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute([':id_ville' => $idVille]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
