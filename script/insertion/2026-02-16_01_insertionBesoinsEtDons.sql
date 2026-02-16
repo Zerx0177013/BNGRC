@@ -108,3 +108,7 @@ INSERT INTO bngrc_dispatch_ETU003918 (id_don, id_besoin, quantite_attribuee, id_
 (12, 15, 3000000.00, 5, '2026-02-14 09:01:00'),
 (12, 20, 2000000.00, 6, '2026-02-14 09:02:00'),
 (13, 20, 5000000.00, 6, '2026-02-16 09:00:00');
+
+-- ========== CONFIGURATION ==========
+INSERT INTO bngrc_config_ETU003918 (valeur) VALUES
+(10.00);
