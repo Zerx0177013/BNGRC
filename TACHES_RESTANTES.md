@@ -69,7 +69,7 @@ User sélectionne dons → clique "Simuler"
 
 **Fichiers à créer :**
 
-### A. RecapController.php
+### A. RecapController.php(Done)
 ```php
 class RecapController {
     public function renderRecapPage() {
@@ -83,7 +83,7 @@ class RecapController {
 }
 ```
 
-### B. RecapModel.php ou ajouter dans BesoinModel
+### B. RecapModel.php ou ajouter dans BesoinModel(Done)
 ```php
 public function getRecapitulatif() {
     // Retourne :
@@ -98,7 +98,7 @@ public function getRecapitulatif() {
 }
 ```
 
-### C. Vue recap.php
+### C. Vue recap.php(Done)
 - Header "Récapitulation"
 - 3 cards Bootstrap :
   1. **Besoins totaux** : XXX XXX,XX Ar (badge bleu)
