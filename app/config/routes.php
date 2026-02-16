@@ -2,6 +2,7 @@
 
 use app\controllers\ArticleController;
 use app\controllers\BesoinController;
+use app\controllers\DispatchController;
 use app\controllers\DonController;
 use app\controllers\RegionController;
 use app\controllers\VilleController;
@@ -17,7 +18,7 @@ $router->group('', function (Router $router) use ($app) {
 	});
 	$router->group('/dispatch', function (Router $router) use ($app) {
 		$besoinController = new BesoinController($app);
-		$router->get('/', [$besoinController, 'renderBesoinsParVille']);
+		$router->get('/besoinsParVille', [$besoinController, 'renderBesoinsParVille']);
 
 	});
 	// ========== Régions ==========
@@ -83,6 +84,16 @@ $router->group('', function (Router $router) use ($app) {
 		$router->post('/', [$donController, 'createDon']);
 		$router->put('/@id', [$donController, 'updateDon']);
 		$router->delete('/@id', [$donController, 'deleteDon']);
+	});
+
+	// ========== Dispatch ==========
+	$router->group('/dispatch', function (Router $router) use ($app) {
+		$dispatchController = new DispatchController($app);
+
+		$router->get('/', [$dispatchController, 'renderDispatchPage']);
+		$router->get('/history', [$dispatchController, 'renderDispatchHistory']);
+		$router->post('/execute', [$dispatchController, 'executeDispatch']);
+		$router->delete('/clear', [$dispatchController, 'clearDispatches']);
 	});
 
 }, [SecurityHeadersMiddleware::class]);
