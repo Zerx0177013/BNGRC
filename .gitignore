@@ -7,3 +7,4 @@ public/assets/images/items/*
 !public/assets/images/items/.gitkeep
 /AdminLTE-master
 /Impact
+script/insertion/load_data.sh
