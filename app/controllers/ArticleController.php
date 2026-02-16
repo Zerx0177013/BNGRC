@@ -3,7 +3,7 @@
 namespace app\controllers;
 
 use app\models\ArticleModel;
-use app\models\CategoryModel;
+use app\models\CategorieBesoinModel;
 use Flight;
 use flight\Engine;
 
@@ -48,7 +48,7 @@ class ArticleController {
 	public function renderEditForm($id): void {
 		$pdo = $this->app->db();
 		$articleModel = new ArticleModel($pdo);
-		$categoryModel = new CategoryModel($pdo);
+		$categoryModel = new CategorieBesoinModel($pdo);
 		
 		$article = $articleModel->getArticleById($id);
 		$categories = $categoryModel->getAllCategories();
@@ -66,7 +66,7 @@ class ArticleController {
 
 	public function renderAddForm(): void {
 		$pdo = $this->app->db();
-		$categoryModel = new CategoryModel($pdo);
+		$categoryModel = new CategorieBesoinModel($pdo);
 		$categories = $categoryModel->getAllCategories();
 
 		$this->app->render('article-add', [
