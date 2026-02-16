@@ -34,7 +34,7 @@
                   <i class="bi bi-list-check me-2"></i>Historique des achats
                 </h3>
                 <div class="d-flex gap-2">
-                  <select class="form-select form-select-sm" id="filtre Ville" style="width: auto;">
+                  <select class="form-select form-select-sm" id="filtreVille" style="width: auto;">
                     <option value="">Toutes les villes</option>
                     <?php foreach ($villes as $ville): ?>
                       <option value="<?= $ville['id_ville'] ?>" <?= (isset($selectedVille) && $selectedVille == $ville['id_ville']) ? 'selected' : '' ?>>
@@ -148,16 +148,25 @@
           filtreVille.addEventListener('change', function () {
             var idVille = filtreVille.value;
             var url = '<?= BASE_URL ?>/achats/json' + (idVille ? '?id_ville=' + idVille : '');
+            
+            console.log('ID Ville sélectionné:', idVille);
+            console.log('URL appelée:', url);
 
             fetch(url)
-              .then(function (res) { return res.json(); })
+              .then(function (res) { 
+                console.log('Response status:', res.status);
+                return res.json(); 
+              })
               .then(function (data) {
+                console.log('Données reçues:', data);
                 if (data.success) {
                   updateTable(data.achats);
+                } else {
+                  console.error('Erreur API:', data);
                 }
               })
               .catch(function (err) {
-                console.error('Erreur:', err);
+                console.error('Erreur fetch:', err);
               });
           });
 

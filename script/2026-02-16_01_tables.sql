@@ -8,7 +8,6 @@ CREATE DATABASE bngrc;
 USE bngrc;
 
 SET FOREIGN_KEY_CHECKS = 0;
-
 -- ========== REGIONS ==========
 CREATE TABLE bngrc_region_ETU003918(
     id_region INT AUTO_INCREMENT PRIMARY KEY,

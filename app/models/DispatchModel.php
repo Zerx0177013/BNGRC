@@ -206,4 +206,102 @@ class DispatchModel
         $sql = 'DELETE FROM bngrc_dispatch_ETU003918';
         return $this->db->exec($sql);
     }
+
+    /**
+     * Simulate dispatch without inserting into database
+     * Returns what would be dispatched
+     */
+    public function simulateDispatchOnly($idsDons)
+    {
+        $results = [];
+        
+        foreach ($idsDons as $idDon) {
+            $quantiteRestante = $this->getQuantiteRestanteDon($idDon);
+            
+            if ($quantiteRestante <= 0) {
+                continue;
+            }
+            
+            $don = $this->getDonById($idDon);
+            
+            if (!$don) {
+                continue;
+            }
+            
+            $besoins = $this->getBesoinsByArticle($don['id_article']);
+            
+            foreach ($besoins as $besoin) {
+                if ($quantiteRestante <= 0) {
+                    break;
+                }
+                
+                $besoinRestant = $this->getQuantiteRestanteBesoin($besoin['id_besoin']);
+                
+                if ($besoinRestant <= 0) {
+                    continue;
+                }
+                
+                $quantiteAttribuee = min($quantiteRestante, $besoinRestant);
+                
+                // NO INSERT - just collect the data
+                $results[] = [
+                    'id_don' => $idDon,
+                    'id_besoin' => $besoin['id_besoin'],
+                    'id_ville' => $besoin['id_ville'],
+                    'ville' => $besoin['nom_ville'],
+                    'id_article' => $don['id_article'],
+                    'quantite_attribuee' => $quantiteAttribuee
+                ];
+                
+                $quantiteRestante -= $quantiteAttribuee;
+            }
+        }
+        
+        return $results;
+    }
+
+    /**
+     * Get simulated dispatches grouped by ville and article
+     * Returns ONLY simulated data (not merged with existing)
+     */
+    public function getSimulatedDispatchesParVilleArticle($simulatedDispatches)
+    {
+        // Get all regions with their villes
+        $sql = '
+            SELECT r.id_region, r.nom_region, v.id_ville, v.nom_ville
+            FROM bngrc_region_ETU003918 r
+            LEFT JOIN bngrc_ville_ETU003918 v ON r.id_region = v.id_region
+            ORDER BY r.nom_region, v.nom_ville
+        ';
+        $stmt = $this->db->query($sql);
+        $villes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Get all articles with categories
+        $sql = '
+            SELECT a.id_article, a.nom_article, c.nom_categorie
+            FROM bngrc_article_ETU003918 a
+            LEFT JOIN bngrc_categorie_besoin_ETU003918 c ON a.id_categorie = c.id_categorie
+            ORDER BY c.nom_categorie, a.nom_article
+        ';
+        $stmt = $this->db->query($sql);
+        $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Transform ONLY simulated dispatches into matrix [ville_id][article_id] = quantite
+        $dispatchMatrix = [];
+        foreach ($simulatedDispatches as $sim) {
+            if (!isset($dispatchMatrix[$sim['id_ville']])) {
+                $dispatchMatrix[$sim['id_ville']] = [];
+            }
+            if (!isset($dispatchMatrix[$sim['id_ville']][$sim['id_article']])) {
+                $dispatchMatrix[$sim['id_ville']][$sim['id_article']] = 0;
+            }
+            $dispatchMatrix[$sim['id_ville']][$sim['id_article']] += $sim['quantite_attribuee'];
+        }
+
+        return [
+            'villes' => $villes,
+            'articles' => $articles,
+            'matrix' => $dispatchMatrix
+        ];
+    }
 }
