@@ -33,10 +33,18 @@ class BesoinController {
 	}
 
 	public function renderBesoinList(): void {
+		$pdo = $this->app->db();
+		$villeModel = new VilleModel($pdo);
+		$articleModel = new ArticleModel($pdo);
+		
 		$besoins = $this->getAllBesoins();
+		$villes = $villeModel->getAllVilles();
+		$articles = $articleModel->getAllArticles();
 
 		$this->app->render('besoin-form', [
 			'besoins' => $besoins,
+			'villes' => $villes,
+			'articles' => $articles,
 			'currentPage' => 'besoins',
 		]);
 	}
