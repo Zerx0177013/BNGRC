@@ -90,7 +90,7 @@ class BesoinController {
 		$villes = $villeModel->getAllVilles();
 		$articles = $articleModel->getAllArticles();
 
-		$this->app->render('besoin-add', [
+		$this->app->render('besoin-form', [
 			'villes' => $villes,
 			'articles' => $articles,
 			'currentPage' => 'besoins',
