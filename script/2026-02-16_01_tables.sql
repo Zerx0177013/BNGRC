@@ -1,11 +1,9 @@
--- Active: 1765287408229@@127.0.0.1@3306@bngrc
+-- Active: 1770652281308@@127.0.0.1@3306@bngrc
 CREATE DATABASE IF NOT EXISTS bngrc;
 
 USE bngrc;
 
 SET FOREIGN_KEY_CHECKS = 0;
-
-DROP DATABASE bngrc;
 -- ========== REGIONS ==========
 CREATE TABLE bngrc_region_ETU003918(
     id_region INT AUTO_INCREMENT PRIMARY KEY,

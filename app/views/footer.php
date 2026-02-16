@@ -6,7 +6,7 @@
         <!--begin::Copyright-->
         <strong>
           <!-- Copyright &copy; 2024-2026&nbsp; -->
-          ETU0003918 Rohan - ETU000000 Randy - ETU000000 Angely
+          ETU0003918 Rohan - ETU004101 Randy - ETU003964 Angely
           <!-- <a href="<?= BASE_URL ?>/" class="text-decoration-none">BNGRC</a>. -->
         </strong>
         <!-- Tous droits réservés. -->
