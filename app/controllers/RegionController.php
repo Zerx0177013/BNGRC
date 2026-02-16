@@ -60,7 +60,7 @@ class RegionController {
 	}
 
 	public function renderAddForm(): void {
-		$this->app->render('region-add', [
+		$this->app->render('region-form', [
 			'currentPage' => 'regions',
 		]);
 	}
