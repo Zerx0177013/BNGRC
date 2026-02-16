@@ -80,63 +80,6 @@
         </div>
       </div>
 
-      <!-- Tableau détaillé par catégorie (optionnel) -->
-      <div class="row mt-3">
-        <div class="col-12">
-          <div class="card card-outline card-primary">
-            <div class="card-header">
-              <h3 class="card-title">
-                <i class="bi bi-bar-chart"></i> Détails par catégorie
-              </h3>
-            </div>
-            <div class="card-body">
-              <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover">
-                  <thead class="table-dark">
-                    <tr>
-                      <th>Catégorie</th>
-                      <th>Besoins totaux</th>
-                      <th>Satisfaits</th>
-                      <th>Restants</th>
-                      <th>Progression</th>
-                    </tr>
-                  </thead>
-                  <tbody id="recapTableBody">
-                    <?php if (isset($recap) && count($recap) > 0): ?>
-                      <?php foreach ($recap as $row): ?>
-                        <tr>
-                          <td>
-                            <span class="badge bg-secondary"><?= htmlspecialchars($row['nom_categorie']) ?></span>
-                          </td>
-                          <td class="text-end"><?= number_format($row['montant_total'], 2, ',', ' ') ?> Ar</td>
-                          <td class="text-end text-success"><?= number_format($row['montant_satisfait'], 2, ',', ' ') ?> Ar</td>
-                          <td class="text-end text-danger"><?= number_format($row['montant_restant'], 2, ',', ' ') ?> Ar</td>
-                          <td>
-                            <div class="progress">
-                              <div class="progress-bar bg-success" role="progressbar" 
-                                   style="width: <?= $row['pourcentage_satisfait'] ?>%"
-                                   aria-valuenow="<?= $row['pourcentage_satisfait'] ?>" 
-                                   aria-valuemin="0" 
-                                   aria-valuemax="100">
-                                <?= number_format($row['pourcentage_satisfait'], 1, ',', ' ') ?>%
-                              </div>
-                            </div>
-                          </td>
-                        </tr>
-                      <?php endforeach; ?>
-                    <?php else: ?>
-                      <tr>
-                        <td colspan="5" class="text-center text-muted">Aucune donnée disponible</td>
-                      </tr>
-                    <?php endif; ?>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
     </div>
   </section>
 </div>
