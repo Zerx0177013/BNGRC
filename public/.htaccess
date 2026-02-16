@@ -1,9 +1,5 @@
 RewriteEngine On
-<<<<<<< Updated upstream
-RewriteBase /Web%20dynamique/EXAM%20FINAL%20s3/BNGRC/public/
-=======
 RewriteBase /
->>>>>>> Stashed changes
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php [QSA,L]
