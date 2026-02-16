@@ -6,9 +6,10 @@
           <a href="<?= BASE_URL ?>/" class="brand-link">
             <!--begin::Brand Image-->
             <img
-              src="<?= BASE_URL ?>/assets/img/AdminLTELogo.png"
+              src="<?= BASE_URL ?>/assets/img/mandeLogo.jpeg"
               alt="BNGRC Logo"
-              class="brand-image opacity-75 shadow" />
+              class="brand-image shadow"
+              style="border-radius: 8px; object-fit: cover;" />
             <!--end::Brand Image-->
             <!--begin::Brand Text-->
             <span class="brand-text fw-light">BNGRC</span>
