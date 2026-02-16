@@ -24,8 +24,33 @@ class ArticleController {
 	public function renderArticleList(): void {
 		$articles = $this->getAllArticles();
 
-		$this->app->render('articles', [
+		$this->app->render('article', [
 			'articles' => $articles,
+			'currentPage' => 'articles',
+		]);
+	}
+
+	public function renderArticlesByCategorie(): void {
+		$pdo = $this->app->db();
+		$articles = $this->getAllArticles();
+
+		$categoryModel = new CategorieBesoinModel($pdo);
+		$categories = $categoryModel->getAllCategories();
+
+		// Grouper les articles par catégorie
+		$articlesByCategorie = [];
+		foreach ($articles as $article) {
+			$catId = $article['id_categorie'];
+			if (!isset($articlesByCategorie[$catId])) {
+				$articlesByCategorie[$catId] = [];
+			}
+			$articlesByCategorie[$catId][] = $article;
+		}
+
+		$this->app->render('article', [
+			'articles' => $articles,
+			'categories' => $categories,
+			'articlesByCategorie' => $articlesByCategorie,
 			'currentPage' => 'articles',
 		]);
 	}
