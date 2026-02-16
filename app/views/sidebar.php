@@ -71,14 +71,14 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="<?= BASE_URL ?>/dispatch/besoinsParVille" class="nav-link <?= (isset($currentPage) && $currentPage === 'dispatch') ? 'active' : '' ?>">
-                  <i class="nav-icon bi bi-truck"></i>
+                <a href="<?= BASE_URL ?>/dispatch/besoinsParVille" class="nav-link <?= (isset($currentPage) && $currentPage === 'dispatchVilles') ? 'active' : '' ?>">
+                  <i class="nav-icon bi bi-geo-fill"></i>
                   <p>Dispatch Villes</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="<?= BASE_URL ?>/dispatch/" class="nav-link <?= (isset($currentPage) && $currentPage === 'dispatch') ? 'active' : '' ?>">
-                  <i class="nav-icon bi bi-truck"></i>
+                  <i class="bi bi-list-check nav-icon"></i>
                   <p>Dispatch Manager</p>
                 </a>
               </li>
