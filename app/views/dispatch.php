@@ -18,10 +18,11 @@
           </div>
         </div>
         <!--end::App Content Header-->
-
         <!--begin::App Content-->
         <div class="app-content">
+          <!--begin::Container-->
           <div class="container-fluid">
+            <!--begin::Row-->
             <div class="row">
               <?php foreach ($villes as $ville): ?>
                 <div class="col-md-6">
@@ -33,18 +34,17 @@
                         <small class="text-secondary ms-2">— <?= htmlspecialchars($ville['nom_region']) ?></small>
                       </h3>
                     </div>
+                    <!-- /.card-header -->
                     <div class="card-body p-0">
                       <?php if (!empty($ville['besoins'])): ?>
-                        <table class="table table-striped align-middle mb-0">
+                        <table class="table table-bordered table-striped align-middle">
                           <thead>
                             <tr>
-                              <th style="width: 50px;">#</th>
+                              <th style="width: 10px">#</th>
                               <th>Article</th>
                               <th>Catégorie</th>
                               <th>Quantité</th>
-                              <th>Prix unitaire</th>
                               <th>Montant total</th>
-                              <th>Date de saisie</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -52,25 +52,25 @@
                               <tr>
                                 <td><?= $besoin['id_besoin'] ?></td>
                                 <td><?= htmlspecialchars($besoin['nom_article']) ?></td>
-                                <td>
-                                  <span class="badge text-bg-info"><?= htmlspecialchars($besoin['nom_categorie']) ?></span>
-                                </td>
+                                <td><span class="badge text-bg-info"><?= htmlspecialchars($besoin['nom_categorie']) ?></span></td>
                                 <td><?= number_format($besoin['quantite'], 2, ',', ' ') ?></td>
-                                <td><?= number_format($besoin['prix_unitaire'], 2, ',', ' ') ?> Ar</td>
                                 <td><?= number_format($besoin['montant_total'], 2, ',', ' ') ?> Ar</td>
-                                <td><?= date('d/m/Y H:i', strtotime($besoin['date_saisie'])) ?></td>
                               </tr>
                             <?php endforeach; ?>
                           </tbody>
                         </table>
                       <?php else: ?>
-                        <p class="text-center text-secondary py-3 mb-0">Aucun besoin enregistré pour cette ville</p>
+                        <p class="text-center text-secondary py-3 mb-0">Aucun besoin enregistré</p>
                       <?php endif; ?>
                     </div>
+                    <!-- /.card-body -->
                   </div>
+                  <!-- /.card -->
                 </div>
+                <!-- /.col -->
               <?php endforeach; ?>
             </div>
+            <!--end::Row-->
 
             <?php if (empty($villes)): ?>
               <div class="alert alert-warning">
@@ -78,6 +78,7 @@
               </div>
             <?php endif; ?>
           </div>
+          <!--end::Container-->
         </div>
         <!--end::App Content-->
       </main>
