@@ -22,7 +22,7 @@ class BesoinController {
 		$villes = $this->getVillesBesoin();
 		$app->render('dispatch', [
 			'villes' => $villes,
-			'currentPage' => 'dispatch',
+			'currentPage' => 'dispatchVilles',
 		]);
 		return ;
 	}
