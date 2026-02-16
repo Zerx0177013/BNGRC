@@ -6,3 +6,4 @@ PurpleAdmin-Free-Admin-Template-master
 public/assets/images/items/*
 !public/assets/images/items/.gitkeep
 /Impact
+/AdminLTE-master
