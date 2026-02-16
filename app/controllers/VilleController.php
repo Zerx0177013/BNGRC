@@ -69,7 +69,7 @@ class VilleController {
 		$regionModel = new RegionModel($pdo);
 		$regions = $regionModel->getAllRegions();
 
-		$this->app->render('ville-add', [
+		$this->app->render('ville-form', [
 			'regions' => $regions,
 			'currentPage' => 'villes',
 		]);
