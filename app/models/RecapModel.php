@@ -23,9 +23,9 @@ class RecapModel
         $stmt = $this->db->query($sql);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        $montantTotal = floatval($result['montant_total']);
-        $montantSatisfait = floatval($result['montant_satisfait']);
-        $montantRestant = $montantTotal - $montantSatisfait;
+        $montantTotal = floatval($result['montant_total'] ?? 0);
+        $montantSatisfait = floatval($result['montant_satisfait'] ?? 0);
+        $montantRestant = abs($montantTotal - $montantSatisfait); // Valeur absolue (toujours positive)
         $pourcentageSatisfait = $montantTotal > 0 ? ($montantSatisfait / $montantTotal) * 100 : 0;
 
         return [
