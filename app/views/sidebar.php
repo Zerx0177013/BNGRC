@@ -77,6 +77,12 @@
                 </a>
               </li>
               <li class="nav-item">
+                <a href="<?= BASE_URL ?>/recap" class="nav-link <?= (isset($currentPage) && $currentPage === 'recap') ? 'active' : '' ?>">
+                  <i class="nav-icon bi bi-clipboard-data"></i>
+                  <p>Récapitulation</p>
+                </a>
+              </li>
+              <li class="nav-item">
                 <a href="<?= BASE_URL ?>/dispatch/besoinsParVille" class="nav-link <?= (isset($currentPage) && $currentPage === 'dispatchVilles') ? 'active' : '' ?>">
                   <i class="nav-icon bi bi-geo-fill"></i>
                   <p>Dispatch Villes</p>
