@@ -41,6 +41,13 @@
                   >
                     <div class="card-body">
 
+                      <!-- Info -->
+                      <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Seuls les articles ayant des besoins non satisfaits sont affichés. 
+                        Un don pour un article sans besoin en attente ne pourra pas être dispatché.
+                      </div>
+
                       <!-- Article -->
                       <div class="mb-3">
                         <label for="id_article" class="form-label">Article <span class="text-danger">*</span></label>
@@ -49,11 +56,15 @@
                           <?php foreach ($articles as $article): ?>
                             <option 
                               value="<?= $article['id_article'] ?>"
+                              data-villes="<?= htmlspecialchars($article['villes_besoins']) ?>"
                             >
-                              <?= htmlspecialchars($article['nom_article']) ?> — <?= htmlspecialchars($article['nom_categorie']) ?>
+                              <?= htmlspecialchars($article['nom_article']) ?> — <?= htmlspecialchars($article['nom_categorie']) ?> (besoin restant: <?= number_format($article['quantite_besoin_restante'], 2, ',', ' ') ?>)
                             </option>
                           <?php endforeach; ?>
                         </select>
+                        <div id="villesDetail" class="form-text text-muted mt-1" style="display:none;">
+                          <i class="bi bi-geo-alt me-1"></i><span id="villesText"></span>
+                        </div>
                       </div>
 
                       <!-- Besoin associé -->
@@ -120,6 +131,17 @@
           function filterBesoins() {
             const selectedArticleId = articleSelect.value;
             const besoinOptions = besoinSelect.querySelectorAll('option');
+            const villesDetail = document.getElementById('villesDetail');
+            const villesText = document.getElementById('villesText');
+
+            // Afficher les villes qui ont besoin de cet article
+            const selectedOption = articleSelect.options[articleSelect.selectedIndex];
+            if (selectedArticleId && selectedOption.dataset.villes) {
+              villesText.textContent = 'Villes en attente : ' + selectedOption.dataset.villes;
+              villesDetail.style.display = '';
+            } else {
+              villesDetail.style.display = 'none';
+            }
 
             besoinOptions.forEach((option, index) => {
               if (index === 0) return; // Skip "Sélectionner un besoin"

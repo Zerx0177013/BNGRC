@@ -9,6 +9,7 @@ class DispatchModel
     public function __construct($db)
     {
         $this->db = $db;
+        $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
     
     public function getAllDispatches()
@@ -79,6 +80,14 @@ class DispatchModel
             JOIN bngrc_article_ETU003918 a ON d.id_article = a.id_article
             JOIN bngrc_categorie_besoin_ETU003918 c ON a.id_categorie = c.id_categorie
             LEFT JOIN bngrc_dispatch_ETU003918 disp ON d.id_don = disp.id_don
+            WHERE EXISTS (
+                SELECT 1 FROM bngrc_besoin_ETU003918 b
+                WHERE b.id_article = d.id_article
+                AND b.quantite > COALESCE(
+                    (SELECT SUM(d2.quantite_attribuee) FROM bngrc_dispatch_ETU003918 d2 WHERE d2.id_besoin = b.id_besoin),
+                    0
+                )
+            )
             GROUP BY d.id_don, d.id_article, d.quantite, d.date_don, a.nom_article, a.prix_unitaire, c.nom_categorie
             HAVING quantite_restante > 0
             ORDER BY d.date_don ASC
@@ -117,12 +126,19 @@ class DispatchModel
             VALUES (:id_don, :id_besoin, :quantite, :id_ville, NOW())
         ';
         $stmt = $this->db->prepare($sql);
-        return $stmt->execute([
+        $success = $stmt->execute([
             ':id_don' => $idDon,
             ':id_besoin' => $idBesoin,
             ':quantite' => $quantite,
             ':id_ville' => $idVille
         ]);
+        
+        if (!$success) {
+            $errorInfo = $stmt->errorInfo();
+            throw new \Exception("Erreur insertion dispatch: " . ($errorInfo[2] ?? 'Unknown error'));
+        }
+        
+        return $success;
     }
     
     public function simulerDispatch($idsDons)

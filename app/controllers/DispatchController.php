@@ -29,8 +29,8 @@ class DispatchController {
 		$pdo = $this->app->db();
 		$model = new DispatchModel($pdo);
 
-		$data = $this->app->request()->data;
-		$idsDons = isset($data->dons) ? $data->dons : [];
+		parse_str(file_get_contents('php://input'), $postData);
+		$idsDons = isset($postData['dons']) ? $postData['dons'] : (isset($_POST['dons']) ? $_POST['dons'] : []);
 
 		if (empty($idsDons)) {
 			$this->app->json(['success' => false, 'message' => 'Aucun don sélectionné.'], 400);
@@ -43,6 +43,14 @@ class DispatchController {
 
 		try {
 			$results = $model->simulerDispatch($idsDons);
+
+			if (empty($results)) {
+				$this->app->json([
+					'success' => false, 
+					'message' => 'Aucun besoin restant à satisfaire pour les dons sélectionnés.'
+				]);
+				return;
+			}
 
 			$this->app->json([
 				'success' => true, 

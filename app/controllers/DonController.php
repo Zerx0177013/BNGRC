@@ -50,7 +50,7 @@ class DonController {
 		$articleModel = new ArticleModel($pdo);
 		$besoinModel = new BesoinModel($pdo);
 		
-		$articles = $articleModel->getAllArticles();
+		$articles = $articleModel->getArticlesWithBesoinsEnAttente();
 		$besoins = $besoinModel->getAllBesoins();
 
 		$this->app->render('don-add', [

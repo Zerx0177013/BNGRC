@@ -92,4 +92,34 @@ class ArticleModel
         $stmt = $this->db->query($sql);
         return (int) $stmt->fetchColumn();
     }
+
+    public function getArticlesWithBesoinsEnAttente()
+    {
+        $sql = '
+            SELECT a.*, c.nom_categorie,
+                SUM(
+                    b.quantite - COALESCE(
+                        (SELECT SUM(d.quantite_attribuee) FROM bngrc_dispatch_ETU003918 d WHERE d.id_besoin = b.id_besoin),
+                        0
+                    )
+                ) as quantite_besoin_restante,
+                GROUP_CONCAT(DISTINCT CONCAT(v.nom_ville, \' (\', 
+                    b.quantite - COALESCE(
+                        (SELECT SUM(d3.quantite_attribuee) FROM bngrc_dispatch_ETU003918 d3 WHERE d3.id_besoin = b.id_besoin),
+                        0
+                    ), \')\') SEPARATOR \', \') as villes_besoins
+            FROM bngrc_article_ETU003918 a
+            JOIN bngrc_categorie_besoin_ETU003918 c ON a.id_categorie = c.id_categorie
+            JOIN bngrc_besoin_ETU003918 b ON b.id_article = a.id_article
+            JOIN bngrc_ville_ETU003918 v ON b.id_ville = v.id_ville
+            WHERE b.quantite > COALESCE(
+                (SELECT SUM(d2.quantite_attribuee) FROM bngrc_dispatch_ETU003918 d2 WHERE d2.id_besoin = b.id_besoin),
+                0
+            )
+            GROUP BY a.id_article, a.nom_article, a.prix_unitaire, a.id_categorie, c.nom_categorie
+            ORDER BY a.nom_article
+        ';
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
