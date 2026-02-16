@@ -1,3 +1,5 @@
+USE bngrc;
+
 CREATE OR REPLACE view v_besoins_complets_ETU003918 AS
 SELECT b.*, v.nom_ville, r.nom_region, a.nom_article, a.prix_unitaire, c.nom_categorie, (b.quantite * a.prix_unitaire) AS montant_total
 FROM

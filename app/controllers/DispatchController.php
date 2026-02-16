@@ -87,6 +87,15 @@ class DispatchController {
 	}
 
 	/**
+	 * Render simulation page
+	 */
+	public function renderSimulationPage(): void {
+		$this->app->render('simulation', [
+			'currentPage' => 'dispatch',
+		]);
+	}
+
+	/**
 	 * Get simulation data as JSON
 	 */
 	public function getSimulationData(): void {
@@ -118,21 +127,13 @@ class DispatchController {
 				return;
 			}
 
-			// Get table data (dispatch format like dashboard)
+			// Get dispatch data with simulated results
 			$dispatchesData = $model->getSimulatedDispatchesParVilleArticle($simulatedResults);
 			
-			// Get existing dispatches by category
-			$dispatchParCategorie = $donModel->getDispatchParCategorie();
-			
-			// Get simulated dispatches by category (only the new simulated ones)
-			$dispatchSimuleParCategorie = $this->calculateSimulatedDispatchByCategory($simulatedResults, $pdo);
-			
-			// Get dons by category
+			// Get totals by category for comparison
+			$dispatchParCategorie = $model->getDispatchParCategorie(); // Dispatches réels
+			$dispatchSimuleParCategorie = $this->calculateSimulatedDispatchByCategory($simulatedResults);
 			$donsParCategorie = $donModel->getDonsParCategorie();
-
-			// Debug logging
-			error_log("Simulation Results Count: " . count($simulatedResults));
-			error_log("Dispatch Simule Par Categorie: " . json_encode($dispatchSimuleParCategorie));
 
 			$this->app->json([
 				'success' => true, 
@@ -144,6 +145,7 @@ class DispatchController {
 				'simulatedCount' => count($simulatedResults)
 			]);
 		} catch (\Exception $e) {
+			error_log('Simulation error: ' . $e->getMessage());
 			$this->app->json(['success' => false, 'message' => 'Erreur lors de la simulation : ' . $e->getMessage()], 500);
 		}
 	}
@@ -151,44 +153,23 @@ class DispatchController {
 	/**
 	 * Calculate simulated dispatch totals by category
 	 */
-	private function calculateSimulatedDispatchByCategory($simulatedResults, $pdo): array {
-		$totals = [];
-
-		foreach ($simulatedResults as $sim) {
-			// Get article category
-			$sql = '
-				SELECT c.nom_categorie
-				FROM bngrc_article_ETU003918 a
-				JOIN bngrc_categorie_besoin_ETU003918 c ON a.id_categorie = c.id_categorie
-				WHERE a.id_article = :id_article
-			';
-			$stmt = $pdo->prepare($sql);
-			$stmt->execute([':id_article' => $sim['id_article']]);
-			$cat = $stmt->fetch(\PDO::FETCH_ASSOC);
-
-			if ($cat) {
-				$catName = $cat['nom_categorie'];
-				if (!isset($totals[$catName])) {
-					$totals[$catName] = 0;
-				}
-				$totals[$catName] += $sim['quantite_attribuee'];
+	private function calculateSimulatedDispatchByCategory(array $simulatedResults): array {
+		$categories = [];
+		
+		foreach ($simulatedResults as $result) {
+			$cat = $result['nom_categorie'];
+			if (!isset($categories[$cat])) {
+				$categories[$cat] = [
+					'nom_categorie' => $cat,
+					'total' => 0
+				];
 			}
+			$categories[$cat]['total'] += $result['quantite_attribuee'];
 		}
-
-		// Convert to array format and sort by category name
-		$result = [];
-		foreach ($totals as $nom_categorie => $total) {
-			$result[] = [
-				'nom_categorie' => $nom_categorie,
-				'total' => (string)$total  // Convert to string to match other data format
-			];
-		}
-
-		// Sort by category name to ensure consistent order
-		usort($result, function($a, $b) {
-			return strcmp($a['nom_categorie'], $b['nom_categorie']);
-		});
-
-		return $result;
+		
+		// Sort by category name
+		ksort($categories);
+		
+		return array_values($categories);
 	}
 }

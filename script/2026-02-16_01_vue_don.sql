@@ -1,3 +1,5 @@
+USE bngrc;
+
 CREATE OR REPLACE view v_info_dons_ETU003918 AS
 SELECT d.*, a.nom_article, a.prix_unitaire, c.nom_categorie, (d.quantite * a.prix_unitaire) AS montant_total
 FROM

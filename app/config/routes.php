@@ -94,6 +94,7 @@ $router->group('', function (Router $router) use ($app) {
 
 		$router->get('/', [$dispatchController, 'renderDispatchPage']);
 		$router->get('/history', [$dispatchController, 'renderDispatchHistory']);
+		$router->get('/simulation', [$dispatchController, 'renderSimulationPage']);
 		$router->post('/simulate-data', [$dispatchController, 'getSimulationData']);
 		$router->post('/execute', [$dispatchController, 'executeDispatch']);
 		$router->delete('/clear', [$dispatchController, 'clearDispatches']);

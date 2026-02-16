@@ -228,6 +228,18 @@ class DispatchModel
                 continue;
             }
             
+            // Get article category
+            $sql = '
+                SELECT c.nom_categorie
+                FROM bngrc_article_ETU003918 a
+                JOIN bngrc_categorie_besoin_ETU003918 c ON a.id_categorie = c.id_categorie
+                WHERE a.id_article = :id_article
+            ';
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([':id_article' => $don['id_article']]);
+            $catInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+            $nomCategorie = $catInfo ? $catInfo['nom_categorie'] : 'Inconnu';
+            
             $besoins = $this->getBesoinsByArticle($don['id_article']);
             
             foreach ($besoins as $besoin) {
@@ -250,6 +262,7 @@ class DispatchModel
                     'id_ville' => $besoin['id_ville'],
                     'ville' => $besoin['nom_ville'],
                     'id_article' => $don['id_article'],
+                    'nom_categorie' => $nomCategorie,
                     'quantite_attribuee' => $quantiteAttribuee
                 ];
                 
@@ -261,8 +274,25 @@ class DispatchModel
     }
 
     /**
-     * Get simulated dispatches grouped by ville and article
-     * Returns ONLY simulated data (not merged with existing)
+     * Get real dispatches by category (existing in database)
+     */
+    public function getDispatchParCategorie()
+    {
+        $sql = '
+            SELECT c.nom_categorie, SUM(dp.quantite_attribuee) as total
+            FROM bngrc_dispatch_ETU003918 dp
+            JOIN bngrc_don_ETU003918 d ON dp.id_don = d.id_don
+            JOIN bngrc_article_ETU003918 a ON d.id_article = a.id_article
+            JOIN bngrc_categorie_besoin_ETU003918 c ON a.id_categorie = c.id_categorie
+            GROUP BY c.nom_categorie
+            ORDER BY c.nom_categorie ASC
+        ';
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Get simulated dispatches grouped by ville and article (ONLY simulated data)
      */
     public function getSimulatedDispatchesParVilleArticle($simulatedDispatches)
     {
@@ -286,7 +316,13 @@ class DispatchModel
         $stmt = $this->db->query($sql);
         $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Transform ONLY simulated dispatches into matrix [ville_id][article_id] = quantite
+        // Get article categories map
+        $articleCategories = [];
+        foreach ($articles as $art) {
+            $articleCategories[$art['id_article']] = $art['nom_categorie'];
+        }
+
+        // Build matrix ONLY from simulated dispatches
         $dispatchMatrix = [];
         foreach ($simulatedDispatches as $sim) {
             if (!isset($dispatchMatrix[$sim['id_ville']])) {
@@ -296,6 +332,11 @@ class DispatchModel
                 $dispatchMatrix[$sim['id_ville']][$sim['id_article']] = 0;
             }
             $dispatchMatrix[$sim['id_ville']][$sim['id_article']] += $sim['quantite_attribuee'];
+            
+            // Add category info to simulated data
+            if (isset($articleCategories[$sim['id_article']])) {
+                $sim['nom_categorie'] = $articleCategories[$sim['id_article']];
+            }
         }
 
         return [
@@ -303,5 +344,64 @@ class DispatchModel
             'articles' => $articles,
             'matrix' => $dispatchMatrix
         ];
+    }
+
+    /**
+     * Get simulated dispatch totals by category
+     * Merges existing dispatches with simulated ones
+     */
+    public function getSimulatedDispatchParCategorie($simulatedDispatches)
+    {
+        // Get existing dispatches by category
+        $sql = '
+            SELECT c.nom_categorie, SUM(dp.quantite_attribuee) as total
+            FROM bngrc_dispatch_ETU003918 dp
+            JOIN bngrc_don_ETU003918 d ON dp.id_don = d.id_don
+            JOIN bngrc_article_ETU003918 a ON d.id_article = a.id_article
+            JOIN bngrc_categorie_besoin_ETU003918 c ON a.id_categorie = c.id_categorie
+            GROUP BY c.nom_categorie
+            ORDER BY c.nom_categorie ASC
+        ';
+        $stmt = $this->db->query($sql);
+        $existing = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Convert to associative array
+        $totals = [];
+        foreach ($existing as $row) {
+            $totals[$row['nom_categorie']] = (float)$row['total'];
+        }
+
+        // Add simulated dispatches
+        foreach ($simulatedDispatches as $sim) {
+            // Get article category
+            $sql = '
+                SELECT c.nom_categorie
+                FROM bngrc_article_ETU003918 a
+                JOIN bngrc_categorie_besoin_ETU003918 c ON a.id_categorie = c.id_categorie
+                WHERE a.id_article = :id_article
+            ';
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([':id_article' => $sim['id_article']]);
+            $cat = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($cat) {
+                $catName = $cat['nom_categorie'];
+                if (!isset($totals[$catName])) {
+                    $totals[$catName] = 0;
+                }
+                $totals[$catName] += $sim['quantite_attribuee'];
+            }
+        }
+
+        // Convert back to array format
+        $result = [];
+        foreach ($totals as $nom_categorie => $total) {
+            $result[] = [
+                'nom_categorie' => $nom_categorie,
+                'total' => $total
+            ];
+        }
+
+        return $result;
     }
 }

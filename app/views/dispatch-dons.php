@@ -109,48 +109,46 @@
             <div id="simulationSection" style="display: none;">
               <div class="alert alert-info alert-dismissible fade show" role="alert">
                 <i class="bi bi-info-circle me-2"></i>
-                <strong>Mode Simulation :</strong> Les données affichées sont une simulation. Cliquez sur "Dispatcher" pour confirmer et enregistrer dans la base de données.
+                <strong>Mode Simulation :</strong> Les données affichées sont une simulation. Aucune donnée n'est enregistrée dans la base de données.
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
               </div>
 
               <div class="row">
                 <!-- Tableau des dispatches simulés -->
-                <div class="col-lg-6">
-                  <div class="card mb-4">
+                <div class="col-12 mb-4">
+                  <div class="card">
                     <div class="card-header">
-                      <h3 class="card-title"><i class="bi bi-truck me-2"></i>Dispatches Simulés par Ville</h3>
+                      <h3 class="card-title"><i class="bi bi-truck me-2"></i>Dispatches Simulés par Ville et Article</h3>
                     </div>
                     <div class="card-body p-0">
-                      <div class="table-responsive">
-                        <table class="table table-sm table-bordered mb-0" id="simulationDispatchTable">
-                          <thead class="table-light">
-                            <tr>
-                              <th style="width:80px;font-size:0.75rem;">Ville</th>
-                              <th class="text-center" style="font-size:0.7rem;padding:4px;">
-                                <div class="spinner-border spinner-border-sm text-primary" role="status">
-                                  <span class="visually-hidden">Chargement...</span>
-                                </div>
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody style="font-size:0.8rem;">
-                            <tr>
-                              <td colspan="100%" class="text-center text-muted py-3">
-                                Chargement des données de simulation...
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
+                      <table class="table table-sm table-bordered mb-0" id="simulationDispatchTable" style="table-layout: fixed; width: 100%;">
+                        <thead class="table-light">
+                          <tr>
+                            <th style="width:90px;font-size:1.05rem;font-weight:600;padding:6px 4px;">Ville</th>
+                            <th class="text-center" style="font-size:0.95rem;padding:4px;">
+                              <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="visually-hidden">Chargement...</span>
+                              </div>
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody style="font-size:1rem;">
+                          <tr>
+                            <td colspan="100%" class="text-center text-muted py-3">
+                              Chargement des données de simulation...
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 </div>
 
                 <!-- Graphique comparatif -->
-                <div class="col-lg-6">
+                <div class="col-12">
                   <div class="card mb-4">
                     <div class="card-header border-0">
-                      <h3 class="card-title"><i class="bi bi-bar-chart-fill me-2"></i>Comparaison Dons / Dispatches</h3>
+                      <h3 class="card-title"><i class="bi bi-bar-chart-fill me-2"></i>Comparaison : Dons / Dispatches Réels / Dispatches Simulés</h3>
                     </div>
                     <div class="card-body">
                       <div class="position-relative" style="height: 480px;">
@@ -186,8 +184,6 @@
           var btnDispatch = document.getElementById('btnDispatch');
           var btnSimulate = document.getElementById('btnSimulate');
           var selectedCount = document.getElementById('selectedCount');
-          var simulationSection = document.getElementById('simulationSection');
-          var simulationChart = null;
 
           function updateUI() {
             var checkedCount = document.querySelectorAll('.don-checkbox:checked').length;
@@ -198,8 +194,6 @@
               selectedCount.textContent = '(' + checkedCount + ' sélectionné' + (checkedCount > 1 ? 's' : '') + ')';
             } else {
               selectedCount.textContent = '';
-              // Cacher la section de simulation si aucun don n'est sélectionné
-              simulationSection.style.display = 'none';
             }
 
             var allChecked = Array.from(checkboxes).every(function(cb) { return cb.checked; });
@@ -230,18 +224,44 @@
                 return;
               }
 
-              // Désactiver le bouton pendant le chargement
+              // Charger les données de simulation via AJAX
               btnSimulate.disabled = true;
               btnSimulate.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Simulation...';
 
-              // Afficher la section de simulation
-              simulationSection.style.display = 'block';
-              
-              // Scroll vers la section de simulation
-              simulationSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              var formData = new URLSearchParams();
+              selected.forEach(function (id) {
+                formData.append('dons[]', id);
+              });
 
-              // Charger les données de simulation
-              loadSimulationData(selected);
+              fetch('<?= BASE_URL ?>/dispatch/simulate-data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData.toString()
+              })
+              .then(function (res) { return res.json(); })
+              .then(function (data) {
+                console.log('Simulation data:', data);
+                if (data.success) {
+                  // Afficher la section de simulation
+                  document.getElementById('simulationSection').style.display = 'block';
+                  
+                  // Remplir le tableau
+                  renderSimulationTable(data.dispatchesData);
+                  
+                  // Remplir le graphique
+                  renderComparisonChart(data.dispatchParCategorie, data.dispatchSimuleParCategorie, data.donsParCategorie);
+                } else {
+                  showAlert('danger', data.message || 'Erreur lors de la simulation.');
+                }
+                btnSimulate.disabled = false;
+                btnSimulate.innerHTML = '<i class="bi bi-eye me-1"></i> Simuler';
+              })
+              .catch(function (err) {
+                console.error('Fetch error:', err);
+                showAlert('danger', 'Erreur réseau: ' + err.message);
+                btnSimulate.disabled = false;
+                btnSimulate.innerHTML = '<i class="bi bi-eye me-1"></i> Simuler';
+              });
             });
           }
 
@@ -256,7 +276,7 @@
                 return;
               }
 
-              if (!confirm('Voulez-vous dispatcher ' + selected.length + ' don(s) et enregistrer dans la base de données ?')) {
+              if (!confirm('Voulez-vous dispatcher ' + selected.length + ' don(s) ?\n\nAttention : Cette action enregistrera directement dans la base de données.\nUtilisez le bouton "Simuler" pour prévisualiser avant d\'enregistrer.')) {
                 return;
               }
 
@@ -299,50 +319,24 @@
             });
           }
 
-          function loadSimulationData(donIds) {
-            var formData = new URLSearchParams();
-            donIds.forEach(function(id) {
-              formData.append('dons[]', id);
-            });
+          function showAlert(type, message) {
+            var container = document.getElementById('alertContainer');
+            container.innerHTML = '<div class="alert alert-' + type + ' alert-dismissible fade show" role="alert">' +
+              message +
+              '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>' +
+              '</div>';
+          }
 
-            fetch('<?= BASE_URL ?>/dispatch/simulate-data', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-              body: formData.toString()
-            })
-            .then(function(res) {
-              return res.json();
-            })
-            .then(function(data) {
-              console.log('Simulation data:', data);
-              if (data.success) {
-                renderSimulationTable(data.dispatchesData);
-                renderComparisonChart(data.dispatchParCategorie, data.dispatchSimuleParCategorie, data.donsParCategorie);
-                
-                // Réactiver le bouton
-                btnSimulate.disabled = false;
-                btnSimulate.innerHTML = '<i class="bi bi-eye me-1"></i> Simuler';
-              } else {
-                alert('Erreur : ' + (data.message || 'Erreur lors de la simulation'));
-                simulationSection.style.display = 'none';
-                btnSimulate.disabled = false;
-                btnSimulate.innerHTML = '<i class="bi bi-eye me-1"></i> Simuler';
-              }
-            })
-            .catch(function(err) {
-              console.error('Erreur lors du chargement des données:', err);
-              alert('Erreur réseau : ' + err.message);
-              simulationSection.style.display = 'none';
-              btnSimulate.disabled = false;
-              btnSimulate.innerHTML = '<i class="bi bi-eye me-1"></i> Simuler';
-            });
+          function escapeHtml(text) {
+            var map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
           }
 
           function renderSimulationTable(dispatchesData) {
             var catColors = {
-              'Nature': { bg: 'info', text: 'text-info' },
-              'Matériaux': { bg: 'warning', text: 'text-warning' },
-              'Argent': { bg: 'success', text: 'text-success' }
+              'Nature': { bg: 'info', text: 'text-info', textDark: '#0a58ca' },
+              'Matériaux': { bg: 'warning', text: 'text-warning', textDark: '#cc7a00' },
+              'Argent': { bg: 'success', text: 'text-success', textDark: '#146c43' }
             };
 
             if (!dispatchesData || !dispatchesData.articles || dispatchesData.articles.length === 0) {
@@ -351,17 +345,19 @@
               return;
             }
 
-            // Header - exactement comme le dashboard
-            var headerHtml = '<tr><th style="width:80px;font-size:0.75rem;">Ville</th>';
+            // En-têtes
+            var headerHtml = '<tr><th style="width:90px;font-size:1.05rem;font-weight:600;padding:6px 4px;">Ville</th>';
             dispatchesData.articles.forEach(function(art) {
-              var catStyle = catColors[art.nom_categorie] || { bg: 'secondary', text: 'text-secondary' };
-              headerHtml += '<th class="text-center bg-' + catStyle.bg + ' bg-opacity-10" style="font-size:0.7rem;padding:4px;">' +
-                escapeHtml(art.nom_article.substring(0, 10)) + '</th>';
+              var catStyle = catColors[art.nom_categorie] || { bg: 'secondary', text: 'text-secondary', textDark: '#6c757d' };
+              headerHtml += '<th class="text-center bg-' + catStyle.bg + ' bg-opacity-10" ' +
+                'style="font-size:0.95rem;padding:6px 2px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" ' +
+                'title="' + escapeHtml(art.nom_article) + '">' +
+                escapeHtml(art.nom_article.substring(0, 8)) + '</th>';
             });
             headerHtml += '</tr>';
             document.querySelector('#simulationDispatchTable thead').innerHTML = headerHtml;
 
-            // Body - exactement comme le dashboard avec régions
+            // Corps du tableau - uniquement les villes avec simulation
             var bodyHtml = '';
             var currentRegion = null;
 
@@ -380,17 +376,17 @@
               if (currentRegion !== ville.nom_region) {
                 currentRegion = ville.nom_region;
                 bodyHtml += '<tr class="table-active">' +
-                  '<td colspan="' + (dispatchesData.articles.length + 1) + '" class="fw-bold" style="font-size:0.75rem;">' +
+                  '<td colspan="' + (dispatchesData.articles.length + 1) + '" class="fw-bold" style="font-size:1rem;padding:6px 4px;">' +
                   '<i class="bi bi-geo-alt-fill text-primary"></i>' + escapeHtml(currentRegion) +
                   '</td></tr>';
               }
 
-              bodyHtml += '<tr><td class="ps-2">' + escapeHtml(ville.nom_ville) + '</td>';
+              bodyHtml += '<tr><td class="ps-2 fw-semibold" style="font-size:1rem;padding:6px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="' + escapeHtml(ville.nom_ville) + '">' + escapeHtml(ville.nom_ville) + '</td>';
               dispatchesData.articles.forEach(function(art) {
                 var qte = dispatchesData.matrix[ville.id_ville] ? dispatchesData.matrix[ville.id_ville][art.id_article] || 0 : 0;
-                var catStyle = catColors[art.nom_categorie] || { bg: 'secondary', text: 'text-secondary' };
+                var catStyle = catColors[art.nom_categorie] || { bg: 'secondary', text: 'text-secondary', textDark: '#6c757d' };
                 var displayValue = qte > 0 ? Number(qte).toLocaleString('fr-FR') : '-';
-                bodyHtml += '<td class="text-center ' + catStyle.text + ' fw-semibold">' + displayValue + '</td>';
+                bodyHtml += '<td class="text-center fw-bold" style="font-size:1rem;padding:6px 2px;color:' + catStyle.textDark + ';">' + displayValue + '</td>';
               });
               bodyHtml += '</tr>';
             });
@@ -403,11 +399,6 @@
           }
 
           function renderComparisonChart(dispatchReels, dispatchSimules, dons) {
-            console.log('=== Chart Rendering Debug ===');
-            console.log('dispatchReels:', dispatchReels);
-            console.log('dispatchSimules:', dispatchSimules);
-            console.log('dons:', dons);
-            
             if (!dons || dons.length === 0) {
               document.querySelector('#simulation-comparison-chart').innerHTML = 
                 '<div class="text-center text-muted py-5">Aucune donnée pour le graphique</div>';
@@ -415,171 +406,66 @@
             }
 
             var categories = dons.map(function(d) { return d.nom_categorie; });
-            console.log('categories:', categories);
             
             // Données Dons
             var donsData = dons.map(function(d) {
               var val = parseFloat(d.total);
               return d.nom_categorie === 'Argent' ? val / 1000 : val;
             });
-            console.log('donsData:', donsData);
 
             // Données Dispatches Réels
-            var dispatchReelsData = categories.map(function(catName) {
-              var dispatch = dispatchReels.find(function(d) { return d.nom_categorie === catName; });
-              if (!dispatch) return 0;
-              var val = parseFloat(dispatch.total);
-              return catName === 'Argent' ? val / 1000 : val;
+            var dispatchReelsData = categories.map(function(cat) {
+              var found = dispatchReels.find(function(d) { return d.nom_categorie === cat; });
+              var val = found ? parseFloat(found.total) : 0;
+              return cat === 'Argent' ? val / 1000 : val;
             });
-            console.log('dispatchReelsData:', dispatchReelsData);
 
             // Données Dispatches Simulés
-            var dispatchSimulesData = categories.map(function(catName) {
-              var dispatch = dispatchSimules.find(function(d) { return d.nom_categorie === catName; });
-              console.log('Looking for category:', catName, 'found:', dispatch);
-              if (!dispatch) return 0;
-              var val = parseFloat(dispatch.total);
-              return catName === 'Argent' ? val / 1000 : val;
-            });
-            console.log('dispatchSimulesData:', dispatchSimulesData);
-
-            var categoriesLabels = categories.map(function(cat) {
-              return cat === 'Argent' ? cat + ' (×1 000)' : cat;
+            var dispatchSimulesData = categories.map(function(cat) {
+              var found = dispatchSimules.find(function(d) { return d.nom_categorie === cat; });
+              var val = found ? parseFloat(found.total) : 0;
+              return cat === 'Argent' ? val / 1000 : val;
             });
 
-            // Détruire le graphique existant s'il y en a un
-            if (simulationChart) {
-              simulationChart.destroy();
-            }
-
-            var chartOptions = {
+            var options = {
               series: [
-                {
-                  name: 'Dons',
-                  data: donsData,
-                },
-                {
-                  name: 'Dispatches Réels',
-                  data: dispatchReelsData,
-                },
-                {
-                  name: 'Dispatches Simulés',
-                  data: dispatchSimulesData,
-                }
+                { name: 'Dons', data: donsData, color: '#dc3545' },
+                { name: 'Dispatches Réels', data: dispatchReelsData, color: '#198754' },
+                { name: 'Dispatches Simulés', data: dispatchSimulesData, color: '#0d6efd' }
               ],
-              chart: {
-                type: 'bar',
-                height: 450,
-              },
+              chart: { type: 'bar', height: 450, toolbar: { show: false } },
               plotOptions: {
-                bar: {
-                  horizontal: false,
-                  columnWidth: '70%',
-                  endingShape: 'rounded',
-                  dataLabels: {
-                    position: 'top',
-                  },
-                },
+                bar: { horizontal: false, columnWidth: '70%', dataLabels: { position: 'top' } }
               },
-              colors: ['#dc3545', '#198754', '#0d6efd'],
               dataLabels: {
                 enabled: true,
-                formatter: function (val) {
-                  if (val === 0) return '';
-                  return val.toFixed(0);
-                },
-                offsetY: -25,
-                style: {
-                  fontSize: '14px',
-                  fontWeight: 'bold',
-                  colors: ["#304758"]
-                }
+                formatter: function (val) { return val > 0 ? Math.round(val) : ''; },
+                offsetY: -20,
+                style: { fontSize: '16px', colors: ['#304758'], fontWeight: 'bold' }
               },
-              stroke: {
-                show: true,
-                width: 2,
-                colors: ['transparent'],
-              },
-              xaxis: {
-                categories: categoriesLabels,
-                labels: {
-                  style: {
-                    fontSize: '13px',
-                    fontWeight: 600,
-                  }
-                }
-              },
+              stroke: { show: true, width: 2, colors: ['transparent'] },
+              xaxis: { categories: categories },
               yaxis: {
-                title: {
-                  text: 'Quantité',
-                  style: {
-                    fontSize: '13px',
-                    fontWeight: 600,
-                  }
-                },
-                min: 0,
-                forceNiceScale: false,
-                tickAmount: 5,
-                labels: {
-                  style: {
-                    fontSize: '12px',
-                  },
-                  formatter: function(val) {
-                    return val.toFixed(0);
-                  }
-                }
+                title: { text: 'Quantité (Argent en milliers)' },
+                forceNiceScale: true
               },
-              fill: {
-                opacity: 1,
-              },
-              legend: {
-                show: false,
-              },
+              fill: { opacity: 1 },
               tooltip: {
                 y: {
                   formatter: function (val, opts) {
-                    var cat = categories[opts.dataPointIndex];
+                    var cat = opts.w.globals.labels[opts.dataPointIndex];
                     if (cat === 'Argent') {
                       return (val * 1000).toLocaleString('fr-FR') + ' Ar';
                     }
-                    return val.toLocaleString('fr-FR') + ' unités';
-                  },
-                },
-              },
-              grid: {
-                padding: {
-                  top: 10,
-                  bottom: 10
+                    return val.toLocaleString('fr-FR');
+                  }
                 }
-              }
+              },
+              legend: { position: 'bottom', horizontalAlign: 'center' }
             };
 
-            console.log('Final chart options:', chartOptions);
-
-            simulationChart = new ApexCharts(
-              document.querySelector('#simulation-comparison-chart'),
-              chartOptions
-            );
-            simulationChart.render();
-          }
-
-          function escapeHtml(text) {
-            var map = {
-              '&': '&amp;',
-              '<': '&lt;',
-              '>': '&gt;',
-              '"': '&quot;',
-              "'": '&#039;'
-            };
-            return String(text).replace(/[&<>"']/g, function(m) { return map[m]; });
-          }
-
-          function showAlert(type, message) {
-            var container = document.getElementById('alertContainer');
-            container.innerHTML = '<div class="alert alert-' + type + ' alert-dismissible fade show" role="alert">' +
-              message +
-              '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>' +
-              '</div>';
+            var chart = new ApexCharts(document.querySelector('#simulation-comparison-chart'), options);
+            chart.render();
           }
         });
       </script>

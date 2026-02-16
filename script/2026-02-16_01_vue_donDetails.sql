@@ -1,3 +1,5 @@
+USE bngrc;
+
 CREATE OR REPLACE view v_don_details_ETU003918 AS
 SELECT
     disp.*,
