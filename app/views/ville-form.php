@@ -76,14 +76,16 @@
                     </div>
                     <!-- /.card-body -->
 
-                    <div class="card-footer d-flex justify-content-between">
-                      <a href="<?= BASE_URL ?>/villes" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left me-1"></i> Retour
-                      </a>
-                      <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-check-lg me-1"></i>
-                        <?= isset($ville) ? 'Enregistrer les modifications' : 'Ajouter la ville' ?>
-                      </button>
+                    <div class="card-footer">
+                      <div class="d-flex justify-content-end gap-2">
+                        <a href="<?= BASE_URL ?>/villes" class="btn btn-secondary">
+                          <i class="bi bi-arrow-left"></i> Retour
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                          <i class="bi bi-check-circle"></i>
+                          <?= isset($ville) ? 'Enregistrer' : 'Ajouter' ?>
+                        </button>
+                      </div>
                     </div>
                   </form>
 

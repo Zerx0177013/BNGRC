@@ -60,14 +60,16 @@
                     </div>
                     <!-- /.card-body -->
 
-                    <div class="card-footer d-flex justify-content-between">
-                      <a href="<?= BASE_URL ?>/regions" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left me-1"></i> Retour
-                      </a>
-                      <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-check-lg me-1"></i>
-                        <?= isset($region) ? 'Enregistrer les modifications' : 'Ajouter la région' ?>
-                      </button>
+                    <div class="card-footer">
+                      <div class="d-flex justify-content-end gap-2">
+                        <a href="<?= BASE_URL ?>/regions" class="btn btn-secondary">
+                          <i class="bi bi-arrow-left"></i> Retour
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                          <i class="bi bi-check-circle"></i>
+                          <?= isset($region) ? 'Enregistrer' : 'Ajouter' ?>
+                        </button>
+                      </div>
                     </div>
                   </form>
 
