@@ -67,10 +67,14 @@ class DonController {
 	public function renderAddForm(): void {
 		$pdo = $this->app->db();
 		$articleModel = new ArticleModel($pdo);
+		$besoinModel = new \app\models\BesoinModel($pdo);
+		
 		$articles = $articleModel->getAllArticles();
+		$besoins = $besoinModel->getAllBesoins();
 
 		$this->app->render('don-add', [
 			'articles' => $articles,
+			'besoins' => $besoins,
 			'currentPage' => 'dons',
 		]);
 	}

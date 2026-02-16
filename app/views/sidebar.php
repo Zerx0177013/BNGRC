@@ -32,100 +32,51 @@
             >
               <li class="nav-header">MENU PRINCIPAL</li>
               <li class="nav-item">
-                <a href="<?= BASE_URL ?>/" class="nav-link active">
+                <a href="<?= BASE_URL ?>/" class="nav-link <?= (isset($currentPage) && $currentPage === 'dashboard') ? 'active' : '' ?>">
                   <i class="nav-icon bi bi-speedometer"></i>
                   <p>Dashboard</p>
                 </a>
               </li>
+
+              <li class="nav-header">GESTION</li>
               <li class="nav-item">
-                <a href="javascript:void(0)" class="nav-link">
-                  <i class="nav-icon bi bi-gift-fill"></i>
-                  <p>Dons</p>
+                <a href="<?= BASE_URL ?>/regions" class="nav-link <?= (isset($currentPage) && $currentPage === 'regions') ? 'active' : '' ?>">
+                  <i class="nav-icon bi bi-map-fill"></i>
+                  <p>Régions</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="javascript:void(0)" class="nav-link">
-                  <i class="nav-icon bi bi-truck"></i>
-                  <p>Dispatch</p>
+                <a href="<?= BASE_URL ?>/villes" class="nav-link <?= (isset($currentPage) && $currentPage === 'villes') ? 'active' : '' ?>">
+                  <i class="nav-icon bi bi-geo-alt-fill"></i>
+                  <p>Villes</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="<?= BASE_URL ?>/articles" class="nav-link <?= (isset($currentPage) && $currentPage === 'articles') ? 'active' : '' ?>">
+                  <i class="nav-icon bi bi-box-seam-fill"></i>
+                  <p>Articles</p>
+                </a>
+              </li>
+
+              <li class="nav-header">SINISTRÉS</li>
+              <li class="nav-item">
+                <a href="<?= BASE_URL ?>/besoins/add" class="nav-link <?= (isset($currentPage) && $currentPage === 'besoins') ? 'active' : '' ?>">
+                  <i class="nav-icon bi bi-clipboard-plus"></i>
+                  <p>Besoins</p>
                 </a>
               </li>
 
               <li class="nav-header">DONATION</li>
               <li class="nav-item">
-                <a href="javascript:void(0)" class="nav-link">
+                <a href="<?= BASE_URL ?>/dons" class="nav-link <?= (isset($currentPage) && $currentPage === 'dons') ? 'active' : '' ?>">
                   <i class="nav-icon bi bi-heart-fill"></i>
-                  <p>Liste des dons</p>
+                  <p>Dons</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="javascript:void(0)" class="nav-link">
-                  <i class="nav-icon bi bi-plus-circle-fill"></i>
-                  <p>Nouveau don</p>
-                </a>
-              </li>
-
-              <li class="nav-header">CATEGORIES</li>
-              <li class="nav-item">
-                <a href="javascript:void(0)" class="nav-link">
-                  <i class="nav-icon bi bi-tags-fill"></i>
-                  <p>
-                    Catégories
-                    <i class="nav-arrow bi bi-chevron-right"></i>
-                  </p>
-                </a>
-                <ul class="nav nav-treeview">
-                  <li class="nav-item">
-                    <a href="javascript:void(0)" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Alimentaire</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="javascript:void(0)" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Vestimentaire</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="javascript:void(0)" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Médical</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="javascript:void(0)" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Matériel</p>
-                    </a>
-                  </li>
-                </ul>
-              </li>
-
-              <li class="nav-header">DOCUMENTATION</li>
-              <li class="nav-item">
-                <a href="javascript:void(0)" class="nav-link">
-                  <i class="nav-icon bi bi-file-earmark-text-fill"></i>
-                  <p>Rapports</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="javascript:void(0)" class="nav-link">
-                  <i class="nav-icon bi bi-journal-text"></i>
-                  <p>Historique</p>
-                </a>
-              </li>
-
-              <li class="nav-header">CONTACTS</li>
-              <li class="nav-item">
-                <a href="javascript:void(0)" class="nav-link">
-                  <i class="nav-icon bi bi-people-fill"></i>
-                  <p>Donateurs</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="javascript:void(0)" class="nav-link">
-                  <i class="nav-icon bi bi-building"></i>
-                  <p>Organisations</p>
+                <a href="<?= BASE_URL ?>/dispatch" class="nav-link <?= (isset($currentPage) && $currentPage === 'dispatch') ? 'active' : '' ?>">
+                  <i class="nav-icon bi bi-truck"></i>
+                  <p>Dispatch</p>
                 </a>
               </li>
             </ul>

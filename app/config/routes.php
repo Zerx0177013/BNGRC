@@ -2,6 +2,7 @@
 
 use app\controllers\ArticleController;
 use app\controllers\BesoinController;
+use app\controllers\DonController;
 use app\controllers\RegionController;
 use app\controllers\VilleController;
 use app\middlewares\SecurityHeadersMiddleware;
@@ -69,6 +70,19 @@ $router->group('', function (Router $router) use ($app) {
 		$router->post('/', [$besoinController, 'createBesoin']);
 		$router->put('/@id', [$besoinController, 'updateBesoin']);
 		$router->delete('/@id', [$besoinController, 'deleteBesoin']);
+	});
+
+	// ========== Dons ==========
+	$router->group('/dons', function (Router $router) use ($app) {
+		$donController = new DonController($app);
+
+		$router->get('/', [$donController, 'renderDonList']);
+		$router->get('/add', [$donController, 'renderAddForm']);
+		$router->get('/@id', [$donController, 'renderDonDetail']);
+		$router->get('/@id/edit', [$donController, 'renderEditForm']);
+		$router->post('/', [$donController, 'createDon']);
+		$router->put('/@id', [$donController, 'updateDon']);
+		$router->delete('/@id', [$donController, 'deleteDon']);
 	});
 
 }, [SecurityHeadersMiddleware::class]);
