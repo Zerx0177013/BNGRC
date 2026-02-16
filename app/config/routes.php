@@ -9,6 +9,7 @@ use app\controllers\VilleController;
 use app\middlewares\SecurityHeadersMiddleware;
 use app\controllers\DispatchController ;
 use app\controllers\AchatController;
+use app\controllers\RecapController;
 use flight\Engine;
 use flight\net\Router;
 
@@ -109,6 +110,14 @@ $router->group('', function (Router $router) use ($app) {
 		$router->get('/json', [$achatController, 'getAchatsJson']);
 		$router->post('/', [$achatController, 'createAchat']);
 		$router->delete('/@id', [$achatController, 'deleteAchat']);
+	});
+
+	// ========== Récapitulation ==========
+	$router->group('/recap', function (Router $router) use ($app) {
+		$recapController = new RecapController($app);
+
+		$router->get('/', [$recapController, 'renderRecapPage']);
+		$router->get('/data', [$recapController, 'getRecapDataJson']);
 	});
 
 }, [SecurityHeadersMiddleware::class]);
