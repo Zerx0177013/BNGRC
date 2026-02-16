@@ -25,33 +25,7 @@
           <div class="container-fluid">
 
             <!-- Alert message -->
-            <div id="alertContainer"></div>
-
-            <div class="row mb-3">
-              <div class="col-md-6">
-                <div class="card bg-info text-white">
-                  <div class="card-body">
-                    <h5 class="card-title"><i class="bi bi-info-circle me-2"></i>Information</h5>
-                    <p class="card-text mb-0">
-                      Sélectionnez les dons à dispatcher. Le système attribuera automatiquement 
-                      les dons aux besoins par ordre de date de saisie.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="card bg-secondary text-white">
-                  <div class="card-body">
-                    <h5 class="card-title"><i class="bi bi-calendar3 me-2"></i>Ordre de traitement</h5>
-                    <p class="card-text mb-0">
-                      Dons : triés par <strong>date_don</strong> (ASC)<br>
-                      Besoins : triés par <strong>date_saisie</strong> (ASC)
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+           
             <div class="card mb-4">
               <div class="card-header d-flex justify-content-between align-items-center">
                 <h3 class="card-title">
