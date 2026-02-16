@@ -245,11 +245,21 @@
         'Matériaux': '#ffc107',
         'Argent': '#198754',
       };
+
+      // Ajuster l'échelle : diviser Argent par 1 000
+      const scaledData = dispatchParCategorie.map(d => {
+        const val = parseFloat(d.total);
+        return d.nom_categorie === 'Argent' ? val / 1000 : val;
+      });
+      const scaledLabels = dispatchParCategorie.map(d => {
+        return d.nom_categorie === 'Argent' ? d.nom_categorie + ' (×1 000)' : d.nom_categorie;
+      });
+
       const sales_chart_options = {
         series: [
           {
             name: 'Quantité dispatchée',
-            data: dispatchParCategorie.map(d => parseFloat(d.total)),
+            data: scaledData,
           },
         ],
         chart: {
@@ -277,14 +287,18 @@
           colors: ['transparent'],
         },
         xaxis: {
-          categories: dispatchParCategorie.map(d => d.nom_categorie),
+          categories: scaledLabels,
         },
         fill: {
           opacity: 1,
         },
         tooltip: {
           y: {
-            formatter: function (val) {
+            formatter: function (val, { dataPointIndex }) {
+              const cat = dispatchParCategorie[dataPointIndex].nom_categorie;
+              if (cat === 'Argent') {
+                return (val * 1000).toLocaleString('fr-FR') + ' Ar';
+              }
               return val + ' unités';
             },
           },
