@@ -102,4 +102,74 @@ class DonModel
         return $stmt->execute([':id' => $id]);
     }
 
+    /**
+     * Dons groupés par jour
+     */
+    public function getDonsParJour()
+    {
+        $sql = '
+            SELECT DATE(date_don) as jour, SUM(quantite) as total
+            FROM bngrc_don_ETU003918
+            GROUP BY DATE(date_don)
+            ORDER BY jour ASC
+        ';
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Dons groupés par article avec catégorie
+     */
+    public function getDonsParArticle()
+    {
+        $sql = '
+            SELECT a.nom_article, SUM(d.quantite) as total_quantite, c.nom_categorie
+            FROM bngrc_don_ETU003918 d
+            JOIN bngrc_article_ETU003918 a ON d.id_article = a.id_article
+            JOIN bngrc_categorie_besoin_ETU003918 c ON a.id_categorie = c.id_categorie
+            GROUP BY a.nom_article, c.nom_categorie
+            ORDER BY total_quantite DESC
+        ';
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Stats totales des dons (nombre + quantité totale)
+     */
+    public function getStatsTotaux()
+    {
+        $sql = 'SELECT COUNT(*) as nb, COALESCE(SUM(quantite), 0) as total FROM bngrc_don_ETU003918';
+        $stmt = $this->db->query($sql);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Dispatches groupés par catégorie
+     */
+    public function getDispatchParCategorie()
+    {
+        $sql = '
+            SELECT c.nom_categorie, SUM(dp.quantite_attribuee) as total
+            FROM bngrc_dispatch_ETU003918 dp
+            JOIN bngrc_don_ETU003918 d ON dp.id_don = d.id_don
+            JOIN bngrc_article_ETU003918 a ON d.id_article = a.id_article
+            JOIN bngrc_categorie_besoin_ETU003918 c ON a.id_categorie = c.id_categorie
+            GROUP BY c.nom_categorie
+            ORDER BY c.nom_categorie ASC
+        ';
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Stats totales des dispatches (nombre + quantité totale)
+     */
+    public function getStatsDispatches()
+    {
+        $sql = 'SELECT COUNT(*) as nb, COALESCE(SUM(quantite_attribuee), 0) as total FROM bngrc_dispatch_ETU003918';
+        $stmt = $this->db->query($sql);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
 }
