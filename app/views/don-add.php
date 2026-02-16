@@ -19,9 +19,7 @@
             </div>
           </div>
         </div>
-        <!--end::App Content Header-->
 
-        <!--begin::App Content-->
         <div class="app-content">
           <div class="container-fluid">
             <div class="row">
@@ -57,6 +55,7 @@
                             <option 
                               value="<?= $article['id_article'] ?>"
                               data-villes="<?= htmlspecialchars($article['villes_besoins']) ?>"
+                              data-besoin-restant="<?= $article['quantite_besoin_restante'] ?>"
                             >
                               <?= htmlspecialchars($article['nom_article']) ?> — <?= htmlspecialchars($article['nom_categorie']) ?> (besoin restant: <?= number_format($article['quantite_besoin_restante'], 2, ',', ' ') ?>)
                             </option>
@@ -96,6 +95,10 @@
                           required
                           placeholder="Ex: 100"
                         >
+                        <div id="quantiteWarning" class="alert alert-warning mt-2" style="display:none;">
+                          <i class="bi bi-exclamation-triangle me-1"></i>
+                          <span id="quantiteWarningText"></span>
+                        </div>
                       </div>
 
                     </div>
@@ -127,7 +130,6 @@
           const articleSelect = document.getElementById('id_article');
           const besoinSelect = document.getElementById('id_besoin');
 
-          // Filtrer les besoins selon l'article sélectionné
           function filterBesoins() {
             const selectedArticleId = articleSelect.value;
             const besoinOptions = besoinSelect.querySelectorAll('option');
@@ -155,17 +157,37 @@
               }
             });
 
-            // Reset la sélection si le besoin ne correspond plus à l'article
             const selectedBesoin = besoinSelect.options[besoinSelect.selectedIndex];
             if (selectedBesoin && selectedBesoin.dataset.articleId !== selectedArticleId && selectedArticleId) {
               besoinSelect.value = '';
             }
           }
 
-          // Filtrer quand l'article change
-          articleSelect.addEventListener('change', filterBesoins);
+          const quantiteInput = document.getElementById('quantite');
+          const quantiteWarning = document.getElementById('quantiteWarning');
+          const quantiteWarningText = document.getElementById('quantiteWarningText');
 
-          // Filtrer au chargement si un article est déjà sélectionné
+          function checkQuantite() {
+            const selectedOption = articleSelect.options[articleSelect.selectedIndex];
+            const besoinRestant = selectedOption ? parseFloat(selectedOption.dataset.besoinRestant) : 0;
+            const quantite = parseFloat(quantiteInput.value) || 0;
+
+            if (articleSelect.value && quantite > 0 && besoinRestant > 0 && quantite > besoinRestant) {
+              var surplus = (quantite - besoinRestant).toFixed(2);
+              quantiteWarningText.textContent = 'La quantité dépasse le besoin restant (' + besoinRestant.toFixed(2).replace('.', ',') + '). Le surplus de ' + surplus.replace('.', ',') + ' ne pourra pas être dispatché.';
+              quantiteWarning.style.display = '';
+            } else {
+              quantiteWarning.style.display = 'none';
+            }
+          }
+
+          quantiteInput.addEventListener('input', checkQuantite);
+
+          articleSelect.addEventListener('change', function () {
+            filterBesoins();
+            checkQuantite();
+          });
+
           filterBesoins();
 
           // Form submission via fetch
