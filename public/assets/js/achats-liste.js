@@ -2,133 +2,246 @@
  * Achats Liste - JavaScript
  * Gestion de la liste des achats avec filtrage et suppression
  */
-document.addEventListener('DOMContentLoaded', function () {
-  var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-  var btnConfirmDelete = document.getElementById('btnConfirmDelete');
+(function () {
+  'use strict';
+
+  // Variables globales
+  var deleteModal = null;
   var currentDeleteId = null;
-  var filtreVille = document.getElementById('filtreVille');
+  var filtreVille = null;
+  var tableContainer = null;
+  var totalCount = null;
+  var alertContainer = null;
 
-  filtreVille.addEventListener('change', function () {
-    var idVille = filtreVille.value;
-    var url = BASE_URL + '/achats/json' + (idVille ? '?id_ville=' + idVille : '');
-    
-    console.log('ID Ville sélectionné:', idVille);
-    console.log('URL appelée:', url);
+  // Initialisation au chargement du DOM
+  document.addEventListener('DOMContentLoaded', function () {
+    // Récupérer les éléments du DOM
+    deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    filtreVille = document.getElementById('filtreVille');
+    tableContainer = document.getElementById('achatsTableContainer');
+    totalCount = document.getElementById('totalCount');
+    alertContainer = document.getElementById('alertContainer');
 
-    fetch(url)
-      .then(function (res) { 
-        console.log('Response status:', res.status);
-        return res.json(); 
-      })
-      .then(function (data) {
-        console.log('Données reçues:', data);
-        if (data.success) {
-          updateTable(data.achats);
-        } else {
-          console.error('Erreur API:', data);
-        }
-      })
-      .catch(function (err) {
-        console.error('Erreur fetch:', err);
-      });
-  });
-
-  function updateTable(achats) {
-    var tableContainer = document.getElementById('achatsTable');
-    var totalCount = document.getElementById('totalCount');
-
-    if (achats.length === 0) {
-      tableContainer.parentElement.innerHTML = 
-        '<div class="text-center text-muted py-4">' +
-        '<i class="bi bi-inbox fs-3 d-block mb-2"></i>' +
-        'Aucun achat pour cette ville.' +
-        '</div>';
-      totalCount.textContent = '0';
+    // Vérifier que tous les éléments existent
+    if (!filtreVille || !tableContainer || !totalCount) {
+      console.error('Erreur: éléments DOM manquants');
       return;
     }
 
-    var tbody = '<tbody>';
+    // Charger les données initiales depuis l'attribut data
+    var initialDataElement = document.getElementById('initialAchatsData');
+    if (initialDataElement) {
+      try {
+        var initialData = JSON.parse(initialDataElement.textContent);
+        renderTable(initialData);
+      } catch (e) {
+        console.error('Erreur parsing JSON:', e);
+        renderTable([]);
+      }
+    } else {
+      renderTable([]);
+    }
+
+    // Event listener pour le filtre
+    filtreVille.addEventListener('change', handleFilterChange);
+
+    // Event listener pour la confirmation de suppression
+    document.getElementById('btnConfirmDelete').addEventListener('click', handleDeleteConfirm);
+  });
+
+  // Gérer le changement de filtre
+  function handleFilterChange() {
+    var idVille = filtreVille.value;
+    var url = window.BASE_URL + '/achats/json';
+    
+    if (idVille) {
+      url += '?id_ville=' + encodeURIComponent(idVille);
+    }
+
+    console.log('Filtre changé - ID Ville:', idVille);
+    console.log('URL:', url);
+
+    fetch(url)
+      .then(function (response) {
+        console.log('Status:', response.status);
+        if (!response.ok) {
+          throw new Error('HTTP ' + response.status);
+        }
+        return response.json();
+      })
+      .then(function (data) {
+        console.log('Données:', data);
+        if (data.success && Array.isArray(data.achats)) {
+          renderTable(data.achats);
+        } else {
+          throw new Error('Format de réponse invalide');
+        }
+      })
+      .catch(function (error) {
+        console.error('Erreur:', error);
+        showAlert('danger', 'Erreur lors du chargement des données: ' + error.message);
+      });
+  }
+
+  // Rendre le tableau
+  function renderTable(achats) {
+    if (!tableContainer || !totalCount) {
+      console.error('Conteneur non trouvé');
+      return;
+    }
+
+    // Mettre à jour le compteur
+    totalCount.textContent = achats.length;
+
+    // Si aucun achat
+    if (achats.length === 0) {
+      tableContainer.innerHTML = 
+        '<div class="text-center text-muted py-5">' +
+        '<i class="bi bi-inbox fs-1 d-block mb-3"></i>' +
+        '<p class="fs-5">Aucun achat pour cette sélection</p>' +
+        '</div>';
+      return;
+    }
+
+    // Construire le tableau
+    var html = '<div class="table-responsive">' +
+      '<table class="table table-bordered table-hover">' +
+      '<thead class="table-dark">' +
+      '<tr>' +
+      '<th>#</th>' +
+      '<th>Date</th>' +
+      '<th>Ville</th>' +
+      '<th>Article</th>' +
+      '<th>Catégorie</th>' +
+      '<th>Quantité</th>' +
+      '<th>Prix unitaire</th>' +
+      '<th>Frais</th>' +
+      '<th>Montant total</th>' +
+      '<th>Don</th>' +
+      '<th>Action</th>' +
+      '</tr>' +
+      '</thead>' +
+      '<tbody>';
+
+    // Ajouter les lignes
     achats.forEach(function (achat) {
       var date = new Date(achat.date_achat);
-      var dateStr = ('0' + date.getDate()).slice(-2) + '/' + 
-                    ('0' + (date.getMonth() + 1)).slice(-2) + '/' + 
-                    date.getFullYear() + ' ' +
-                    ('0' + date.getHours()).slice(-2) + ':' +
-                    ('0' + date.getMinutes()).slice(-2);
+      var dateStr = formatDate(date);
 
-      tbody += '<tr>' +
-        '<td>' + achat.id_achat + '</td>' +
+      html += '<tr>' +
+        '<td>' + escapeHtml(achat.id_achat) + '</td>' +
         '<td>' + dateStr + '</td>' +
-        '<td>' + achat.nom_ville + '</td>' +
-        '<td>' + achat.nom_article + '</td>' +
-        '<td><span class="badge bg-secondary">' + achat.nom_categorie + '</span></td>' +
-        '<td>' + parseFloat(achat.quantite).toFixed(2).replace('.', ',') + '</td>' +
-        '<td>' + parseFloat(achat.prix_unitaire).toFixed(2).replace('.', ',') + ' Ar</td>' +
-        '<td>' + parseFloat(achat.frais_percent).toFixed(0) + '%</td>' +
-        '<td class="fw-bold">' + parseFloat(achat.montant_total).toFixed(2).replace('.', ',') + ' Ar</td>' +
-        '<td><small class="text-muted">Don #' + achat.id_don + '</small></td>' +
+        '<td>' + escapeHtml(achat.nom_ville) + '</td>' +
+        '<td>' + escapeHtml(achat.nom_article) + '</td>' +
+        '<td><span class="badge bg-secondary">' + escapeHtml(achat.nom_categorie) + '</span></td>' +
+        '<td>' + formatNumber(achat.quantite) + '</td>' +
+        '<td>' + formatNumber(achat.prix_unitaire) + ' Ar</td>' +
+        '<td>' + Math.round(parseFloat(achat.frais_percent)) + '%</td>' +
+        '<td class="fw-bold">' + formatNumber(achat.montant_total) + ' Ar</td>' +
+        '<td><small class="text-muted">Don #' + escapeHtml(achat.id_don) + '</small></td>' +
         '<td>' +
-        '<button type="button" class="btn btn-danger btn-sm btn-delete" data-id="' + achat.id_achat + '">' +
+        '<button type="button" class="btn btn-danger btn-sm btn-delete" data-id="' + escapeHtml(achat.id_achat) + '">' +
         '<i class="bi bi-trash"></i>' +
         '</button>' +
         '</td>' +
         '</tr>';
     });
-    tbody += '</tbody>';
 
-    tableContainer.innerHTML = 
-      '<table class="table table-bordered table-hover">' +
-      '<thead class="table-dark">' +
-      '<tr>' +
-      '<th>#</th><th>Date</th><th>Ville</th><th>Article</th><th>Catégorie</th>' +
-      '<th>Quantité</th><th>Prix unitaire</th><th>Frais</th><th>Montant total</th>' +
-      '<th>Don</th><th>Action</th>' +
-      '</tr>' +
-      '</thead>' +
-      tbody +
-      '</table>';
+    html += '</tbody></table></div>';
 
-    totalCount.textContent = achats.length;
+    // Insérer dans le DOM
+    tableContainer.innerHTML = html;
+
+    // Attacher les event listeners aux boutons delete
     attachDeleteListeners();
   }
 
+  // Attacher les listeners aux boutons de suppression
   function attachDeleteListeners() {
-    document.querySelectorAll('.btn-delete').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        currentDeleteId = btn.dataset.id;
-        deleteModal.show();
+    var deleteButtons = document.querySelectorAll('.btn-delete');
+    deleteButtons.forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        currentDeleteId = btn.getAttribute('data-id');
+        if (deleteModal && currentDeleteId) {
+          deleteModal.show();
+        }
       });
     });
   }
 
-  attachDeleteListeners();
+  // Gérer la confirmation de suppression
+  function handleDeleteConfirm() {
+    if (!currentDeleteId) {
+      console.error('Aucun ID à supprimer');
+      return;
+    }
 
-  btnConfirmDelete.addEventListener('click', function () {
-    if (!currentDeleteId) return;
+    var url = window.BASE_URL + '/achats/' + encodeURIComponent(currentDeleteId);
 
-    fetch(BASE_URL + '/achats/' + currentDeleteId, {
-      method: 'DELETE'
-    })
-    .then(function (res) { return res.json(); })
-    .then(function (data) {
-      if (data.success) {
-        showAlert('success', data.message);
-        deleteModal.hide();
-        setTimeout(function () { window.location.reload(); }, 1500);
-      } else {
-        showAlert('danger', data.message);
-      }
-    })
-    .catch(function (err) {
-      showAlert('danger', 'Erreur réseau: ' + err.message);
-    });
-  });
+    fetch(url, { method: 'DELETE' })
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error('HTTP ' + response.status);
+        }
+        return response.json();
+      })
+      .then(function (data) {
+        if (data.success) {
+          showAlert('success', data.message || 'Achat supprimé avec succès');
+          deleteModal.hide();
+          currentDeleteId = null;
+          
+          // Recharger les données après 1 seconde
+          setTimeout(function () {
+            handleFilterChange();
+          }, 1000);
+        } else {
+          throw new Error(data.message || 'Erreur lors de la suppression');
+        }
+      })
+      .catch(function (error) {
+        console.error('Erreur:', error);
+        showAlert('danger', 'Erreur: ' + error.message);
+      });
+  }
 
+  // Afficher une alerte
   function showAlert(type, message) {
-    var container = document.getElementById('alertContainer');
-    container.innerHTML = '<div class="alert alert-' + type + ' alert-dismissible fade show" role="alert">' +
-      message +
+    if (!alertContainer) return;
+
+    alertContainer.innerHTML = 
+      '<div class="alert alert-' + type + ' alert-dismissible fade show" role="alert">' +
+      escapeHtml(message) +
       '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>' +
       '</div>';
+
+    // Auto-masquer après 5 secondes
+    setTimeout(function () {
+      alertContainer.innerHTML = '';
+    }, 5000);
   }
-});
+
+  // Formater une date
+  function formatDate(date) {
+    var day = ('0' + date.getDate()).slice(-2);
+    var month = ('0' + (date.getMonth() + 1)).slice(-2);
+    var year = date.getFullYear();
+    var hours = ('0' + date.getHours()).slice(-2);
+    var minutes = ('0' + date.getMinutes()).slice(-2);
+    return day + '/' + month + '/' + year + ' ' + hours + ':' + minutes;
+  }
+
+  // Formater un nombre
+  function formatNumber(num) {
+    return parseFloat(num).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  }
+
+  // Échapper le HTML
+  function escapeHtml(text) {
+    var div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+})();
