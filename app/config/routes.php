@@ -1,11 +1,70 @@
 <?php
 
+use app\controllers\ArticleController;
+use app\controllers\BesoinController;
+use app\controllers\RegionController;
+use app\controllers\VilleController;
 use app\middlewares\SecurityHeadersMiddleware;
 use flight\Engine;
 use flight\net\Router;
 
 $router->group('', function (Router $router) use ($app) {
-	$router->get('/',function () use ($app){
-		$app->render('index') ;
-	} ) ;
+
+	// ========== Dashboard ==========
+	$router->get('/', function () use ($app) {
+		$app->render('index');
+	});
+
+	// ========== Régions ==========
+	$router->group('/regions', function (Router $router) use ($app) {
+		$regionController = new RegionController($app);
+
+		$router->get('/', [$regionController, 'renderRegionList']);
+		$router->get('/add', [$regionController, 'renderAddForm']);
+		$router->get('/@id', [$regionController, 'renderRegionDetail']);
+		$router->get('/@id/edit', [$regionController, 'renderEditForm']);
+		$router->post('/', [$regionController, 'createRegion']);
+		$router->put('/@id', [$regionController, 'updateRegion']);
+		$router->delete('/@id', [$regionController, 'deleteRegion']);
+	});
+
+	// ========== Villes ==========
+	$router->group('/villes', function (Router $router) use ($app) {
+		$villeController = new VilleController($app);
+
+		$router->get('/', [$villeController, 'renderVilleList']);
+		$router->get('/add', [$villeController, 'renderAddForm']);
+		$router->get('/@id', [$villeController, 'renderVilleDetail']);
+		$router->get('/@id/edit', [$villeController, 'renderEditForm']);
+		$router->post('/', [$villeController, 'createVille']);
+		$router->put('/@id', [$villeController, 'updateVille']);
+		$router->delete('/@id', [$villeController, 'deleteVille']);
+	});
+
+	// ========== Articles ==========
+	$router->group('/articles', function (Router $router) use ($app) {
+		$articleController = new ArticleController($app);
+
+		$router->get('/', [$articleController, 'renderArticleList']);
+		$router->get('/add', [$articleController, 'renderAddForm']);
+		$router->get('/@id', [$articleController, 'renderArticleDetail']);
+		$router->get('/@id/edit', [$articleController, 'renderEditForm']);
+		$router->post('/', [$articleController, 'createArticle']);
+		$router->put('/@id', [$articleController, 'updateArticle']);
+		$router->delete('/@id', [$articleController, 'deleteArticle']);
+	});
+
+	// ========== Besoins ==========
+	$router->group('/besoins', function (Router $router) use ($app) {
+		$besoinController = new BesoinController($app);
+
+		$router->get('/', [$besoinController, 'renderBesoinList']);
+		$router->get('/add', [$besoinController, 'renderAddForm']);
+		$router->get('/@id', [$besoinController, 'renderBesoinDetail']);
+		$router->get('/@id/edit', [$besoinController, 'renderEditForm']);
+		$router->post('/', [$besoinController, 'createBesoin']);
+		$router->put('/@id', [$besoinController, 'updateBesoin']);
+		$router->delete('/@id', [$besoinController, 'deleteBesoin']);
+	});
+
 }, [SecurityHeadersMiddleware::class]);
