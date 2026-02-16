@@ -1,11 +1,18 @@
-<?php include __DIR__ . '/header.php'; ?>
+<?php
+include __DIR__ . '/header.php';
+
+// Préparer les couleurs des catégories
+$catColors = [
+    'Nature' => ['bg' => 'info', 'text' => 'text-info'],
+    'Matériaux' => ['bg' => 'warning', 'text' => 'text-warning'],
+    'Argent' => ['bg' => 'success', 'text' => 'text-success'],
+];
+?>
       <!--begin::App Main-->
       <main class="app-main">
         <!--begin::App Content Header-->
         <div class="app-content-header">
-          <!--begin::Container-->
           <div class="container-fluid">
-            <!--begin::Row-->
             <div class="row">
               <div class="col-sm-6">
                 <h3 class="mb-0">Dashboard</h3>
@@ -17,55 +24,77 @@
                 </ol>
               </div>
             </div>
-            <!--end::Row-->
           </div>
-          <!--end::Container-->
         </div>
+        
         <div class="app-content">
-          <!--begin::Container-->
           <div class="container-fluid">
             <!--begin::Row-->
             <div class="row">
+              
+              <!-- ========== COLONNE GAUCHE ========== -->
               <div class="col-lg-6">
+                
+                <!-- VILLES - BESOINS -->
                 <div class="card mb-4">
-                  <div class="card-header border-0">
-                    <div class="d-flex justify-content-between">
-                      <h3 class="card-title">Donations reçues</h3>
-                    </div>
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="bi bi-house-exclamation me-2"></i>Besoins par Ville</h3>
                   </div>
-                  <div class="card-body">
-                    <div class="d-flex">
-                      <p class="d-flex flex-column">
-                        <span class="fw-bold fs-5"><?= number_format($totalDons['nb']) ?></span>
-                        <span>Donations au fil du temps</span>
-                      </p>
-                    </div>
-                    <!-- /.d-flex -->
-
-                    <div class="position-relative mb-4">
-                      <div id="visitors-chart"></div>
-                    </div>
-
-                    <div class="d-flex flex-row justify-content-end">
-                      <span class="me-2">
-                        <i class="bi bi-square-fill text-primary"></i> Cette semaine
-                      </span>
-
-                      <span> <i class="bi bi-square-fill text-secondary"></i> Semaine dernière </span>
+                  <div class="card-body p-0">
+                    <div class="table-responsive">
+                      <table class="table table-sm table-bordered mb-0">
+                        <thead class="table-light">
+                          <tr>
+                            <th style="width:80px;font-size:0.75rem;">Ville</th>
+                            <?php foreach ($besoinsData['articles'] as $art): 
+                              $catStyle = $catColors[$art['nom_categorie']] ?? ['bg' => 'secondary', 'text' => 'text-secondary'];
+                            ?>
+                            <th class="text-center bg-<?= $catStyle['bg'] ?> bg-opacity-10" style="font-size:0.7rem;padding:4px;">
+                              <?= htmlspecialchars(substr($art['nom_article'], 0, 10)) ?>
+                            </th>
+                            <?php endforeach; ?>
+                          </tr>
+                        </thead>
+                        <tbody style="font-size:0.8rem;">
+                          <?php
+                          $currentRegion = null;
+                          foreach ($besoinsData['villes'] as $ville):
+                            // Séparateur de région
+                            if ($currentRegion !== $ville['nom_region']):
+                              $currentRegion = $ville['nom_region'];
+                          ?>
+                          <tr class="table-active">
+                            <td colspan="<?= count($besoinsData['articles']) + 1 ?>" class="fw-bold" style="font-size:0.75rem;">
+                              <i class="bi bi-geo-alt-fill text-primary"></i><?= htmlspecialchars($currentRegion) ?>
+                            </td>
+                          </tr>
+                          <?php endif; ?>
+                          
+                          <tr>
+                            <td class="ps-2"><?= htmlspecialchars($ville['nom_ville']) ?></td>
+                            <?php foreach ($besoinsData['articles'] as $art): 
+                              $qte = $besoinsData['matrix'][$ville['id_ville']][$art['id_article']] ?? 0;
+                              $catStyle = $catColors[$art['nom_categorie']] ?? ['bg' => 'secondary', 'text' => 'text-secondary'];
+                            ?>
+                            <td class="text-center <?= $catStyle['text'] ?> fw-semibold">
+                              <?= $qte > 0 ? number_format($qte, 0, ',', ' ') : '-' ?>
+                            </td>
+                            <?php endforeach; ?>
+                          </tr>
+                          <?php endforeach; ?>
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 </div>
-                <!-- /.card -->
 
+                <!-- TABLEAU DES DONS -->
                 <div class="card mb-4">
                   <div class="card-header border-0">
-                    <h3 class="card-title">Dons</h3>
+                    <h3 class="card-title"><i class="bi bi-gift-fill me-2"></i>Dons par Article</h3>
                     <div class="card-tools">
                       <a href="javascript:void(0)" class="btn btn-tool btn-sm">
                         <i class="bi bi-download"></i>
-                      </a>
-                      <a href="javascript:void(0)" class="btn btn-tool btn-sm">
-                        <i class="bi bi-list"></i>
                       </a>
                     </div>
                   </div>
@@ -97,187 +126,145 @@
                     </table>
                   </div>
                 </div>
-                <!-- /.card -->
+
               </div>
-              <!-- /.col-md-6 -->
+              <!-- /.col-lg-6 -->
+
+              <!-- ========== COLONNE DROITE ========== -->
               <div class="col-lg-6">
+                
+                <!-- VILLES - DISPATCHES -->
+                <div class="card mb-4">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="bi bi-truck me-2"></i>Dispatches par Ville</h3>
+                  </div>
+                  <div class="card-body p-0">
+                    <div class="table-responsive">
+                      <table class="table table-sm table-bordered mb-0">
+                        <thead class="table-light">
+                          <tr>
+                            <th style="width:80px;font-size:0.75rem;">Ville</th>
+                            <?php foreach ($dispatchesData['articles'] as $art): 
+                              $catStyle = $catColors[$art['nom_categorie']] ?? ['bg' => 'secondary', 'text' => 'text-secondary'];
+                            ?>
+                            <th class="text-center bg-<?= $catStyle['bg'] ?> bg-opacity-10" style="font-size:0.7rem;padding:4px;">
+                              <?= htmlspecialchars(substr($art['nom_article'], 0, 10)) ?>
+                            </th>
+                            <?php endforeach; ?>
+                          </tr>
+                        </thead>
+                        <tbody style="font-size:0.8rem;">
+                          <?php
+                          $currentRegion = null;
+                          foreach ($dispatchesData['villes'] as $ville):
+                            // Séparateur de région
+                            if ($currentRegion !== $ville['nom_region']):
+                              $currentRegion = $ville['nom_region'];
+                          ?>
+                          <tr class="table-active">
+                            <td colspan="<?= count($dispatchesData['articles']) + 1 ?>" class="fw-bold" style="font-size:0.75rem;">
+                              <i class="bi bi-geo-alt-fill text-primary"></i><?= htmlspecialchars($currentRegion) ?>
+                            </td>
+                          </tr>
+                          <?php endif; ?>
+                          
+                          <tr>
+                            <td class="ps-2"><?= htmlspecialchars($ville['nom_ville']) ?></td>
+                            <?php foreach ($dispatchesData['articles'] as $art): 
+                              $qte = $dispatchesData['matrix'][$ville['id_ville']][$art['id_article']] ?? 0;
+                              $catStyle = $catColors[$art['nom_categorie']] ?? ['bg' => 'secondary', 'text' => 'text-secondary'];
+                            ?>
+                            <td class="text-center <?= $catStyle['text'] ?> fw-semibold">
+                              <?= $qte > 0 ? number_format($qte, 0, ',', ' ') : '-' ?>
+                            </td>
+                            <?php endforeach; ?>
+                          </tr>
+                          <?php endforeach; ?>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- GRAPHIQUE DISPATCHES VS DONATIONS -->
                 <div class="card mb-4">
                   <div class="card-header border-0">
-                    <div class="d-flex justify-content-between">
-                      <h3 class="card-title">Dispatches</h3>
-                    </div>
+                    <h3 class="card-title"><i class="bi bi-bar-chart-fill me-2"></i>Dispatches vs Donations</h3>
                   </div>
                   <div class="card-body">
-                    <div class="d-flex">
-                      <p class="d-flex flex-column">
-                        <span class="fw-bold fs-5"><?= number_format($totalDispatches['nb']) ?></span>
-                        <span>Dispatches effectués</span>
-                      </p>
+                    <div class="position-relative" style="height: 250px;">
+                      <div id="comparison-chart"></div>
                     </div>
-                    <!-- /.d-flex -->
-
-                    <div class="position-relative mb-4">
-                      <div id="sales-chart"></div>
-                    </div>
-
-                    <div class="d-flex flex-row justify-content-end">
-                      <span class="me-2">
-                        <i class="bi bi-square-fill text-primary"></i> Cette année
+                    <div class="d-flex flex-row justify-content-center mt-3">
+                      <span class="me-3">
+                        <i class="bi bi-square-fill text-primary"></i> Dispatches
                       </span>
-
-                      <span> <i class="bi bi-square-fill text-secondary"></i> Année dernière </span>
+                      <span>
+                        <i class="bi bi-square-fill text-danger"></i> Donations
+                      </span>
                     </div>
                   </div>
                 </div>
-                <!-- /.card -->
 
-                <div class="card">
-                  <div class="card-header border-0">
-                    <h3 class="card-title">Aperçu des opérations</h3>
-                  </div>
-                  <div class="card-body">
-                    <div
-                      class="d-flex justify-content-between align-items-center border-bottom mb-3"
-                    >
-                      <p class="text-success fs-2">
-                        <i class="bi bi-gift-fill"></i>
-                      </p>
-                      <p class="d-flex flex-column text-end">
-                        <span class="fw-bold">
-                          <i class="bi bi-graph-up-arrow text-success"></i> <?= $tauxDons ?>%
-                        </span>
-                        <span class="text-secondary">TAUX DE DONS</span>
-                      </p>
-                    </div>
-                    <!-- /.d-flex -->
-                    <div
-                      class="d-flex justify-content-between align-items-center border-bottom mb-3"
-                    >
-                      <p class="text-info fs-2">
-                        <i class="bi bi-truck"></i>
-                      </p>
-                      <p class="d-flex flex-column text-end">
-                        <span class="fw-bold">
-                          <i class="bi bi-graph-up-arrow text-info"></i> <?= $tauxDispatch ?>%
-                        </span>
-                        <span class="text-secondary">TAUX DE DISPATCH</span>
-                      </p>
-                    </div>
-                    <!-- /.d-flex -->
-                    <div class="d-flex justify-content-between align-items-center mb-0">
-                      <p class="text-warning fs-2">
-                        <i class="bi bi-people-fill"></i>
-                      </p>
-                      <p class="d-flex flex-column text-end">
-                        <span class="fw-bold">
-                          <i class="bi bi-graph-up-arrow text-warning"></i>
-                          5%
-                        </span>
-                        <span class="text-secondary">NOUVEAUX DONATEURS</span>
-                      </p>
-                    </div>
-                    <!-- /.d-flex -->
-                  </div>
-                </div>
               </div>
-              <!-- /.col-md-6 -->
+              <!-- /.col-lg-6 -->
+
             </div>
             <!--end::Row-->
           </div>
-          <!--end::Container-->
         </div>
-        <!--end::App Content-->
       </main>
       <!--end::App Main-->
 <?php include __DIR__ . '/footer.php'; ?>
 
     <script>
       // --- Données PHP injectées ---
-      const donsParJour = <?= json_encode($donsParJour) ?>;
       const dispatchParCategorie = <?= json_encode($dispatchParCategorie) ?>;
+      const donsParCategorie = <?= json_encode($donsParCategorie) ?>;
 
-      // --- Line chart : Dons par jour ---
-      const visitors_chart_options = {
-        series: [
-          {
-            name: 'Quantité donnée',
-            data: donsParJour.map(d => parseFloat(d.total)),
-          },
-        ],
-        chart: {
-          height: 200,
-          type: 'line',
-          toolbar: {
-            show: false,
-          },
-        },
-        colors: ['#0d6efd'],
-        stroke: {
-          curve: 'smooth',
-        },
-        grid: {
-          borderColor: '#e7e7e7',
-          row: {
-            colors: ['#f3f3f3', 'transparent'],
-            opacity: 0.5,
-          },
-        },
-        legend: {
-          show: false,
-        },
-        markers: {
-          size: 3,
-        },
-        xaxis: {
-          categories: donsParJour.map(d => d.jour),
-        },
-      };
-
-      const visitors_chart = new ApexCharts(
-        document.querySelector('#visitors-chart'),
-        visitors_chart_options,
-      );
-      visitors_chart.render();
-
-      // --- Bar chart : Dispatches par catégorie ---
-      const catColors = {
-        'Nature': '#0d6efd',
-        'Matériaux': '#ffc107',
-        'Argent': '#198754',
-      };
-
-      // Ajuster l'échelle : diviser Argent par 1 000
-      const scaledData = dispatchParCategorie.map(d => {
+      // --- Préparation des données pour le graphique groupé ---
+      const categories = dispatchParCategorie.map(d => d.nom_categorie);
+      
+      const dispatchData = dispatchParCategorie.map(d => {
         const val = parseFloat(d.total);
         return d.nom_categorie === 'Argent' ? val / 1000 : val;
       });
-      const scaledLabels = dispatchParCategorie.map(d => {
-        return d.nom_categorie === 'Argent' ? d.nom_categorie + ' (×1 000)' : d.nom_categorie;
+
+      const donsData = categories.map(catName => {
+        const don = donsParCategorie.find(d => d.nom_categorie === catName);
+        if (!don) return 0;
+        const val = parseFloat(don.total);
+        return catName === 'Argent' ? val / 1000 : val;
       });
 
-      const sales_chart_options = {
+      const categoriesLabels = categories.map(cat => 
+        cat === 'Argent' ? cat + ' (×1 000)' : cat
+      );
+
+      // --- Graphique à barres groupées ---
+      const comparison_chart_options = {
         series: [
           {
-            name: 'Quantité dispatchée',
-            data: scaledData,
+            name: 'Dispatches',
+            data: dispatchData,
           },
+          {
+            name: 'Donations',
+            data: donsData,
+          }
         ],
         chart: {
           type: 'bar',
-          height: 200,
+          height: 230,
         },
         plotOptions: {
           bar: {
             horizontal: false,
-            columnWidth: '55%',
+            columnWidth: '70%',
             endingShape: 'rounded',
-            distributed: true,
           },
         },
-        legend: {
-          show: false,
-        },
-        colors: dispatchParCategorie.map(d => catColors[d.nom_categorie] || '#adb5bd'),
+        colors: ['#0d6efd', '#dc3545'],
         dataLabels: {
           enabled: false,
         },
@@ -287,27 +274,30 @@
           colors: ['transparent'],
         },
         xaxis: {
-          categories: scaledLabels,
+          categories: categoriesLabels,
         },
         fill: {
           opacity: 1,
         },
+        legend: {
+          show: false,
+        },
         tooltip: {
           y: {
-            formatter: function (val, { dataPointIndex }) {
-              const cat = dispatchParCategorie[dataPointIndex].nom_categorie;
+            formatter: function (val, { seriesIndex, dataPointIndex }) {
+              const cat = categories[dataPointIndex];
               if (cat === 'Argent') {
                 return (val * 1000).toLocaleString('fr-FR') + ' Ar';
               }
-              return val + ' unités';
+              return val.toLocaleString('fr-FR') + ' unités';
             },
           },
         },
       };
 
-      const sales_chart = new ApexCharts(
-        document.querySelector('#sales-chart'),
-        sales_chart_options,
+      const comparison_chart = new ApexCharts(
+        document.querySelector('#comparison-chart'),
+        comparison_chart_options,
       );
-      sales_chart.render();
+      comparison_chart.render();
     </script>

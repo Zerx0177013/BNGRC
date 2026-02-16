@@ -21,9 +21,13 @@ class DashboardController
 		$donModel = new DonModel($pdo);
 		$besoinModel = new BesoinModel($pdo);
 
+		// Données pour les tableaux villes
+		$besoinsData = $besoinModel->getBesoinsParVilleArticle();
+		$dispatchesData = $donModel->getDispatchesParVilleArticle();
+
 		// Données pour les graphiques
-		$donsParJour = $donModel->getDonsParJour();
 		$dispatchParCategorie = $donModel->getDispatchParCategorie();
+		$donsParCategorie = $donModel->getDonsParCategorie();
 		$donsParArticle = $donModel->getDonsParArticle();
 
 		// Stats totales
@@ -40,8 +44,10 @@ class DashboardController
 			: 0;
 
 		$this->app->render('index', [
-			'donsParJour' => $donsParJour,
+			'besoinsData' => $besoinsData,
+			'dispatchesData' => $dispatchesData,
 			'dispatchParCategorie' => $dispatchParCategorie,
+			'donsParCategorie' => $donsParCategorie,
 			'donsParArticle' => $donsParArticle,
 			'totalDons' => $totalDons,
 			'totalDispatches' => $totalDispatches,

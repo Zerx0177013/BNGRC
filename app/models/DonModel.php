@@ -172,4 +172,69 @@ class DonModel
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Get dispatches grouped by ville and article for dashboard table
+     */
+    public function getDispatchesParVilleArticle()
+    {
+        // Get all regions with their villes
+        $sql = '
+            SELECT r.id_region, r.nom_region, v.id_ville, v.nom_ville
+            FROM bngrc_region_ETU003918 r
+            LEFT JOIN bngrc_ville_ETU003918 v ON r.id_region = v.id_region
+            ORDER BY r.nom_region, v.nom_ville
+        ';
+        $stmt = $this->db->query($sql);
+        $villes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Get all articles with categories
+        $sql = '
+            SELECT a.id_article, a.nom_article, c.nom_categorie
+            FROM bngrc_article_ETU003918 a
+            LEFT JOIN bngrc_categorie_besoin_ETU003918 c ON a.id_categorie = c.id_categorie
+            ORDER BY c.nom_categorie, a.nom_article
+        ';
+        $stmt = $this->db->query($sql);
+        $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Get dispatches matrix
+        $sql = '
+            SELECT dp.id_ville, d.id_article, SUM(dp.quantite_attribuee) as quantite
+            FROM bngrc_dispatch_ETU003918 dp
+            JOIN bngrc_don_ETU003918 d ON dp.id_don = d.id_don
+            GROUP BY dp.id_ville, d.id_article
+        ';
+        $stmt = $this->db->query($sql);
+        $dispatches = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Transform dispatches into matrix [ville_id][article_id] = quantite
+        $dispatchMatrix = [];
+        foreach ($dispatches as $d) {
+            $dispatchMatrix[$d['id_ville']][$d['id_article']] = $d['quantite'];
+        }
+
+        return [
+            'villes' => $villes,
+            'articles' => $articles,
+            'matrix' => $dispatchMatrix
+        ];
+    }
+
+    /**
+     * Get dons grouped by category for chart comparison
+     */
+    public function getDonsParCategorie()
+    {
+        $sql = '
+            SELECT c.nom_categorie, SUM(d.quantite) as total
+            FROM bngrc_don_ETU003918 d
+            JOIN bngrc_article_ETU003918 a ON d.id_article = a.id_article
+            JOIN bngrc_categorie_besoin_ETU003918 c ON a.id_categorie = c.id_categorie
+            GROUP BY c.nom_categorie
+            ORDER BY c.nom_categorie ASC
+        ';
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 }

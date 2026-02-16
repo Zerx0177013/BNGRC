@@ -1,11 +1,14 @@
--- Active: 1765287408229@@127.0.0.1@3306@bngrc
-CREATE DATABASE IF NOT EXISTS bngrc;
+-- =============================================================
+--  BNGRC - Script de création des tables
+-- =============================================================
+
+DROP DATABASE IF EXISTS bngrc;
+CREATE DATABASE bngrc;
 
 USE bngrc;
 
 SET FOREIGN_KEY_CHECKS = 0;
 
-DROP DATABASE bngrc;
 -- ========== REGIONS ==========
 CREATE TABLE bngrc_region_ETU003918(
     id_region INT AUTO_INCREMENT PRIMARY KEY,
