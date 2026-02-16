@@ -100,4 +100,14 @@ class BesoinModel
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    /**
+     * Stats totales des besoins (quantité totale)
+     */
+    public function getStatsTotaux()
+    {
+        $sql = 'SELECT COALESCE(SUM(quantite), 0) as total FROM bngrc_besoin_ETU003918';
+        $stmt = $this->db->query($sql);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }

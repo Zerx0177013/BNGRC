@@ -36,12 +36,8 @@
                   <div class="card-body">
                     <div class="d-flex">
                       <p class="d-flex flex-column">
-                        <span class="fw-bold fs-5">820</span>
+                        <span class="fw-bold fs-5"><?= number_format($totalDons['nb']) ?></span>
                         <span>Donations au fil du temps</span>
-                      </p>
-                      <p class="ms-auto d-flex flex-column text-end">
-                        <span class="text-success"> <i class="bi bi-arrow-up"></i> 12.5% </span>
-                        <span class="text-secondary">Depuis la semaine dernière</span>
                       </p>
                     </div>
                     <!-- /.d-flex -->
@@ -77,32 +73,26 @@
                     <table class="table table-striped align-middle">
                       <thead>
                         <tr>
-                          <th>Don</th>
-                          <th>Qté</th>
-                          <th>Unités</th>
+                          <th>Article</th>
+                          <th>Qté totale</th>
+                          <th>Catégorie</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td>Riz</td>
-                          <td>500</td>
-                          <td>Kg</td>
-                        </tr>
-                        <tr>
-                          <td>Eau potable</td>
-                          <td>1 200</td>
-                          <td>Litres</td>
-                        </tr>
-                        <tr>
-                          <td>Couvertures</td>
-                          <td>350</td>
-                          <td>Pièces</td>
-                        </tr>
-                        <tr>
-                          <td>Médicaments</td>
-                          <td>80</td>
-                          <td>Cartons</td>
-                        </tr>
+                        <?php foreach ($donsParArticle as $don): ?>
+                          <tr>
+                            <td><?= htmlspecialchars($don['nom_article']) ?></td>
+                            <td><?= number_format($don['total_quantite'], 0, ',', ' ') ?></td>
+                            <td><?php
+                              $cat = strtolower($don['nom_categorie']);
+                              $badge = match(true) {
+                                str_contains($cat, 'argent') => 'text-bg-success',
+                                str_contains($cat, 'mat')    => 'text-bg-warning',
+                                default                      => 'text-bg-info',
+                              };
+                            ?><span class="badge <?= $badge ?>"><?= htmlspecialchars($don['nom_categorie']) ?></span></td>
+                          </tr>
+                        <?php endforeach; ?>
                       </tbody>
                     </table>
                   </div>
@@ -120,12 +110,8 @@
                   <div class="card-body">
                     <div class="d-flex">
                       <p class="d-flex flex-column">
-                        <span class="fw-bold fs-5">1 230</span>
-                        <span>Dispatches au fil du temps</span>
-                      </p>
-                      <p class="ms-auto d-flex flex-column text-end">
-                        <span class="text-success"> <i class="bi bi-arrow-up"></i> 33.1% </span>
-                        <span class="text-secondary">Depuis l'année dernière</span>
+                        <span class="fw-bold fs-5"><?= number_format($totalDispatches['nb']) ?></span>
+                        <span>Dispatches effectués</span>
                       </p>
                     </div>
                     <!-- /.d-flex -->
@@ -158,7 +144,7 @@
                       </p>
                       <p class="d-flex flex-column text-end">
                         <span class="fw-bold">
-                          <i class="bi bi-graph-up-arrow text-success"></i> 12%
+                          <i class="bi bi-graph-up-arrow text-success"></i> <?= $tauxDons ?>%
                         </span>
                         <span class="text-secondary">TAUX DE DONS</span>
                       </p>
@@ -172,7 +158,7 @@
                       </p>
                       <p class="d-flex flex-column text-end">
                         <span class="fw-bold">
-                          <i class="bi bi-graph-up-arrow text-info"></i> 0.8%
+                          <i class="bi bi-graph-up-arrow text-info"></i> <?= $tauxDispatch ?>%
                         </span>
                         <span class="text-secondary">TAUX DE DISPATCH</span>
                       </p>
@@ -206,15 +192,16 @@
 <?php include __DIR__ . '/footer.php'; ?>
 
     <script>
+      // --- Données PHP injectées ---
+      const donsParJour = <?= json_encode($donsParJour) ?>;
+      const dispatchParCategorie = <?= json_encode($dispatchParCategorie) ?>;
+
+      // --- Line chart : Dons par jour ---
       const visitors_chart_options = {
         series: [
           {
-            name: 'Dons - 2026',
-            data: [100, 120, 170, 167, 180, 177, 160],
-          },
-          {
-            name: 'Dons - 2025',
-            data: [60, 80, 70, 67, 80, 77, 100],
+            name: 'Quantité donnée',
+            data: donsParJour.map(d => parseFloat(d.total)),
           },
         ],
         chart: {
@@ -224,7 +211,7 @@
             show: false,
           },
         },
-        colors: ['#0d6efd', '#adb5bd'],
+        colors: ['#0d6efd'],
         stroke: {
           curve: 'smooth',
         },
@@ -239,10 +226,10 @@
           show: false,
         },
         markers: {
-          size: 1,
+          size: 3,
         },
         xaxis: {
-          categories: ['22th', '23th', '24th', '25th', '26th', '27th', '28th'],
+          categories: donsParJour.map(d => d.jour),
         },
       };
 
@@ -252,19 +239,17 @@
       );
       visitors_chart.render();
 
+      // --- Bar chart : Dispatches par catégorie ---
+      const catColors = {
+        'Nature': '#0d6efd',
+        'Matériaux': '#ffc107',
+        'Argent': '#198754',
+      };
       const sales_chart_options = {
         series: [
           {
-            name: 'Alimentaire',
-            data: [44, 55, 57, 56, 61, 58, 63, 60, 66],
-          },
-          {
-            name: 'Médical',
-            data: [76, 85, 101, 98, 87, 105, 91, 114, 94],
-          },
-          {
-            name: 'Matériel',
-            data: [35, 41, 36, 26, 45, 48, 52, 53, 41],
+            name: 'Quantité dispatchée',
+            data: dispatchParCategorie.map(d => parseFloat(d.total)),
           },
         ],
         chart: {
@@ -276,12 +261,13 @@
             horizontal: false,
             columnWidth: '55%',
             endingShape: 'rounded',
+            distributed: true,
           },
         },
         legend: {
           show: false,
         },
-        colors: ['#0d6efd', '#20c997', '#ffc107'],
+        colors: dispatchParCategorie.map(d => catColors[d.nom_categorie] || '#adb5bd'),
         dataLabels: {
           enabled: false,
         },
@@ -291,7 +277,7 @@
           colors: ['transparent'],
         },
         xaxis: {
-          categories: ['Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct'],
+          categories: dispatchParCategorie.map(d => d.nom_categorie),
         },
         fill: {
           opacity: 1,

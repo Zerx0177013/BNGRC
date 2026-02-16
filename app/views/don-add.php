@@ -101,14 +101,15 @@
                     </div>
                     <!-- /.card-body -->
 
-                    <div class="card-footer d-flex justify-content-between">
-                      <a href="<?= BASE_URL ?>/dons" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left me-1"></i> Retour
-                      </a>
-                      <button type="submit" class="btn btn-success">
-                        <i class="bi bi-check-lg me-1"></i>
-                        Enregistrer le don
-                      </button>
+                    <div class="card-footer">
+                      <div class="d-flex justify-content-end gap-2">
+                        <a href="<?= BASE_URL ?>/dons" class="btn btn-secondary">
+                          <i class="bi bi-arrow-left"></i> Retour
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                          <i class="bi bi-check-circle"></i> Enregistrer le don
+                        </button>
+                      </div>
                     </div>
                   </form>
 

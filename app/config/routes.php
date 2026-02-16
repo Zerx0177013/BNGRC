@@ -2,20 +2,21 @@
 
 use app\controllers\ArticleController;
 use app\controllers\BesoinController;
-use app\controllers\DispatchController;
+use app\controllers\DashboardController;
 use app\controllers\DonController;
 use app\controllers\RegionController;
 use app\controllers\VilleController;
 use app\middlewares\SecurityHeadersMiddleware;
+use app\controllers\DispatchController ;
 use flight\Engine;
 use flight\net\Router;
 
 $router->group('', function (Router $router) use ($app) {
 
 	// ========== Dashboard ==========
-	$router->get('/', function () use ($app) {
-		$app->render('index');
-	});
+	$dashboardController = new DashboardController($app);
+	$router->get('/', [$dashboardController, 'renderDashboard']);
+
 	$router->group('/dispatch', function (Router $router) use ($app) {
 		$besoinController = new BesoinController($app);
 		$router->get('/besoinsParVille', [$besoinController, 'renderBesoinsParVille']);
