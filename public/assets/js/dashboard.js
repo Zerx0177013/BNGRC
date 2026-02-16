@@ -1,11 +1,4 @@
-/**
- * Dashboard - JavaScript
- * Charts ApexCharts pour le dashboard (dons par jour et dispatches par catégorie)
- */
 document.addEventListener('DOMContentLoaded', function () {
-  // Les données sont injectées via des variables globales: donsParJour et dispatchParCategorie
-
-  // --- Line chart : Dons par jour ---
   if (typeof donsParJour !== 'undefined' && document.getElementById('visitors-chart')) {
     const visitors_chart_options = {
       series: [
@@ -50,7 +43,6 @@ document.addEventListener('DOMContentLoaded', function () {
     visitors_chart.render();
   }
 
-  // --- Bar chart : Dispatches par catégorie ---
   if (typeof dispatchParCategorie !== 'undefined' && document.getElementById('sales-chart')) {
     const catColors = {
       'Nature': '#0d6efd',
@@ -58,7 +50,6 @@ document.addEventListener('DOMContentLoaded', function () {
       'Argent': '#198754',
     };
 
-    // Ajuster l'échelle : diviser Argent par 1 000
     const scaledData = dispatchParCategorie.map(d => {
       const val = parseFloat(d.total);
       return d.nom_categorie === 'Argent' ? val / 1000 : val;

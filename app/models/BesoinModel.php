@@ -25,9 +25,6 @@ class BesoinModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Créer un besoin
-     */
     public function createBesoin($idVille, $idArticle, $quantite, $dateSaisie)
     {
         if ($dateSaisie) {
@@ -57,9 +54,6 @@ class BesoinModel
         return (int) $this->db->lastInsertId();
     }
 
-    /**
-     * Modifier un besoin
-     */
     public function updateBesoin($id, $idVille, $idArticle, $quantite)
     {
         $sql = '
@@ -76,9 +70,6 @@ class BesoinModel
         ]);
     }
 
-    /**
-     * Supprimer un besoin
-     */
     public function deleteBesoin($id)
     {
         $sql = 'DELETE FROM bngrc_besoin_ETU003918 WHERE id_besoin = :id';
@@ -101,9 +92,6 @@ class BesoinModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Stats totales des besoins (quantité totale)
-     */
     public function getStatsTotaux()
     {
         $sql = 'SELECT COALESCE(SUM(quantite), 0) as total FROM bngrc_besoin_ETU003918';
@@ -111,13 +99,8 @@ class BesoinModel
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Get besoins grouped by ville and article for dashboard table
-     * Returns: regions with villes, articles with categories, and besoin matrix
-     */
     public function getBesoinsParVilleArticle()
     {
-        // Get all regions with their villes
         $sql = '
             SELECT r.id_region, r.nom_region, v.id_ville, v.nom_ville
             FROM bngrc_region_ETU003918 r
@@ -127,7 +110,6 @@ class BesoinModel
         $stmt = $this->db->query($sql);
         $villes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Get all articles with categories
         $sql = '
             SELECT a.id_article, a.nom_article, c.nom_categorie
             FROM bngrc_article_ETU003918 a
@@ -137,7 +119,6 @@ class BesoinModel
         $stmt = $this->db->query($sql);
         $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Get besoins matrix
         $sql = '
             SELECT id_ville, id_article, SUM(quantite) as quantite
             FROM bngrc_besoin_ETU003918
@@ -146,7 +127,6 @@ class BesoinModel
         $stmt = $this->db->query($sql);
         $besoins = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Transform besoins into matrix [ville_id][article_id] = quantite
         $besoinMatrix = [];
         foreach ($besoins as $b) {
             $besoinMatrix[$b['id_ville']][$b['id_article']] = $b['quantite'];

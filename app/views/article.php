@@ -1,14 +1,12 @@
 <?php
 include __DIR__ . '/header.php';
 
-// Mapping des couleurs par catégorie
 $catColors = [
     'Nature'     => ['bg' => 'bg-info',    'textbg' => 'text-bg-info',    'icon' => 'bi bi-tree-fill'],
     'Matériaux'  => ['bg' => 'bg-warning',  'textbg' => 'text-bg-warning',  'icon' => 'bi bi-tools'],
     'Argent'     => ['bg' => 'bg-success',  'textbg' => 'text-bg-success',  'icon' => 'bi bi-cash-stack'],
 ];
 
-// Dériver catégories et groupement depuis $articles
 $countByCategorie = [];
 $articlesByCategorie = [];
 foreach ($articles as $art) {

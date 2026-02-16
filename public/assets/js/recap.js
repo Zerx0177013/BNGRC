@@ -1,14 +1,9 @@
-/**
- * Recap - JavaScript
- * Gestion de la page de récapitulation avec actualisation Ajax
- */
 document.addEventListener('DOMContentLoaded', function () {
   var btnActualiser = document.getElementById('btnActualiser');
   var refreshIcon = document.getElementById('refreshIcon');
   var refreshSpinner = document.getElementById('refreshSpinner');
 
   btnActualiser.addEventListener('click', function () {
-    // Désactiver le bouton et afficher le spinner
     btnActualiser.disabled = true;
     refreshIcon.classList.add('d-none');
     refreshSpinner.classList.remove('d-none');
@@ -26,7 +21,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (response.success && response.data) {
           var data = response.data;
           
-          // Mettre à jour les 3 cards principales
           document.getElementById('montantTotal').textContent = 
             formatNumber(data.montant_total) + ' Ar';
           
@@ -39,7 +33,6 @@ document.addEventListener('DOMContentLoaded', function () {
           document.getElementById('pourcentageSatisfait').textContent = 
             formatNumber(data.pourcentage_satisfait) + '%';
 
-          // Animation de mise à jour réussie
           btnActualiser.classList.add('btn-success');
           setTimeout(function () {
             btnActualiser.classList.remove('btn-success');
@@ -54,7 +47,6 @@ document.addEventListener('DOMContentLoaded', function () {
         alert('Erreur lors de l\'actualisation: ' + err.message);
       })
       .finally(function () {
-        // Réactiver le bouton et masquer le spinner
         btnActualiser.disabled = false;
         refreshIcon.classList.remove('d-none');
         refreshSpinner.classList.add('d-none');

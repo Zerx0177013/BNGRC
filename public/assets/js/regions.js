@@ -1,12 +1,7 @@
-/**
- * Regions - JavaScript
- * Gestion de la liste des régions avec suppression
- */
 document.addEventListener('DOMContentLoaded', function () {
   let deleteId = null;
   const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
 
-  // Delete button click
   document.querySelectorAll('.btn-delete').forEach(function (btn) {
     btn.addEventListener('click', function () {
       deleteId = this.dataset.id;
@@ -15,7 +10,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // Confirm delete
   document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
     if (!deleteId) return;
 

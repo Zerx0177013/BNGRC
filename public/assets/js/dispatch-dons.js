@@ -1,11 +1,6 @@
-/**
- * Dispatch Dons - JavaScript
- * Gestion de la sélection et du dispatch des dons avec simulation
- */
 (function () {
   'use strict';
 
-  // Variables globales
   var checkAll = null;
   var checkboxes = null;
   var btnDispatch = null;
@@ -13,9 +8,7 @@
   var selectedCount = null;
   var alertContainer = null;
 
-  // Initialisation au chargement du DOM
   document.addEventListener('DOMContentLoaded', function () {
-    // Récupérer les éléments du DOM
     checkAll = document.getElementById('checkAll');
     checkboxes = document.querySelectorAll('.don-checkbox');
     btnDispatch = document.getElementById('btnDispatch');
@@ -23,13 +16,10 @@
     selectedCount = document.getElementById('selectedCount');
     alertContainer = document.getElementById('alertContainer');
 
-    // Initialiser les event listeners
     initializeEventListeners();
   });
 
-  // Initialiser tous les event listeners
   function initializeEventListeners() {
-    // Check all checkbox
     if (checkAll) {
       checkAll.addEventListener('change', function () {
         checkboxes.forEach(function (cb) {
@@ -39,23 +29,19 @@
       });
     }
 
-    // Individual checkboxes
     checkboxes.forEach(function (cb) {
       cb.addEventListener('change', updateUI);
     });
 
-    // Bouton Simuler
     if (btnSimulate) {
       btnSimulate.addEventListener('click', handleSimulate);
     }
 
-    // Bouton Dispatcher
     if (btnDispatch) {
       btnDispatch.addEventListener('click', handleDispatch);
     }
   }
 
-  // Mettre à jour l'interface utilisateur
   function updateUI() {
     var checkedCount = document.querySelectorAll('.don-checkbox:checked').length;
     
@@ -76,7 +62,6 @@
     }
   }
 
-  // Gérer la simulation
   function handleSimulate() {
     var selected = Array.from(document.querySelectorAll('.don-checkbox:checked'))
       .map(function (cb) { return cb.value; });
@@ -86,7 +71,6 @@
       return;
     }
 
-    // Désactiver le bouton et afficher le spinner
     btnSimulate.disabled = true;
     btnSimulate.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Simulation...';
 
@@ -109,19 +93,15 @@
     .then(function (data) {
       console.log('Simulation data:', data);
       if (data.success) {
-        // Afficher la section de simulation
         var simulationSection = document.getElementById('simulationSection');
         if (simulationSection) {
           simulationSection.style.display = 'block';
         }
         
-        // Remplir le tableau
         renderSimulationTable(data.dispatchesData);
         
-        // Remplir le graphique
         renderComparisonChart(data.dispatchParCategorie, data.dispatchSimuleParCategorie, data.donsParCategorie);
         
-        // Scroll vers la section de simulation
         simulationSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
       } else {
         showAlert('danger', data.message || 'Erreur lors de la simulation.');
@@ -137,7 +117,6 @@
     });
   }
 
-  // Gérer le dispatch réel
   function handleDispatch() {
     var selected = Array.from(document.querySelectorAll('.don-checkbox:checked'))
       .map(function (cb) { return cb.value; });
@@ -190,7 +169,6 @@
     });
   }
 
-  // Afficher une alerte
   function showAlert(type, message) {
     if (!alertContainer) return;
 
@@ -200,10 +178,8 @@
       '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>' +
       '</div>';
 
-    // Scroll vers l'alerte
-    alertContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    document.querySelector('.app-content').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-    // Auto-masquer après 5 secondes
     setTimeout(function () {
       var alert = alertContainer.querySelector('.alert');
       if (alert) {

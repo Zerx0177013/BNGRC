@@ -13,9 +13,6 @@ class RecapModel
         $this->db = $db;
     }
 
-    /**
-     * Récapitulatif des besoins (montants totaux, satisfaits, restants)
-     */
     public function getRecapitulatif()
     {
         $sql = 'SELECT * FROM v_recap_besoins_ETU003918';
@@ -25,7 +22,7 @@ class RecapModel
 
         $montantTotal = floatval($result['montant_total'] ?? 0);
         $montantSatisfait = floatval($result['montant_satisfait'] ?? 0);
-        $montantRestant = abs($montantTotal - $montantSatisfait); // Valeur absolue (toujours positive)
+        $montantRestant = abs($montantTotal - $montantSatisfait);
         $pourcentageSatisfait = $montantTotal > 0 ? ($montantSatisfait / $montantTotal) * 100 : 0;
 
         return [

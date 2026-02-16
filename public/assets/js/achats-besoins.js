@@ -1,7 +1,3 @@
-/**
- * Achats Besoins - JavaScript
- * Gestion du formulaire d'achat via dons en argent
- */
 document.addEventListener('DOMContentLoaded', function () {
   var achatModal = new bootstrap.Modal(document.getElementById('achatModal'));
   var achatForm = document.getElementById('achatForm');

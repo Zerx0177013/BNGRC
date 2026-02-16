@@ -1,11 +1,6 @@
-/**
- * Achats Liste - JavaScript
- * Gestion de la liste des achats avec filtrage et suppression
- */
 (function () {
   'use strict';
 
-  // Variables globales
   var deleteModal = null;
   var currentDeleteId = null;
   var filtreVille = null;
@@ -13,22 +8,18 @@
   var totalCount = null;
   var alertContainer = null;
 
-  // Initialisation au chargement du DOM
   document.addEventListener('DOMContentLoaded', function () {
-    // Récupérer les éléments du DOM
     deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
     filtreVille = document.getElementById('filtreVille');
     tableContainer = document.getElementById('achatsTableContainer');
     totalCount = document.getElementById('totalCount');
     alertContainer = document.getElementById('alertContainer');
 
-    // Vérifier que tous les éléments existent
     if (!filtreVille || !tableContainer || !totalCount) {
       console.error('Erreur: éléments DOM manquants');
       return;
     }
 
-    // Charger les données initiales depuis l'attribut data
     var initialDataElement = document.getElementById('initialAchatsData');
     if (initialDataElement) {
       try {
@@ -42,14 +33,11 @@
       renderTable([]);
     }
 
-    // Event listener pour le filtre
     filtreVille.addEventListener('change', handleFilterChange);
 
-    // Event listener pour la confirmation de suppression
     document.getElementById('btnConfirmDelete').addEventListener('click', handleDeleteConfirm);
   });
 
-  // Gérer le changement de filtre
   function handleFilterChange() {
     var idVille = filtreVille.value;
     var url = window.BASE_URL + '/achats/json';
@@ -83,17 +71,14 @@
       });
   }
 
-  // Rendre le tableau
   function renderTable(achats) {
     if (!tableContainer || !totalCount) {
       console.error('Conteneur non trouvé');
       return;
     }
 
-    // Mettre à jour le compteur
     totalCount.textContent = achats.length;
 
-    // Si aucun achat
     if (achats.length === 0) {
       tableContainer.innerHTML = 
         '<div class="text-center text-muted py-5">' +
@@ -103,7 +88,6 @@
       return;
     }
 
-    // Construire le tableau
     var html = '<div class="table-responsive">' +
       '<table class="table table-bordered table-hover">' +
       '<thead class="table-dark">' +
@@ -123,7 +107,6 @@
       '</thead>' +
       '<tbody>';
 
-    // Ajouter les lignes
     achats.forEach(function (achat) {
       var date = new Date(achat.date_achat);
       var dateStr = formatDate(date);
@@ -149,14 +132,11 @@
 
     html += '</tbody></table></div>';
 
-    // Insérer dans le DOM
     tableContainer.innerHTML = html;
 
-    // Attacher les event listeners aux boutons delete
     attachDeleteListeners();
   }
 
-  // Attacher les listeners aux boutons de suppression
   function attachDeleteListeners() {
     var deleteButtons = document.querySelectorAll('.btn-delete');
     deleteButtons.forEach(function (btn) {
@@ -170,7 +150,6 @@
     });
   }
 
-  // Gérer la confirmation de suppression
   function handleDeleteConfirm() {
     if (!currentDeleteId) {
       console.error('Aucun ID à supprimer');
@@ -192,7 +171,6 @@
           deleteModal.hide();
           currentDeleteId = null;
           
-          // Recharger les données après 1 seconde
           setTimeout(function () {
             handleFilterChange();
           }, 1000);
@@ -206,7 +184,6 @@
       });
   }
 
-  // Afficher une alerte
   function showAlert(type, message) {
     if (!alertContainer) return;
 
@@ -216,13 +193,11 @@
       '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>' +
       '</div>';
 
-    // Auto-masquer après 5 secondes
     setTimeout(function () {
       alertContainer.innerHTML = '';
     }, 5000);
   }
 
-  // Formater une date
   function formatDate(date) {
     var day = ('0' + date.getDate()).slice(-2);
     var month = ('0' + (date.getMonth() + 1)).slice(-2);
@@ -232,12 +207,10 @@
     return day + '/' + month + '/' + year + ' ' + hours + ':' + minutes;
   }
 
-  // Formater un nombre
   function formatNumber(num) {
     return parseFloat(num).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   }
 
-  // Échapper le HTML
   function escapeHtml(text) {
     var div = document.createElement('div');
     div.textContent = text;

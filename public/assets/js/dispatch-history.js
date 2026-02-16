@@ -1,7 +1,3 @@
-/**
- * Dispatch History - JavaScript
- * Gestion de l'historique des dispatches et réinitialisation
- */
 document.addEventListener('DOMContentLoaded', function () {
   var btnClearAll = document.getElementById('btnClearAll');
   var clearModal = null;

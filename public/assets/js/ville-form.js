@@ -1,7 +1,3 @@
-/**
- * Ville Form - JavaScript
- * Gestion du formulaire de ville
- */
 document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('villeForm').addEventListener('submit', function (e) {
     e.preventDefault();

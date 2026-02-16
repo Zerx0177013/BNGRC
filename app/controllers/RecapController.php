@@ -19,13 +19,12 @@ class RecapController
 		$pdo = $this->app->db();
 		$recapModel = new RecapModel($pdo);
 
-		// Récupérer les données de récapitulation
 		$recapData = $recapModel->getRecapitulatif();
 
 		$this->app->render('recap', [
 			'currentPage' => 'recap',
 			'data' => $recapData,
-			'recap' => [] // Pour le tableau détaillé par catégorie (à implémenter plus tard)
+			'recap' => []
 		]);
 	}
 
@@ -34,7 +33,6 @@ class RecapController
 		$pdo = $this->app->db();
 		$recapModel = new RecapModel($pdo);
 
-		// Récupérer les données de récapitulation
 		$recap = $recapModel->getRecapitulatif();
 
 		$this->app->json([

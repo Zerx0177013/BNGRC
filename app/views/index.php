@@ -1,7 +1,6 @@
 <?php
 include __DIR__ . '/header.php';
 
-// Préparer les couleurs des catégories
 $catColors = [
     'Nature' => ['bg' => 'info', 'text' => 'text-info'],
     'Matériaux' => ['bg' => 'warning', 'text' => 'text-warning'],
@@ -59,7 +58,6 @@ $catColors = [
                           <?php
                           $currentRegion = null;
                           foreach ($besoinsData['villes'] as $ville):
-                            // Séparateur de région
                             if ($currentRegion !== $ville['nom_region']):
                               $currentRegion = $ville['nom_region'];
                           ?>
@@ -157,7 +155,6 @@ $catColors = [
                           <?php
                           $currentRegion = null;
                           foreach ($dispatchesData['villes'] as $ville):
-                            // Séparateur de région
                             if ($currentRegion !== $ville['nom_region']):
                               $currentRegion = $ville['nom_region'];
                           ?>
@@ -218,11 +215,9 @@ $catColors = [
 <?php include __DIR__ . '/footer.php'; ?>
 
     <script>
-      // --- Données PHP injectées ---
       const dispatchParCategorie = <?= json_encode($dispatchParCategorie) ?>;
       const donsParCategorie = <?= json_encode($donsParCategorie) ?>;
 
-      // --- Préparation des données pour le graphique groupé ---
       const categories = dispatchParCategorie.map(d => d.nom_categorie);
       
       const dispatchData = dispatchParCategorie.map(d => {
@@ -241,7 +236,6 @@ $catColors = [
         cat === 'Argent' ? cat + ' (×1 000)' : cat
       );
 
-      // --- Graphique à barres groupées ---
       const comparison_chart_options = {
         series: [
           {

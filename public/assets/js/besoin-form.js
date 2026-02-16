@@ -1,7 +1,3 @@
-/**
- * Besoin Form - JavaScript
- * Gestion du formulaire de besoin avec calcul du montant
- */
 document.addEventListener('DOMContentLoaded', function () {
   const articleSelect = document.getElementById('id_article');
   const quantiteInput = document.getElementById('quantite');
@@ -20,7 +16,6 @@ document.addEventListener('DOMContentLoaded', function () {
   articleSelect.addEventListener('change', updateMontant);
   quantiteInput.addEventListener('input', updateMontant);
 
-  // Form submission via fetch
   document.getElementById('besoinForm').addEventListener('submit', function (e) {
     e.preventDefault();
     const form = e.target;

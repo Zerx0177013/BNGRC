@@ -1,7 +1,3 @@
-/**
- * Region Form - JavaScript
- * Gestion du formulaire de région
- */
 document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('regionForm').addEventListener('submit', function (e) {
     e.preventDefault();

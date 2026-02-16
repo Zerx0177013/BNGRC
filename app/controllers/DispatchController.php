@@ -86,18 +86,13 @@ class DispatchController {
 		}
 	}
 
-	/**
-	 * Render simulation page
-	 */
 	public function renderSimulationPage(): void {
 		$this->app->render('simulation', [
 			'currentPage' => 'dispatch',
 		]);
 	}
 
-	/**
-	 * Get simulation data as JSON
-	 */
+
 	public function getSimulationData(): void {
 		$pdo = $this->app->db();
 		$model = new DispatchModel($pdo);
@@ -116,7 +111,6 @@ class DispatchController {
 		}
 
 		try {
-			// Simulate dispatch without inserting into database
 			$simulatedResults = $model->simulateDispatchOnly($idsDons);
 
 			if (empty($simulatedResults)) {
@@ -127,10 +121,8 @@ class DispatchController {
 				return;
 			}
 
-			// Get dispatch data with simulated results
 			$dispatchesData = $model->getSimulatedDispatchesParVilleArticle($simulatedResults);
 			
-			// Get totals by category for comparison
 			$dispatchParCategorie = $model->getDispatchParCategorie(); // Dispatches réels
 			$dispatchSimuleParCategorie = $this->calculateSimulatedDispatchByCategory($simulatedResults);
 			$donsParCategorie = $donModel->getDonsParCategorie();
@@ -150,9 +142,6 @@ class DispatchController {
 		}
 	}
 
-	/**
-	 * Calculate simulated dispatch totals by category
-	 */
 	private function calculateSimulatedDispatchByCategory(array $simulatedResults): array {
 		$categories = [];
 		
@@ -167,7 +156,6 @@ class DispatchController {
 			$categories[$cat]['total'] += $result['quantite_attribuee'];
 		}
 		
-		// Sort by category name
 		ksort($categories);
 		
 		return array_values($categories);

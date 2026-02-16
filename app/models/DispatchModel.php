@@ -207,10 +207,6 @@ class DispatchModel
         return $this->db->exec($sql);
     }
 
-    /**
-     * Simulate dispatch without inserting into database
-     * Returns what would be dispatched
-     */
     public function simulateDispatchOnly($idsDons)
     {
         $results = [];
@@ -228,7 +224,6 @@ class DispatchModel
                 continue;
             }
             
-            // Get article category
             $sql = '
                 SELECT c.nom_categorie
                 FROM bngrc_article_ETU003918 a
@@ -255,7 +250,6 @@ class DispatchModel
                 
                 $quantiteAttribuee = min($quantiteRestante, $besoinRestant);
                 
-                // NO INSERT - just collect the data
                 $results[] = [
                     'id_don' => $idDon,
                     'id_besoin' => $besoin['id_besoin'],
@@ -273,9 +267,6 @@ class DispatchModel
         return $results;
     }
 
-    /**
-     * Get real dispatches by category (existing in database)
-     */
     public function getDispatchParCategorie()
     {
         $sql = '
@@ -291,12 +282,8 @@ class DispatchModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Get simulated dispatches grouped by ville and article (ONLY simulated data)
-     */
     public function getSimulatedDispatchesParVilleArticle($simulatedDispatches)
     {
-        // Get all regions with their villes
         $sql = '
             SELECT r.id_region, r.nom_region, v.id_ville, v.nom_ville
             FROM bngrc_region_ETU003918 r
@@ -306,7 +293,6 @@ class DispatchModel
         $stmt = $this->db->query($sql);
         $villes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Get all articles with categories
         $sql = '
             SELECT a.id_article, a.nom_article, c.nom_categorie
             FROM bngrc_article_ETU003918 a
@@ -316,13 +302,11 @@ class DispatchModel
         $stmt = $this->db->query($sql);
         $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Get article categories map
         $articleCategories = [];
         foreach ($articles as $art) {
             $articleCategories[$art['id_article']] = $art['nom_categorie'];
         }
 
-        // Build matrix ONLY from simulated dispatches
         $dispatchMatrix = [];
         foreach ($simulatedDispatches as $sim) {
             if (!isset($dispatchMatrix[$sim['id_ville']])) {
@@ -333,7 +317,6 @@ class DispatchModel
             }
             $dispatchMatrix[$sim['id_ville']][$sim['id_article']] += $sim['quantite_attribuee'];
             
-            // Add category info to simulated data
             if (isset($articleCategories[$sim['id_article']])) {
                 $sim['nom_categorie'] = $articleCategories[$sim['id_article']];
             }
@@ -346,13 +329,8 @@ class DispatchModel
         ];
     }
 
-    /**
-     * Get simulated dispatch totals by category
-     * Merges existing dispatches with simulated ones
-     */
     public function getSimulatedDispatchParCategorie($simulatedDispatches)
     {
-        // Get existing dispatches by category
         $sql = '
             SELECT c.nom_categorie, SUM(dp.quantite_attribuee) as total
             FROM bngrc_dispatch_ETU003918 dp
@@ -365,15 +343,12 @@ class DispatchModel
         $stmt = $this->db->query($sql);
         $existing = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Convert to associative array
         $totals = [];
         foreach ($existing as $row) {
             $totals[$row['nom_categorie']] = (float)$row['total'];
         }
 
-        // Add simulated dispatches
         foreach ($simulatedDispatches as $sim) {
-            // Get article category
             $sql = '
                 SELECT c.nom_categorie
                 FROM bngrc_article_ETU003918 a
@@ -393,7 +368,6 @@ class DispatchModel
             }
         }
 
-        // Convert back to array format
         $result = [];
         foreach ($totals as $nom_categorie => $total) {
             $result[] = [

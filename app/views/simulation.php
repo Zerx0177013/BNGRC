@@ -2,7 +2,6 @@
 <?php include __DIR__ . '/sidebar.php'; ?>
 
 <?php
-// Préparer les couleurs des catégories
 $catColors = [
     'Nature' => ['bg' => 'info', 'text' => 'text-info'],
     'Matériaux' => ['bg' => 'warning', 'text' => 'text-warning'],
@@ -126,7 +125,6 @@ $catColors = [
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  // Récupérer les IDs des dons depuis l'URL
   const urlParams = new URLSearchParams(window.location.search);
   const donsParam = urlParams.get('dons');
   
@@ -138,10 +136,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const donIds = donsParam.split(',');
 
-  // Charger les données de simulation
   loadSimulationData(donIds);
 
-  // Bouton confirmer
   document.getElementById('btnConfirmDispatch')?.addEventListener('click', function () {
     if (!confirm('Voulez-vous confirmer et enregistrer ces dispatches dans la base de données ?')) {
       return;
@@ -215,7 +211,6 @@ function renderDispatchTable(dispatchesData) {
     return;
   }
 
-  // Header
   let headerHtml = '<tr><th style="width:80px;font-size:0.75rem;">Ville</th>';
   dispatchesData.articles.forEach(art => {
     const catStyle = catColors[art.nom_categorie] || { bg: 'secondary', text: 'text-secondary' };
@@ -226,12 +221,10 @@ function renderDispatchTable(dispatchesData) {
   headerHtml += '</tr>';
   document.querySelector('#simulationDispatchTable thead').innerHTML = headerHtml;
 
-  // Body
   let bodyHtml = '';
   let currentRegion = null;
 
   dispatchesData.villes.forEach(ville => {
-    // Séparateur de région
     if (currentRegion !== ville.nom_region) {
       currentRegion = ville.nom_region;
       bodyHtml += `<tr class="table-active">

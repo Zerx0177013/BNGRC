@@ -11,9 +11,6 @@ class DonModel
         $this->db = $db;
     }
 
-    /**
-     * Tous les dons avec article + catégorie
-     */
     public function getAllDons()
     {
         $sql = 'SELECT * from v_info_dons_ETU003918 ORDER BY date_don ASC';
@@ -21,9 +18,6 @@ class DonModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Un don par ID
-     */
     public function getDonById($id)
     {
         $sql = 'SELECT * from v_info_dons_ETU003918 WHERE id_don = :id';
@@ -32,9 +26,6 @@ class DonModel
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Dons par article
-     */
     public function getDonsByArticle($idArticle)
     {
         $sql = '
@@ -48,9 +39,6 @@ class DonModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Créer un don
-     */
     public function createDon($idArticle, $quantite, $dateDon = null)
     {
         if ($dateDon) {
@@ -102,9 +90,6 @@ class DonModel
         return $stmt->execute([':id' => $id]);
     }
 
-    /**
-     * Dons groupés par jour
-     */
     public function getDonsParJour()
     {
         $sql = '
@@ -117,9 +102,6 @@ class DonModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Dons groupés par article avec catégorie
-     */
     public function getDonsParArticle()
     {
         $sql = '
@@ -134,9 +116,6 @@ class DonModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Stats totales des dons (nombre + quantité totale)
-     */
     public function getStatsTotaux()
     {
         $sql = 'SELECT COUNT(*) as nb, COALESCE(SUM(quantite), 0) as total FROM bngrc_don_ETU003918';
@@ -144,9 +123,6 @@ class DonModel
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Dispatches groupés par catégorie
-     */
     public function getDispatchParCategorie()
     {
         $sql = '
@@ -162,9 +138,6 @@ class DonModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Stats totales des dispatches (nombre + quantité totale)
-     */
     public function getStatsDispatches()
     {
         $sql = 'SELECT COUNT(*) as nb, COALESCE(SUM(quantite_attribuee), 0) as total FROM bngrc_dispatch_ETU003918';
@@ -172,12 +145,8 @@ class DonModel
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Get dispatches grouped by ville and article for dashboard table
-     */
     public function getDispatchesParVilleArticle()
     {
-        // Get all regions with their villes
         $sql = '
             SELECT r.id_region, r.nom_region, v.id_ville, v.nom_ville
             FROM bngrc_region_ETU003918 r
@@ -187,7 +156,6 @@ class DonModel
         $stmt = $this->db->query($sql);
         $villes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Get all articles with categories
         $sql = '
             SELECT a.id_article, a.nom_article, c.nom_categorie
             FROM bngrc_article_ETU003918 a
@@ -197,7 +165,6 @@ class DonModel
         $stmt = $this->db->query($sql);
         $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Get dispatches matrix
         $sql = '
             SELECT dp.id_ville, d.id_article, SUM(dp.quantite_attribuee) as quantite
             FROM bngrc_dispatch_ETU003918 dp
@@ -207,7 +174,6 @@ class DonModel
         $stmt = $this->db->query($sql);
         $dispatches = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Transform dispatches into matrix [ville_id][article_id] = quantite
         $dispatchMatrix = [];
         foreach ($dispatches as $d) {
             $dispatchMatrix[$d['id_ville']][$d['id_article']] = $d['quantite'];
@@ -220,9 +186,6 @@ class DonModel
         ];
     }
 
-    /**
-     * Get dons grouped by category for chart comparison
-     */
     public function getDonsParCategorie()
     {
         $sql = '

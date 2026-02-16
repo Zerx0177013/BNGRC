@@ -1,7 +1,3 @@
-/**
- * Don Add - JavaScript
- * Gestion du formulaire d'ajout de don
- */
 document.addEventListener('DOMContentLoaded', function () {
   const articleSelect = document.getElementById('id_article');
   const besoinSelect = document.getElementById('id_besoin');
@@ -12,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const villesDetail = document.getElementById('villesDetail');
     const villesText = document.getElementById('villesText');
 
-    // Afficher les villes qui ont besoin de cet article
     const selectedOption = articleSelect.options[articleSelect.selectedIndex];
     if (selectedArticleId && selectedOption.dataset.villes) {
       villesText.textContent = 'Villes en attente : ' + selectedOption.dataset.villes;
@@ -22,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     besoinOptions.forEach((option, index) => {
-      if (index === 0) return; // Skip "Sélectionner un besoin"
+      if (index === 0) return;
 
       const besoinArticleId = option.dataset.articleId;
       
@@ -66,7 +61,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   filterBesoins();
 
-  // Form submission via fetch
   document.getElementById('donForm').addEventListener('submit', function (e) {
     e.preventDefault();
     const form = e.target;

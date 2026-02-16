@@ -8,21 +8,11 @@ use flight\database\PdoWrapper;
 
 class SampleDatabaseCommand extends AbstractBaseCommand
 {
-    /**
-     * Construct
-     *
-     * @param array<string,mixed> $config JSON config from .runway-config.json
-     */
     public function __construct(array $config)
     {
         parent::__construct('init:sample-db', 'Creates a sample SQLite database and tables.', $config);
     }
 
-    /**
-     * Executes the function
-     *
-     * @return void
-     */
     public function execute()
     {
         $io = $this->app()->io();

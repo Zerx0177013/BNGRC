@@ -101,14 +101,6 @@ class AchatController {
 			return;
 		}
 
-		// if ($model->donExistePourArticle($idArticle)) {
-		// 	$this->app->json([
-		// 		'success' => false,
-		// 		'message' => 'Un don en nature existe encore pour cet article. Faites un dispatch d\'abord.'
-		// 	], 400);
-		// 	return;
-		// }
-
 		$prixUnitaire = $model->getPrixUnitaireByBesoin($idBesoin);
 		if (!$prixUnitaire) {
 			$this->app->json(['success' => false, 'message' => 'Article du besoin introuvable.'], 400);

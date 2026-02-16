@@ -37,7 +37,6 @@ class ArticleController {
 		$categoryModel = new CategorieBesoinModel($pdo);
 		$categories = $categoryModel->getAllCategories();
 
-		// Grouper les articles par catégorie
 		$articlesByCategorie = [];
 		foreach ($articles as $article) {
 			$catId = $article['id_categorie'];
