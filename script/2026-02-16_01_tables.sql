@@ -1,3 +1,4 @@
+-- Active: 1765287408229@@127.0.0.1@3306@bngrc
 CREATE DATABASE IF NOT EXISTS bngrc;
 
 USE bngrc;
@@ -54,12 +55,14 @@ CREATE TABLE bngrc_don_ETU003918(
 );
 
 -- ========== DISPATCH (attribution des dons aux villes) ==========
-CREATE TABLE bngrc_dispatch_ETU003918(
+CREATE OR REPLACE TABLE bngrc_dispatch_ETU003918(
     id_dispatch INT AUTO_INCREMENT PRIMARY KEY,
     id_don INT NOT NULL,
     id_besoin INT NOT NULL,
     quantite_attribuee DECIMAL(12,2) NOT NULL,
+    id_ville INT NOT NULL,
     date_dispatch DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_don) REFERENCES bngrc_don_ETU003918(id_don),
-    FOREIGN KEY (id_besoin) REFERENCES bngrc_besoin_ETU003918(id_besoin)
+    FOREIGN KEY (id_besoin) REFERENCES bngrc_besoin_ETU003918(id_besoin),
+    FOREIGN KEY (id_ville) REFERENCES bngrc_ville_ETU003918(id_ville)
 );
