@@ -34,7 +34,7 @@
                   <i class="bi bi-list-check me-2"></i>Historique des achats
                 </h3>
                 <div class="d-flex gap-2">
-                  <select class="form-select form-select-sm" id="filtre Ville" style="width: auto;">
+                  <select class="form-select form-select-sm" id="filtreVille" style="width: auto;">
                     <option value="">Toutes les villes</option>
                     <?php foreach ($villes as $ville): ?>
                       <option value="<?= $ville['id_ville'] ?>" <?= (isset($selectedVille) && $selectedVille == $ville['id_ville']) ? 'selected' : '' ?>>

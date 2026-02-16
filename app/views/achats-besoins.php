@@ -27,48 +27,28 @@
             <!-- Alert -->
             <div id="alertContainer"></div>
 
-            <!-- Info -->
-            <div class="row mb-3">
-              <div class="col-md-6">
-                <div class="card bg-info text-white">
-                  <div class="card-body">
-                    <h5 class="card-title"><i class="bi bi-info-circle me-2"></i>Information</h5>
-                    <p class="card-text mb-0">
-                      Utilisez les dons en argent pour acheter des articles répondant aux besoins non satisfaits.
-                      Un frais de <?= number_format($config['valeur'], 0) ?>% s'applique sur chaque achat.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="card bg-secondary text-white">
-                  <div class="card-body">
-                    <h5 class="card-title"><i class="bi bi-list-ul me-2"></i>Actions</h5>
-                    <a href="<?= BASE_URL ?>/achats/liste" class="btn btn-light btn-sm">
-                      <i class="bi bi-list-check me-1"></i> Voir la liste des achats
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             <!-- Besoins restants -->
-            <div class="card mb-4">
+            <div class="card card-primary card-outline">
               <div class="card-header">
                 <h3 class="card-title">
                   <i class="bi bi-clipboard-check me-2"></i>Besoins restants (Nature & Matériaux)
                 </h3>
+                <div class="card-tools">
+                  <a href="<?= BASE_URL ?>/achats/liste" class="btn btn-primary btn-sm">
+                    <i class="bi bi-list-check me-1"></i> Voir la liste des achats
+                  </a>
+                </div>
               </div>
               <div class="card-body">
                 <?php if (empty($besoins)): ?>
                   <div class="text-center text-muted py-4">
-                    <i class="bi bi-check-circle fs-3 d-block mb-2"></i>
-                    Tous les besoins sont satisfaits !
+                    <i class="bi bi-check-circle display-4 d-block mb-2"></i>
+                    <p class="lead">Tous les besoins sont satisfaits !</p>
                   </div>
                 <?php else: ?>
                   <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
-                      <thead class="table-dark">
+                    <table class="table table-bordered table-striped table-hover">
+                      <thead>
                         <tr>
                           <th>#</th>
                           <th>Ville</th>
@@ -96,10 +76,10 @@
                                 <?= htmlspecialchars($besoin['nom_categorie']) ?>
                               </span>
                             </td>
-                            <td><?= number_format($besoin['prix_unitaire'], 2, ',', ' ') ?> Ar</td>
-                            <td><?= number_format($besoin['quantite_restante'], 2, ',', ' ') ?></td>
-                            <td><?= number_format($montantHT, 2, ',', ' ') ?> Ar</td>
-                            <td>
+                            <td class="text-end"><?= number_format($besoin['prix_unitaire'], 2, ',', ' ') ?> Ar</td>
+                            <td class="text-end"><?= number_format($besoin['quantite_restante'], 2, ',', ' ') ?></td>
+                            <td class="text-end fw-bold"><?= number_format($montantHT, 2, ',', ' ') ?> Ar</td>
+                            <td class="text-center">
                               <button 
                                 type="button" 
                                 class="btn btn-success btn-sm btn-achat"
@@ -178,25 +158,29 @@
                 </div>
 
                 <div class="mb-3">
-                  <label class="form-label">Récapitulatif</label>
-                  <ul class="list-group">
-                    <li class="list-group-item d-flex justify-content-between">
-                      <span>Prix unitaire:</span>
-                      <strong id="prixUnitaire">0,00 Ar</strong>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                      <span>Montant HT:</span>
-                      <strong id="montantHT">0,00 Ar</strong>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                      <span>Frais (<span id="fraisLabel"></span>%):</span>
-                      <strong id="montantFrais">0,00 Ar</strong>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between bg-light">
-                      <span class="fw-bold">Montant total:</span>
-                      <strong class="text-primary" id="montantTotal">0,00 Ar</strong>
-                    </li>
-                  </ul>
+                  <label class="form-label fw-bold">Récapitulatif</label>
+                  <div class="table-responsive">
+                    <table class="table table-sm">
+                      <tbody>
+                        <tr>
+                          <td>Prix unitaire:</td>
+                          <td class="text-end"><strong id="prixUnitaire">0,00 Ar</strong></td>
+                        </tr>
+                        <tr>
+                          <td>Montant HT:</td>
+                          <td class="text-end"><strong id="montantHT">0,00 Ar</strong></td>
+                        </tr>
+                        <tr>
+                          <td>Frais (<span id="fraisLabel"></span>%):</td>
+                          <td class="text-end"><strong id="montantFrais">0,00 Ar</strong></td>
+                        </tr>
+                        <tr class="table-active">
+                          <td class="fw-bold">Montant total:</td>
+                          <td class="text-end"><strong class="text-primary fs-5" id="montantTotal">0,00 Ar</strong></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
 
                 <div id="warningInsuffisant" class="alert alert-warning" style="display:none;">
