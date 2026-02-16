@@ -23,41 +23,7 @@
 
     <!--begin::Accessibility Features-->
     <meta name="supported-color-schemes" content="light dark" />
-    <link rel="preload" href="<?= BASE_URL ?>/assets/css/adminlte.css" as="style" />
     <!--end::Accessibility Features-->
-
-    <!--begin::Fonts-->
-    <link
-      rel="stylesheet"
-      href="<?= BASE_URL ?>/assets/css/source-sans-3.css"
-      media="print"
-      onload="this.media = 'all'"
-    />
-    <!--end::Fonts-->
-
-    <!--begin::Third Party Plugin(OverlayScrollbars)-->
-    <link
-      rel="stylesheet"
-      href="<?= BASE_URL ?>/assets/css/overlayscrollbars.min.css"
-    />
-    <!--end::Third Party Plugin(OverlayScrollbars)-->
-
-    <!--begin::Third Party Plugin(Bootstrap Icons)-->
-    <link
-      rel="stylesheet"
-      href="<?= BASE_URL ?>/assets/css/bootstrap-icons.min.css"
-    />
-    <!--end::Third Party Plugin(Bootstrap Icons)-->
-
-    <!--begin::Required Plugin(AdminLTE)-->
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/adminlte.css" />
-    <!--end::Required Plugin(AdminLTE)-->
-
-    <!-- apexcharts -->
-    <link
-      rel="stylesheet"
-      href="<?= BASE_URL ?>/assets/css/apexcharts.css"
-    />
   </head>
 
   <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">

@@ -65,7 +65,6 @@
                   <p>Besoins</p>
                 </a>
               </li>
-
               <li class="nav-header">DONATION</li>
               <li class="nav-item">
                 <a href="<?= BASE_URL ?>/dons" class="nav-link <?= (isset($currentPage) && $currentPage === 'dons') ? 'active' : '' ?>">
@@ -76,7 +75,7 @@
               <li class="nav-item">
                 <a href="<?= BASE_URL ?>/dispatch" class="nav-link <?= (isset($currentPage) && $currentPage === 'dispatch') ? 'active' : '' ?>">
                   <i class="nav-icon bi bi-truck"></i>
-                  <p>Dispatch</p>
+                  <p>Dispatch Villes</p>
                 </a>
               </li>
             </ul>

@@ -16,7 +16,11 @@ $router->group('', function (Router $router) use ($app) {
 	$router->get('/', function () use ($app) {
 		$app->render('index');
 	});
+	$router->group('/dispatch', function (Router $router) use ($app) {
+		$besoinController = new BesoinController($app);
+		$router->get('/', [$besoinController, 'renderBesoinsParVille']);
 
+	});
 	// ========== Régions ==========
 	$router->group('/regions', function (Router $router) use ($app) {
 		$regionController = new RegionController($app);

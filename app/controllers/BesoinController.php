@@ -16,6 +16,16 @@ class BesoinController {
 		$this->app = $app;
 	}
 
+	
+	public function renderBesoinsParVille() {
+		$app = $this->app;
+		$villes = $this->getVillesBesoin();
+		$app->render('dispatch', [
+			'villes' => $villes,
+			'currentPage' => 'dispatch',
+		]);
+		return ;
+	}
 	public function getAllBesoins(): array {
 		$pdo = $this->app->db();
 		$model = new BesoinModel($pdo);
@@ -143,5 +153,16 @@ class BesoinController {
 		} else {
 			$this->app->json(['success' => false, 'message' => 'Failed to delete besoin'], 500);
 		}
+	}
+	public function getVillesBesoin(){
+		$pdo = $this->app->db();
+		$model = new VilleModel($pdo);
+		$besoinModel = new BesoinModel($pdo);
+		$villes = $model->getAllVilles();
+		foreach ($villes as &$ville) {
+			$ville['besoins'] = $besoinModel->getBesoinsByVille($ville['id_ville']);
+		}
+		unset($ville);
+		return $villes;
 	}
 }
