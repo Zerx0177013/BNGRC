@@ -52,7 +52,14 @@
                               <tr>
                                 <td><?= $besoin['id_besoin'] ?></td>
                                 <td><?= htmlspecialchars($besoin['nom_article']) ?></td>
-                                <td><span class="badge text-bg-info"><?= htmlspecialchars($besoin['nom_categorie']) ?></span></td>
+                                <td><?php
+                                  $cat = strtolower($besoin['nom_categorie']);
+                                  $badgeClass = match(true) {
+                                    str_contains($cat, 'argent') => 'text-bg-success',
+                                    str_contains($cat, 'mat')    => 'text-bg-warning',
+                                    default                      => 'text-bg-info',
+                                  };
+                                ?><span class="badge <?= $badgeClass ?>"><?= htmlspecialchars($besoin['nom_categorie']) ?></span></td>
                                 <td><?= number_format($besoin['quantite'], 2, ',', ' ') ?></td>
                                 <td><?= number_format($besoin['montant_total'], 2, ',', ' ') ?> Ar</td>
                               </tr>
