@@ -8,8 +8,7 @@
             <img
               src="<?= BASE_URL ?>/assets/img/AdminLTELogo.png"
               alt="BNGRC Logo"
-              class="brand-image opacity-75 shadow"
-            />
+              class="brand-image opacity-75 shadow" />
             <!--end::Brand Image-->
             <!--begin::Brand Text-->
             <span class="brand-text fw-light">BNGRC</span>
@@ -28,8 +27,7 @@
               role="navigation"
               aria-label="Main navigation"
               data-accordion="false"
-              id="navigation"
-            >
+              id="navigation">
               <li class="nav-header">MENU PRINCIPAL</li>
               <li class="nav-item">
                 <a href="<?= BASE_URL ?>/" class="nav-link <?= (isset($currentPage) && $currentPage === 'dashboard') ? 'active' : '' ?>">
@@ -73,9 +71,15 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="<?= BASE_URL ?>/dispatch" class="nav-link <?= (isset($currentPage) && $currentPage === 'dispatch') ? 'active' : '' ?>">
+                <a href="<?= BASE_URL ?>/dispatch/besoinsParVille" class="nav-link <?= (isset($currentPage) && $currentPage === 'dispatch') ? 'active' : '' ?>">
                   <i class="nav-icon bi bi-truck"></i>
                   <p>Dispatch Villes</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="<?= BASE_URL ?>/dispatch/" class="nav-link <?= (isset($currentPage) && $currentPage === 'dispatch') ? 'active' : '' ?>">
+                  <i class="nav-icon bi bi-truck"></i>
+                  <p>Dispatch Manager</p>
                 </a>
               </li>
             </ul>

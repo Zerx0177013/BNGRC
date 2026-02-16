@@ -49,34 +49,27 @@
                           <?php foreach ($articles as $article): ?>
                             <option 
                               value="<?= $article['id_article'] ?>"
-                              data-nom="<?= htmlspecialchars($article['nom_article']) ?>"
-                              data-categorie="<?= htmlspecialchars($article['nom_categorie']) ?>"
                             >
-                              <?= htmlspecialchars($article['nom_article']) ?> — <?= htmlspecialchars($article['nom_categorie']) ?> (<?= number_format($article['prix_unitaire'], 2, ',', ' ') ?> Ar)
+                              <?= htmlspecialchars($article['nom_article']) ?> — <?= htmlspecialchars($article['nom_categorie']) ?>
                             </option>
                           <?php endforeach; ?>
                         </select>
-                        <small class="text-muted">Choisissez l'article que vous souhaitez donner</small>
                       </div>
 
                       <!-- Besoin associé -->
                       <div class="mb-3">
-                        <label for="id_besoin" class="form-label">Besoin associé (optionnel)</label>
+                        <label for="id_besoin" class="form-label">Besoin associé</label>
                         <select class="form-select" id="id_besoin" name="id_besoin">
-                          <option value="">-- Aucun besoin spécifique --</option>
+                          <option value="">-- Sélectionner un besoin --</option>
                           <?php foreach ($besoins as $besoin): ?>
                             <option 
                               value="<?= $besoin['id_besoin'] ?>"
-                              data-ville="<?= htmlspecialchars($besoin['nom_ville']) ?>"
-                              data-article="<?= htmlspecialchars($besoin['nom_article']) ?>"
-                              data-quantite="<?= $besoin['quantite'] ?>"
-                              data-id-article="<?= $besoin['id_article'] ?>"
+                              data-article-id="<?= $besoin['id_article'] ?>"
                             >
-                              <?= htmlspecialchars($besoin['nom_ville']) ?> — <?= htmlspecialchars($besoin['nom_article']) ?> (<?= number_format($besoin['quantite'], 2, ',', ' ') ?> requis)
+                              <?= htmlspecialchars($besoin['nom_ville']) ?> — <?= htmlspecialchars($besoin['nom_article']) ?> (<?= number_format($besoin['quantite'], 2) ?> requis)
                             </option>
                           <?php endforeach; ?>
                         </select>
-                        <small class="text-muted">Vous pouvez associer ce don à un besoin spécifique d'une ville</small>
                       </div>
 
                       <!-- Quantité -->
@@ -92,32 +85,20 @@
                           required
                           placeholder="Ex: 100"
                         >
-                        <small class="text-muted" id="quantite_besoin_hint"></small>
-                      </div>
-
-                      <!-- Date du don (optionnel) -->
-                      <div class="mb-3">
-                        <label for="date_don" class="form-label">Date du don (optionnel)</label>
-                        <input 
-                          type="datetime-local" 
-                          class="form-control" 
-                          id="date_don" 
-                          name="date_don"
-                        >
-                        <small class="text-muted">Si non renseigné, la date actuelle sera utilisée</small>
                       </div>
 
                     </div>
                     <!-- /.card-body -->
 
-                    <div class="card-footer d-flex justify-content-between">
-                      <a href="<?= BASE_URL ?>/dons" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left me-1"></i> Retour
-                      </a>
-                      <button type="submit" class="btn btn-success">
-                        <i class="bi bi-check-lg me-1"></i>
-                        Enregistrer le don
-                      </button>
+                    <div class="card-footer">
+                      <div class="d-flex justify-content-end gap-2">
+                        <a href="<?= BASE_URL ?>/dons" class="btn btn-secondary">
+                          <i class="bi bi-arrow-left"></i> Retour
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                          <i class="bi bi-check-circle"></i> Enregistrer le don
+                        </button>
+                      </div>
                     </div>
                   </form>
 
@@ -134,72 +115,36 @@
         document.addEventListener('DOMContentLoaded', function () {
           const articleSelect = document.getElementById('id_article');
           const besoinSelect = document.getElementById('id_besoin');
-          const quantiteInput = document.getElementById('quantite');
-          const quantiteHint = document.getElementById('quantite_besoin_hint');
 
-          // Filtrer les besoins en fonction de l'article sélectionné
+          // Filtrer les besoins selon l'article sélectionné
           function filterBesoins() {
             const selectedArticleId = articleSelect.value;
             const besoinOptions = besoinSelect.querySelectorAll('option');
 
             besoinOptions.forEach((option, index) => {
-              if (index === 0) return; // Skip the first "Aucun besoin" option
+              if (index === 0) return; // Skip "Sélectionner un besoin"
 
-              const optionArticleId = option.dataset.idArticle;
-              if (!selectedArticleId || optionArticleId === selectedArticleId) {
+              const besoinArticleId = option.dataset.articleId;
+              
+              if (!selectedArticleId || besoinArticleId === selectedArticleId) {
                 option.style.display = '';
               } else {
                 option.style.display = 'none';
               }
             });
 
-            // Reset besoin selection if it doesn't match the article
-            const selectedBesoinOption = besoinSelect.options[besoinSelect.selectedIndex];
-            if (selectedBesoinOption && selectedBesoinOption.dataset.idArticle !== selectedArticleId && selectedArticleId) {
+            // Reset la sélection si le besoin ne correspond plus à l'article
+            const selectedBesoin = besoinSelect.options[besoinSelect.selectedIndex];
+            if (selectedBesoin && selectedBesoin.dataset.articleId !== selectedArticleId && selectedArticleId) {
               besoinSelect.value = '';
-              updateQuantiteHint();
             }
           }
 
-          // Afficher un indice pour la quantité basé sur le besoin sélectionné
-          function updateQuantiteHint() {
-            const selectedOption = besoinSelect.options[besoinSelect.selectedIndex];
-            if (selectedOption && selectedOption.value) {
-              const quantiteBesoin = selectedOption.dataset.quantite;
-              const ville = selectedOption.dataset.ville;
-              quantiteHint.textContent = `💡 Le besoin pour ${ville} est de ${parseFloat(quantiteBesoin).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} unités`;
-              quantiteHint.classList.add('text-info');
-            } else {
-              quantiteHint.textContent = '';
-            }
-          }
-
-          // Ajouter la recherche simple dans les dropdowns
-          function makeSearchable(selectElement) {
-            selectElement.addEventListener('keypress', function(e) {
-              const char = e.key.toLowerCase();
-              const options = Array.from(selectElement.options);
-              const currentIndex = selectElement.selectedIndex;
-              
-              for (let i = currentIndex + 1; i < options.length; i++) {
-                if (options[i].text.toLowerCase().startsWith(char) && options[i].style.display !== 'none') {
-                  selectElement.selectedIndex = i;
-                  if (selectElement === besoinSelect) {
-                    updateQuantiteHint();
-                  }
-                  break;
-                }
-              }
-            });
-          }
-
-          // Initialize search functionality
-          makeSearchable(articleSelect);
-          makeSearchable(besoinSelect);
-
-          // Event listeners
+          // Filtrer quand l'article change
           articleSelect.addEventListener('change', filterBesoins);
-          besoinSelect.addEventListener('change', updateQuantiteHint);
+
+          // Filtrer au chargement si un article est déjà sélectionné
+          filterBesoins();
 
           // Form submission via fetch
           document.getElementById('donForm').addEventListener('submit', function (e) {
@@ -216,7 +161,9 @@
             .then(res => res.json())
             .then(data => {
               if (data.success) {
-                window.location.href = '<?= BASE_URL ?>/dons';
+                alert('Don enregistré avec succès !');
+                form.reset();
+                filterBesoins(); // Reset le filtre après reset du formulaire
               } else {
                 alert(data.message || 'Erreur lors de l\'enregistrement du don.');
               }
