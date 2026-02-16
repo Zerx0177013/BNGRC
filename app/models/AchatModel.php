@@ -109,6 +109,40 @@ class AchatModel
         return $stmt->fetch(PDO::FETCH_ASSOC) ? true : false;
     }
 
+    public function getArticleIdByBesoin($idBesoin)
+    {
+        $sql = 'SELECT id_article FROM bngrc_besoin_ETU003918 WHERE id_besoin = :id';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':id' => $idBesoin]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ? $row['id_article'] : null;
+    }
+
+    public function getPrixUnitaireByBesoin($idBesoin)
+    {
+        $sql = '
+            SELECT a.prix_unitaire 
+            FROM bngrc_besoin_ETU003918 b 
+            JOIN bngrc_article_ETU003918 a ON b.id_article = a.id_article 
+            WHERE b.id_besoin = :id
+        ';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':id' => $idBesoin]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ? (float) $row['prix_unitaire'] : null;
+    }
+
+    public function getDonArgentById($idDon)
+    {
+        $donsArgent = $this->getDonsArgentDisponibles();
+        foreach ($donsArgent as $d) {
+            if ($d['id_don'] == $idDon) {
+                return $d;
+            }
+        }
+        return null;
+    }
+
     public function createAchat($idBesoin, $idDon, $idConfig, $quantite, $prixUnitaire, $montantTotal)
     {
         $sql = '
