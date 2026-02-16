@@ -1,4 +1,4 @@
--- Active: 1765287408229@@127.0.0.1@3306@bngrc
+-- Active: 1770652281308@@127.0.0.1@3306@bngrc
 CREATE DATABASE IF NOT EXISTS bngrc;
 
 USE bngrc;
