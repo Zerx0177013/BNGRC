@@ -65,7 +65,12 @@
                   <p>Besoins</p>
                 </a>
               </li>
-
+                      <li class="nav-item">
+                <a href="<?= BASE_URL ?>/dispatch" class="nav-link <?= (isset($currentPage) && $currentPage === 'besoins') ? 'active' : '' ?>">
+                  <i class="nav-icon bi bi-clipboard-plus"></i>
+                  <p>Besoins Par Ville</p>
+                </a>
+              </li>
               <li class="nav-header">DONATION</li>
               <li class="nav-item">
                 <a href="<?= BASE_URL ?>/dons" class="nav-link <?= (isset($currentPage) && $currentPage === 'dons') ? 'active' : '' ?>">
