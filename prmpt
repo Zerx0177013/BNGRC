@@ -1,0 +1,4 @@
+in my-items make the details button work
+also make a cross on the cards to delete them
+make a js function that prompts if the user wants to delete it
+you'll use fetch and make the route using 

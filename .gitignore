@@ -1,0 +1,7 @@
+.vscode/
+composer.lock
+.vagrant/
+.runway-creds.json
+PurpleAdmin-Free-Admin-Template-master
+public/assets/images/items/*
+!public/assets/images/items/.gitkeep
