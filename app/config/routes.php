@@ -18,7 +18,7 @@ $router->group('', function (Router $router) use ($app) {
 	});
 	$router->group('/dispatch', function (Router $router) use ($app) {
 		$besoinController = new BesoinController($app);
-		$router->get('/', [$besoinController, 'renderBesoinsParVille']);
+		$router->get('/besoinsParVille', [$besoinController, 'renderBesoinsParVille']);
 
 	});
 	// ========== Régions ==========
