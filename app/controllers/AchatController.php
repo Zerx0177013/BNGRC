@@ -95,50 +95,30 @@ class AchatController {
 		$idConfig = $config['id_config'];
 		$fraisPercent = (float) $config['valeur'];
 
-		// Vérifier si un don en nature existe pour cet article
-		$sql = 'SELECT id_article FROM bngrc_besoin_ETU003918 WHERE id_besoin = :id';
-		$stmt = $pdo->prepare($sql);
-		$stmt->execute([':id' => $idBesoin]);
-		$besoin = $stmt->fetch(\PDO::FETCH_ASSOC);
-
-		if ($besoin && $model->donExistePourArticle($besoin['id_article'])) {
-			$this->app->json([
-				'success' => false,
-				'message' => 'Un don en nature existe encore pour cet article. Faites un dispatch d\'abord.'
-			], 400);
+		$idArticle = $model->getArticleIdByBesoin($idBesoin);
+		if (!$idArticle) {
+			$this->app->json(['success' => false, 'message' => 'Besoin introuvable.'], 400);
 			return;
 		}
 
-		// Récupérer le prix unitaire de l'article
-		$sql = '
-			SELECT a.prix_unitaire 
-			FROM bngrc_besoin_ETU003918 b 
-			JOIN bngrc_article_ETU003918 a ON b.id_article = a.id_article 
-			WHERE b.id_besoin = :id
-		';
-		$stmt = $pdo->prepare($sql);
-		$stmt->execute([':id' => $idBesoin]);
-		$articleInfo = $stmt->fetch(\PDO::FETCH_ASSOC);
+		// if ($model->donExistePourArticle($idArticle)) {
+		// 	$this->app->json([
+		// 		'success' => false,
+		// 		'message' => 'Un don en nature existe encore pour cet article. Faites un dispatch d\'abord.'
+		// 	], 400);
+		// 	return;
+		// }
 
-		if (!$articleInfo) {
+		$prixUnitaire = $model->getPrixUnitaireByBesoin($idBesoin);
+		if (!$prixUnitaire) {
 			$this->app->json(['success' => false, 'message' => 'Article du besoin introuvable.'], 400);
 			return;
 		}
 
-		$prixUnitaire = (float) $articleInfo['prix_unitaire'];
 		$montantHT = $quantite * $prixUnitaire;
 		$montantTotal = $montantHT * (1 + $fraisPercent / 100);
 
-		// Vérifier le solde du don en argent
-		$donsArgent = $model->getDonsArgentDisponibles();
-		$donTrouve = null;
-		foreach ($donsArgent as $d) {
-			if ($d['id_don'] == $idDon) {
-				$donTrouve = $d;
-				break;
-			}
-		}
-
+		$donTrouve = $model->getDonArgentById($idDon);
 		if (!$donTrouve) {
 			$this->app->json(['success' => false, 'message' => 'Don en argent introuvable ou solde insuffisant.'], 400);
 			return;
