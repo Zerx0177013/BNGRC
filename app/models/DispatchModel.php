@@ -267,6 +267,74 @@ class DispatchModel
         return $results;
     }
 
+    /**
+     * Simule les dispatches sans insertion avec calcul de valeur (quantité * prix) pour Argent
+     */
+    public function simulateDispatchOnlyWithValeur($idsDons)
+    {
+        $results = [];
+        
+        foreach ($idsDons as $idDon) {
+            $quantiteRestante = $this->getQuantiteRestanteDon($idDon);
+            
+            if ($quantiteRestante <= 0) {
+                continue;
+            }
+            
+            $don = $this->getDonById($idDon);
+            
+            if (!$don) {
+                continue;
+            }
+            
+            $sql = '
+                SELECT c.nom_categorie, a.prix_unitaire
+                FROM bngrc_article_ETU003918 a
+                JOIN bngrc_categorie_besoin_ETU003918 c ON a.id_categorie = c.id_categorie
+                WHERE a.id_article = :id_article
+            ';
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([':id_article' => $don['id_article']]);
+            $catInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+            $nomCategorie = $catInfo ? $catInfo['nom_categorie'] : 'Inconnu';
+            $prixUnitaire = $catInfo ? (float)$catInfo['prix_unitaire'] : 0;
+            
+            $besoins = $this->getBesoinsByArticle($don['id_article']);
+            
+            foreach ($besoins as $besoin) {
+                if ($quantiteRestante <= 0) {
+                    break;
+                }
+                
+                $besoinRestant = $this->getQuantiteRestanteBesoin($besoin['id_besoin']);
+                
+                if ($besoinRestant <= 0) {
+                    continue;
+                }
+                
+                $quantiteAttribuee = min($quantiteRestante, $besoinRestant);
+                
+                // Pour la catégorie Argent, multiplier par le prix unitaire
+                $valeurAttribuee = ($nomCategorie === 'Argent') ? $quantiteAttribuee * $prixUnitaire : $quantiteAttribuee;
+                
+                $results[] = [
+                    'id_don' => $idDon,
+                    'id_besoin' => $besoin['id_besoin'],
+                    'id_ville' => $besoin['id_ville'],
+                    'ville' => $besoin['nom_ville'],
+                    'id_article' => $don['id_article'],
+                    'nom_categorie' => $nomCategorie,
+                    'quantite_attribuee' => $quantiteAttribuee,
+                    'valeur_attribuee' => $valeurAttribuee
+                ];
+                
+                $quantiteRestante -= $quantiteAttribuee;
+            }
+        }
+        
+        return $results;
+    }
+
     public function getDispatchParCategorie()
     {
         $sql = '
@@ -280,6 +348,92 @@ class DispatchModel
         ';
         $stmt = $this->db->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Calcule les dispatches par catégorie avec valeur (quantité * prix) pour Argent
+     */
+    public function getDispatchParCategorieWithValeur()
+    {
+        $sql = '
+            SELECT 
+                c.nom_categorie,
+                CASE 
+                    WHEN c.nom_categorie = \'Argent\' THEN SUM(dp.quantite_attribuee * a.prix_unitaire)
+                    ELSE SUM(dp.quantite_attribuee)
+                END as total
+            FROM bngrc_dispatch_ETU003918 dp
+            JOIN bngrc_don_ETU003918 d ON dp.id_don = d.id_don
+            JOIN bngrc_article_ETU003918 a ON d.id_article = a.id_article
+            JOIN bngrc_categorie_besoin_ETU003918 c ON a.id_categorie = c.id_categorie
+            GROUP BY c.nom_categorie
+            ORDER BY c.nom_categorie ASC
+        ';
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Calcule les dispatches simulés par catégorie avec valeur (quantité * prix) pour Argent
+     */
+    public function getSimulatedDispatchParCategorieWithValeur($simulatedDispatches)
+    {
+        // Récupérer les dispatches réels existants avec valeur pour Argent
+        $sql = '
+            SELECT 
+                c.nom_categorie,
+                CASE 
+                    WHEN c.nom_categorie = \'Argent\' THEN SUM(dp.quantite_attribuee * a.prix_unitaire)
+                    ELSE SUM(dp.quantite_attribuee)
+                END as total
+            FROM bngrc_dispatch_ETU003918 dp
+            JOIN bngrc_don_ETU003918 d ON dp.id_don = d.id_don
+            JOIN bngrc_article_ETU003918 a ON d.id_article = a.id_article
+            JOIN bngrc_categorie_besoin_ETU003918 c ON a.id_categorie = c.id_categorie
+            GROUP BY c.nom_categorie
+            ORDER BY c.nom_categorie ASC
+        ';
+        $stmt = $this->db->query($sql);
+        $existing = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $totals = [];
+        foreach ($existing as $row) {
+            $totals[$row['nom_categorie']] = (float)$row['total'];
+        }
+
+        // Ajouter les dispatches simulés
+        foreach ($simulatedDispatches as $sim) {
+            $sql = '
+                SELECT c.nom_categorie, a.prix_unitaire
+                FROM bngrc_article_ETU003918 a
+                JOIN bngrc_categorie_besoin_ETU003918 c ON a.id_categorie = c.id_categorie
+                WHERE a.id_article = :id_article
+            ';
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([':id_article' => $sim['id_article']]);
+            $cat = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($cat) {
+                $catName = $cat['nom_categorie'];
+                $prixUnitaire = (float)$cat['prix_unitaire'];
+                if (!isset($totals[$catName])) {
+                    $totals[$catName] = 0;
+                }
+                // Pour Argent, multiplier par le prix unitaire
+                $valeur = ($catName === 'Argent') ? $sim['quantite_attribuee'] * $prixUnitaire : $sim['quantite_attribuee'];
+                $totals[$catName] += $valeur;
+            }
+        }
+
+        $result = [];
+        foreach ($totals as $nom_categorie => $total) {
+            $result[] = [
+                'nom_categorie' => $nom_categorie,
+                'total' => $total
+            ];
+        }
+
+        return $result;
     }
 
     public function getSimulatedDispatchesParVilleArticle($simulatedDispatches)
@@ -409,5 +563,203 @@ class DispatchModel
         }
         
         return $this->simulerDispatch($idsDons);
+    }
+
+    /**
+     * Dispatch tous les dons par ordre chronologique avec calcul de valeur (quantité * prix) pour Argent
+     */
+    public function dispatchAllDonsChronologicallyWithValeur()
+    {
+        $results = [];
+        
+        $sql = '
+            SELECT d.id_don
+            FROM bngrc_don_ETU003918 d
+            JOIN bngrc_article_ETU003918 a ON d.id_article = a.id_article
+            WHERE EXISTS (
+                SELECT 1 FROM bngrc_besoin_ETU003918 b
+                WHERE b.id_article = d.id_article
+                AND b.quantite > COALESCE(
+                    (SELECT SUM(d2.quantite_attribuee) FROM bngrc_dispatch_ETU003918 d2 WHERE d2.id_besoin = b.id_besoin),
+                    0
+                )
+            )
+            AND d.quantite > COALESCE(
+                (SELECT SUM(disp.quantite_attribuee) FROM bngrc_dispatch_ETU003918 disp WHERE disp.id_don = d.id_don),
+                0
+            )
+            ORDER BY d.date_don ASC
+        ';
+        $stmt = $this->db->query($sql);
+        $dons = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        foreach ($dons as $don) {
+            $idDon = $don['id_don'];
+            $quantiteRestante = $this->getQuantiteRestanteDon($idDon);
+            
+            if ($quantiteRestante <= 0) {
+                continue;
+            }
+            
+            $donInfo = $this->getDonById($idDon);
+            
+            if (!$donInfo) {
+                continue;
+            }
+            
+            // Récupérer la catégorie et prix unitaire
+            $sql = '
+                SELECT c.nom_categorie, a.prix_unitaire
+                FROM bngrc_article_ETU003918 a
+                JOIN bngrc_categorie_besoin_ETU003918 c ON a.id_categorie = c.id_categorie
+                WHERE a.id_article = :id_article
+            ';
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([':id_article' => $donInfo['id_article']]);
+            $catInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+            $nomCategorie = $catInfo ? $catInfo['nom_categorie'] : 'Inconnu';
+            $prixUnitaire = $catInfo ? (float)$catInfo['prix_unitaire'] : 0;
+            
+            // Récupérer les besoins triés par date de saisie ASC (ordre chronologique)
+            $besoins = $this->getBesoinsByArticle($donInfo['id_article']);
+            
+            foreach ($besoins as $besoin) {
+                if ($quantiteRestante <= 0) {
+                    break;
+                }
+                
+                $besoinRestant = $this->getQuantiteRestanteBesoin($besoin['id_besoin']);
+                
+                if ($besoinRestant <= 0) {
+                    continue;
+                }
+                
+                $quantiteAttribuee = min($quantiteRestante, $besoinRestant);
+                
+                $this->insertDispatch(
+                    $idDon,
+                    $besoin['id_besoin'],
+                    $quantiteAttribuee,
+                    $besoin['id_ville']
+                );
+                
+                // Pour la catégorie Argent, multiplier par le prix unitaire
+                $valeurAttribuee = ($nomCategorie === 'Argent') ? $quantiteAttribuee * $prixUnitaire : $quantiteAttribuee;
+                
+                $results[] = [
+                    'id_don' => $idDon,
+                    'id_besoin' => $besoin['id_besoin'],
+                    'ville' => $besoin['nom_ville'],
+                    'quantite_attribuee' => $quantiteAttribuee,
+                    'valeur_attribuee' => $valeurAttribuee
+                ];
+                
+                $quantiteRestante -= $quantiteAttribuee;
+            }
+        }
+        
+        return $results;
+    }
+
+    public function dispatchAllDonsBySmallestQuantity()
+    {
+        $results = [];
+        
+        $sql = '
+            SELECT d.id_don
+            FROM bngrc_don_ETU003918 d
+            JOIN bngrc_article_ETU003918 a ON d.id_article = a.id_article
+            WHERE EXISTS (
+                SELECT 1 FROM bngrc_besoin_ETU003918 b
+                WHERE b.id_article = d.id_article
+                AND b.quantite > COALESCE(
+                    (SELECT SUM(d2.quantite_attribuee) FROM bngrc_dispatch_ETU003918 d2 WHERE d2.id_besoin = b.id_besoin),
+                    0
+                )
+            )
+            AND d.quantite > COALESCE(
+                (SELECT SUM(disp.quantite_attribuee) FROM bngrc_dispatch_ETU003918 disp WHERE disp.id_don = d.id_don),
+                0
+            )
+            ORDER BY d.date_don ASC
+        ';
+        $stmt = $this->db->query($sql);
+        $dons = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        foreach ($dons as $don) {
+            $idDon = $don['id_don'];
+            $quantiteRestante = $this->getQuantiteRestanteDon($idDon);
+            
+            if ($quantiteRestante <= 0) {
+                continue;
+            }
+            
+            $donInfo = $this->getDonById($idDon);
+            
+            if (!$donInfo) {
+                continue;
+            }
+            
+            // Récupérer la catégorie et prix unitaire
+            $sql = '
+                SELECT c.nom_categorie, a.prix_unitaire
+                FROM bngrc_article_ETU003918 a
+                JOIN bngrc_categorie_besoin_ETU003918 c ON a.id_categorie = c.id_categorie
+                WHERE a.id_article = :id_article
+            ';
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([':id_article' => $donInfo['id_article']]);
+            $catInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+            $nomCategorie = $catInfo ? $catInfo['nom_categorie'] : 'Inconnu';
+            $prixUnitaire = $catInfo ? (float)$catInfo['prix_unitaire'] : 0;
+            
+            // Récupérer les besoins triés par quantité ASC (plus petite d'abord)
+            $sql = '
+                SELECT b.*, v.nom_ville
+                FROM bngrc_besoin_ETU003918 b
+                JOIN bngrc_ville_ETU003918 v ON b.id_ville = v.id_ville
+                WHERE b.id_article = :id_article
+                ORDER BY b.quantite ASC
+            ';
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([':id_article' => $donInfo['id_article']]);
+            $besoins = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            foreach ($besoins as $besoin) {
+                if ($quantiteRestante <= 0) {
+                    break;
+                }
+                
+                $besoinRestant = $this->getQuantiteRestanteBesoin($besoin['id_besoin']);
+                
+                if ($besoinRestant <= 0) {
+                    continue;
+                }
+                
+                $quantiteAttribuee = min($quantiteRestante, $besoinRestant);
+                
+                $this->insertDispatch(
+                    $idDon,
+                    $besoin['id_besoin'],
+                    $quantiteAttribuee,
+                    $besoin['id_ville']
+                );
+                
+                // Pour la catégorie Argent, multiplier par le prix unitaire
+                $valeurAttribuee = ($nomCategorie === 'Argent') ? $quantiteAttribuee * $prixUnitaire : $quantiteAttribuee;
+                
+                $results[] = [
+                    'id_don' => $idDon,
+                    'id_besoin' => $besoin['id_besoin'],
+                    'ville' => $besoin['nom_ville'],
+                    'quantite_attribuee' => $quantiteAttribuee,
+                    'valeur_attribuee' => $valeurAttribuee
+                ];
+                
+                $quantiteRestante -= $quantiteAttribuee;
+            }
+        }
+        
+        return $results;
     }
 }
