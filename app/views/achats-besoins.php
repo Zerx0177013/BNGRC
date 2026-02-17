@@ -71,11 +71,14 @@
                             <td><?= $besoin['id_besoin'] ?></td>
                             <td><?= htmlspecialchars($besoin['nom_ville']) ?></td>
                             <td><?= htmlspecialchars($besoin['nom_article']) ?></td>
-                            <td>
-                              <span class="badge bg-secondary">
-                                <?= htmlspecialchars($besoin['nom_categorie']) ?>
-                              </span>
-                            </td>
+                            <td><?php
+                              $cat = strtolower($besoin['nom_categorie']);
+                              $textClass = match(true) {
+                                str_contains($cat, 'argent') => 'text-success',
+                                str_contains($cat, 'mat')    => 'text-warning',
+                                default                      => 'text-info',
+                              };
+                            ?><span class="<?= $textClass ?> fw-semibold"><?= htmlspecialchars($besoin['nom_categorie']) ?></span></td>
                             <td class="text-end"><?= number_format($besoin['prix_unitaire'], 2, ',', ' ') ?> Ar</td>
                             <td class="text-end"><?= number_format($besoin['quantite_restante'], 2, ',', ' ') ?></td>
                             <td class="text-end fw-bold"><?= number_format($montantHT, 2, ',', ' ') ?> Ar</td>

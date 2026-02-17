@@ -66,7 +66,7 @@
                 <?php else: ?>
                   <div class="table-responsive">
                     <table class="table table-bordered table-hover">
-                      <thead class="table-dark">
+                      <thead>
                         <tr>
                           <th style="width: 60px">#</th>
                           <th>Article</th>
@@ -81,14 +81,17 @@
                           <tr>
                             <td><?= $don['id_don'] ?></td>
                             <td><?= htmlspecialchars($don['nom_article']) ?></td>
-                            <td>
-                              <span class="badge bg-secondary">
-                                <?= htmlspecialchars($don['nom_categorie']) ?>
-                              </span>
-                            </td>
+                            <td><?php
+                              $cat = strtolower($don['nom_categorie']);
+                              $textClass = match(true) {
+                                str_contains($cat, 'argent') => 'text-success',
+                                str_contains($cat, 'mat')    => 'text-warning',
+                                default                      => 'text-info',
+                              };
+                            ?><span class="<?= $textClass ?> fw-semibold"><?= htmlspecialchars($don['nom_categorie']) ?></span></td>
                             <td><?= number_format($don['quantite'], 2, ',', ' ') ?></td>
                             <td>
-                              <span class="badge bg-success">
+                              <span class="text-success fw-semibold">
                                 <?= number_format($don['quantite_restante'], 2, ',', ' ') ?>
                               </span>
                             </td>

@@ -54,7 +54,7 @@
                 <?php else: ?>
                   <div class="table-responsive">
                     <table class="table table-bordered table-hover table-sm">
-                      <thead class="table-dark">
+                      <thead>
                         <tr>
                           <th style="width: 60px">#</th>
                           <th>Article</th>
@@ -71,14 +71,14 @@
                             <td><?= $dispatch['id_dispatch'] ?></td>
                             <td><?= htmlspecialchars($dispatch['nom_article']) ?></td>
                             <td>
-                              <span class="badge bg-info">
+                              <span class="text-info fw-semibold">
                                 <?= htmlspecialchars($dispatch['nom_ville']) ?>
                               </span>
                             </td>
                             <td><?= $dispatch['id_don'] ?></td>
                             <td><?= $dispatch['id_besoin'] ?></td>
                             <td>
-                              <span class="badge bg-success">
+                              <span class="text-success fw-semibold">
                                 <?= number_format($dispatch['quantite_attribuee'], 2, ',', ' ') ?>
                               </span>
                             </td>

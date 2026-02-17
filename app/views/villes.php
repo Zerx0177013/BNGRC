@@ -27,18 +27,21 @@
             <!-- Alert message -->
             <div id="alertContainer"></div>
 
-            <div class="card mb-4">
-              <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="card card-primary card-outline">
+              <div class="card-header">
                 <h3 class="card-title">
                   <i class="bi bi-geo-alt-fill me-2"></i>Liste des villes
                 </h3>
-                <a href="<?= BASE_URL ?>/villes/add" class="btn btn-primary btn-sm">
-                  <i class="bi bi-plus-lg me-1"></i> Ajouter une ville
-                </a>
+                <div class="card-tools">
+                  <a href="<?= BASE_URL ?>/villes/add" class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus-lg me-1"></i> Ajouter une ville
+                  </a>
+                </div>
               </div>
               <div class="card-body">
-                <table class="table table-bordered table-hover table-striped">
-                  <thead class="table-dark">
+                <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover">
+                  <thead>
                     <tr>
                       <th style="width: 60px">#</th>
                       <th>Nom de la ville</th>
@@ -60,7 +63,7 @@
                           <td><?= $index + 1 ?></td>
                           <td><?= htmlspecialchars($ville['nom_ville']) ?></td>
                           <td>
-                            <span class="badge bg-info">
+                            <span class="text-info fw-semibold">
                               <?= htmlspecialchars($ville['nom_region'] ?? 'N/A') ?>
                             </span>
                           </td>
@@ -83,9 +86,7 @@
                     <?php endif; ?>
                   </tbody>
                 </table>
-              </div>
-              <div class="card-footer text-muted">
-                Total : <strong><?= count($villes) ?></strong> ville(s)
+                </div>
               </div>
             </div>
 

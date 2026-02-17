@@ -27,18 +27,21 @@
             <!-- Alert message -->
             <div id="alertContainer"></div>
 
-            <div class="card mb-4">
-              <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="card card-primary card-outline">
+              <div class="card-header">
                 <h3 class="card-title">
                   <i class="bi bi-map-fill me-2"></i>Liste des régions
                 </h3>
-                <a href="<?= BASE_URL ?>/regions/add" class="btn btn-primary btn-sm">
-                  <i class="bi bi-plus-lg me-1"></i> Ajouter une région
-                </a>
+                <div class="card-tools">
+                  <a href="<?= BASE_URL ?>/regions/add" class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus-lg me-1"></i> Ajouter une région
+                  </a>
+                </div>
               </div>
               <div class="card-body">
-                <table class="table table-bordered table-hover table-striped">
-                  <thead class="table-dark">
+                <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover">
+                  <thead>
                     <tr>
                       <th style="width: 60px">#</th>
                       <th>Nom de la région</th>
@@ -77,9 +80,7 @@
                     <?php endif; ?>
                   </tbody>
                 </table>
-              </div>
-              <div class="card-footer text-muted">
-                Total : <strong><?= count($regions) ?></strong> région(s)
+                </div>
               </div>
             </div>
 

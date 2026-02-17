@@ -112,12 +112,12 @@ $catColors = [
                             <td><?= number_format($don['total_quantite'], 0, ',', ' ') ?></td>
                             <td><?php
                               $cat = strtolower($don['nom_categorie']);
-                              $badge = match(true) {
-                                str_contains($cat, 'argent') => 'text-bg-success',
-                                str_contains($cat, 'mat')    => 'text-bg-warning',
-                                default                      => 'text-bg-info',
+                              $textClass = match(true) {
+                                str_contains($cat, 'argent') => 'text-success',
+                                str_contains($cat, 'mat')    => 'text-warning',
+                                default                      => 'text-info',
                               };
-                            ?><span class="badge <?= $badge ?>"><?= htmlspecialchars($don['nom_categorie']) ?></span></td>
+                            ?><span class="<?= $textClass ?> fw-semibold"><?= htmlspecialchars($don['nom_categorie']) ?></span></td>
                           </tr>
                         <?php endforeach; ?>
                       </tbody>
