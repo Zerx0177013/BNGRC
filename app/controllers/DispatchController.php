@@ -216,7 +216,7 @@ class DispatchController {
 			switch ($strategy) {
 				case 'direct':
 					// Simulation avec tous les dons chronologiquement
-					$simulatedResults = $model->simulateDispatchAllChronologically();
+					$simulatedResults = $model->simulateAllDonsChronologically();
 					break;
 					
 				case 'smallest':
