@@ -35,11 +35,24 @@
                   <a href="<?= BASE_URL ?>/dispatch/history" class="btn btn-secondary btn-sm me-2">
                     <i class="bi bi-clock-history me-1"></i> Historique
                   </a>
+                  
+                  <!-- Select pour choisir la stratégie de dispatch -->
+                  <select class="form-select form-select-sm d-inline-block me-2" id="strategySelect" style="width: auto;">
+                    <option value="" selected disabled>Choisir une stratégie</option>
+                    <option value="direct">Direct (Chronologique)</option>
+                    <option value="smallest">Du plus petit</option>
+                    <option value="proportional">Proportionnalité</option>
+                  </select>
+
                   <button type="button" class="btn btn-info btn-sm me-2" id="btnSimulate" disabled>
                     <i class="bi bi-eye me-1"></i> Simuler
                   </button>
-                  <button type="button" class="btn btn-primary btn-sm" id="btnDispatch" disabled>
-                    <i class="bi bi-truck me-1"></i> Dispatcher les dons sélectionnés
+                  <button type="button" class="btn btn-success btn-sm me-2" id="btnExecute" disabled>
+                    <i class="bi bi-check-circle me-1"></i> Exécuter
+                  </button>
+                  
+                  <button type="button" class="btn btn-danger btn-sm ms-2" id="btnClearDispatch">
+                    <i class="bi bi-trash me-1"></i> Réinitialiser
                   </button>
                 </div>
               </div>
@@ -55,9 +68,6 @@
                     <table class="table table-bordered table-hover">
                       <thead class="table-dark">
                         <tr>
-                          <th style="width: 50px">
-                            <input type="checkbox" id="checkAll" class="form-check-input">
-                          </th>
                           <th style="width: 60px">#</th>
                           <th>Article</th>
                           <th>Catégorie</th>
@@ -69,14 +79,6 @@
                       <tbody>
                         <?php foreach ($dons as $index => $don): ?>
                           <tr>
-                            <td class="text-center">
-                              <input 
-                                type="checkbox" 
-                                class="form-check-input don-checkbox" 
-                                value="<?= $don['id_don'] ?>"
-                                data-quantite="<?= $don['quantite_restante'] ?>"
-                              >
-                            </td>
                             <td><?= $don['id_don'] ?></td>
                             <td><?= htmlspecialchars($don['nom_article']) ?></td>
                             <td>
@@ -101,7 +103,7 @@
               </div>
               <div class="card-footer text-muted">
                 Total : <strong><?= count($dons) ?></strong> don(s) disponible(s)
-                <span id="selectedCount" class="ms-3 text-primary fw-bold"></span>
+                <span id="strategyInfo" class="ms-3 text-info fw-bold"></span>
               </div>
             </div>
 

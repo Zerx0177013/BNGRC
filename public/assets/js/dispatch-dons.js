@@ -1,85 +1,99 @@
 (function () {
   'use strict';
 
-  var checkAll = null;
-  var checkboxes = null;
-  var btnDispatch = null;
   var btnSimulate = null;
-  var selectedCount = null;
+  var btnExecute = null;
+  var btnClearDispatch = null;
+  var strategySelect = null;
+  var strategyInfo = null;
   var alertContainer = null;
+  var selectedStrategy = null;
 
   document.addEventListener('DOMContentLoaded', function () {
-    checkAll = document.getElementById('checkAll');
-    checkboxes = document.querySelectorAll('.don-checkbox');
-    btnDispatch = document.getElementById('btnDispatch');
     btnSimulate = document.getElementById('btnSimulate');
-    selectedCount = document.getElementById('selectedCount');
+    btnExecute = document.getElementById('btnExecute');
+    btnClearDispatch = document.getElementById('btnClearDispatch');
+    strategySelect = document.getElementById('strategySelect');
+    strategyInfo = document.getElementById('strategyInfo');
     alertContainer = document.getElementById('alertContainer');
 
     initializeEventListeners();
   });
 
   function initializeEventListeners() {
-    if (checkAll) {
-      checkAll.addEventListener('change', function () {
-        checkboxes.forEach(function (cb) {
-          cb.checked = checkAll.checked;
-        });
-        updateUI();
+    // Gestion du select de stratégie
+    if (strategySelect) {
+      strategySelect.addEventListener('change', function() {
+        selectedStrategy = this.value;
+        updateStrategyUI();
       });
     }
-
-    checkboxes.forEach(function (cb) {
-      cb.addEventListener('change', updateUI);
-    });
 
     if (btnSimulate) {
       btnSimulate.addEventListener('click', handleSimulate);
     }
 
-    if (btnDispatch) {
-      btnDispatch.addEventListener('click', handleDispatch);
+    if (btnExecute) {
+      btnExecute.addEventListener('click', handleExecute);
+    }
+
+    if (btnClearDispatch) {
+      btnClearDispatch.addEventListener('click', handleClearDispatch);
     }
   }
 
-  function updateUI() {
-    var checkedCount = document.querySelectorAll('.don-checkbox:checked').length;
-    
-    if (btnDispatch) btnDispatch.disabled = checkedCount === 0;
-    if (btnSimulate) btnSimulate.disabled = checkedCount === 0;
-    
-    if (selectedCount) {
-      if (checkedCount > 0) {
-        selectedCount.textContent = '(' + checkedCount + ' sélectionné' + (checkedCount > 1 ? 's' : '') + ')';
-      } else {
-        selectedCount.textContent = '';
-      }
+  function updateStrategyUI() {
+    if (strategyInfo && selectedStrategy) {
+      var strategyText = strategySelect.options[strategySelect.selectedIndex].text;
+      strategyInfo.textContent = '📋 Stratégie: ' + strategyText;
     }
+    
+    // Activer les boutons Simuler et Exécuter
+    if (btnSimulate) btnSimulate.disabled = !selectedStrategy;
+    if (btnExecute) btnExecute.disabled = !selectedStrategy;
+  }  function handleClearDispatch() {
+    if (!confirm('Voulez-vous vraiment supprimer tous les dispatches ? Cette action est irréversible.')) return;
 
-    if (checkAll && checkboxes.length > 0) {
-      var allChecked = Array.from(checkboxes).every(function(cb) { return cb.checked; });
-      checkAll.checked = allChecked;
-    }
+    btnClearDispatch.disabled = true;
+    btnClearDispatch.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Suppression...';
+
+    fetch(window.BASE_URL + '/dispatch/clear', {
+      method: 'DELETE'
+    })
+    .then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    })
+    .then(function (data) {
+      if (data.success) {
+        showAlert('success', data.message || 'Tous les dispatches ont été supprimés.');
+        setTimeout(function () { window.location.reload(); }, 1200);
+      } else {
+        throw new Error(data.message || 'Erreur lors de la suppression.');
+      }
+    })
+    .catch(function (err) {
+      console.error('Clear error:', err);
+      showAlert('danger', 'Erreur: ' + err.message);
+      btnClearDispatch.disabled = false;
+      btnClearDispatch.innerHTML = '<i class="bi bi-trash me-1"></i> Réinitialiser';
+    });
   }
 
   function handleSimulate() {
-    var selected = Array.from(document.querySelectorAll('.don-checkbox:checked'))
-      .map(function (cb) { return cb.value; });
-
-    if (selected.length === 0) {
-      alert('Veuillez sélectionner au moins un don.');
+    if (!selectedStrategy) {
+      alert('Veuillez choisir une stratégie de dispatch.');
       return;
     }
 
     btnSimulate.disabled = true;
     btnSimulate.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Simulation...';
 
+    var url = window.BASE_URL + '/dispatch/simulate-data';
     var formData = new URLSearchParams();
-    selected.forEach(function (id) {
-      formData.append('dons[]', id);
-    });
+    formData.append('strategy', selectedStrategy);
 
-    fetch(window.BASE_URL + '/dispatch/simulate-data', {
+    fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: formData.toString()
@@ -117,26 +131,21 @@
     });
   }
 
-  function handleDispatch() {
-    var selected = Array.from(document.querySelectorAll('.don-checkbox:checked'))
-      .map(function (cb) { return cb.value; });
-
-    if (selected.length === 0) {
-      alert('Veuillez sélectionner au moins un don.');
+  function handleExecute() {
+    if (!selectedStrategy) {
+      alert('Veuillez choisir une stratégie de dispatch.');
       return;
     }
 
-    if (!confirm('Voulez-vous dispatcher ' + selected.length + ' don(s) ?\n\nAttention : Cette action enregistrera directement dans la base de données.\nUtilisez le bouton "Simuler" pour prévisualiser avant d\'enregistrer.')) {
+    if (!confirm('Voulez-vous exécuter le dispatch avec la stratégie sélectionnée ?\n\nAttention : Cette action enregistrera directement dans la base de données.')) {
       return;
     }
 
-    btnDispatch.disabled = true;
-    btnDispatch.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Dispatch en cours...';
+    btnExecute.disabled = true;
+    btnExecute.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Exécution...';
 
     var formData = new URLSearchParams();
-    selected.forEach(function (id) {
-      formData.append('dons[]', id);
-    });
+    formData.append('strategy', selectedStrategy);
 
     fetch(window.BASE_URL + '/dispatch/execute', {
       method: 'POST',
@@ -164,8 +173,8 @@
     .catch(function (err) {
       console.error('Fetch error:', err);
       showAlert('danger', 'Erreur: ' + err.message);
-      btnDispatch.disabled = false;
-      btnDispatch.innerHTML = '<i class="bi bi-truck me-1"></i> Dispatcher les dons sélectionnés';
+      btnExecute.disabled = false;
+      btnExecute.innerHTML = '<i class="bi bi-check-circle me-1"></i> Exécuter';
     });
   }
 
