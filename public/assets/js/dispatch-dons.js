@@ -23,6 +23,12 @@
   function initializeEventListeners() {
     // Gestion du select de stratégie
     if (strategySelect) {
+      // Vérifier si une stratégie est déjà sélectionnée au chargement
+      if (strategySelect.value) {
+        selectedStrategy = strategySelect.value;
+        updateStrategyUI();
+      }
+      
       strategySelect.addEventListener('change', function() {
         selectedStrategy = this.value;
         updateStrategyUI();
@@ -43,14 +49,21 @@
   }
 
   function updateStrategyUI() {
-    if (strategyInfo && selectedStrategy) {
-      var strategyText = strategySelect.options[strategySelect.selectedIndex].text;
-      strategyInfo.textContent = '📋 Stratégie: ' + strategyText;
+    if (strategyInfo) {
+      if (selectedStrategy) {
+        var strategyText = strategySelect.options[strategySelect.selectedIndex].text;
+        strategyInfo.textContent = '📋 Stratégie: ' + strategyText;
+      } else {
+        strategyInfo.textContent = '';
+      }
     }
     
-    // Activer les boutons Simuler et Exécuter
-    if (btnSimulate) btnSimulate.disabled = !selectedStrategy;
-    if (btnExecute) btnExecute.disabled = !selectedStrategy;
+    // Activer les boutons Simuler et Exécuter seulement si une stratégie est sélectionnée
+    var hasStrategy = selectedStrategy && selectedStrategy !== '';
+    if (btnSimulate) btnSimulate.disabled = !hasStrategy;
+    if (btnExecute) btnExecute.disabled = !hasStrategy;
+    
+    console.log('updateStrategyUI - selectedStrategy:', selectedStrategy, 'hasStrategy:', hasStrategy);
   }  function handleClearDispatch() {
     if (!confirm('Voulez-vous vraiment supprimer tous les dispatches ? Cette action est irréversible.')) return;
 
@@ -81,6 +94,8 @@
   }
 
   function handleSimulate() {
+    console.log('handleSimulate called, selectedStrategy:', selectedStrategy);
+    
     if (!selectedStrategy) {
       alert('Veuillez choisir une stratégie de dispatch.');
       return;
@@ -92,6 +107,8 @@
     var url = window.BASE_URL + '/dispatch/simulate-data';
     var formData = new URLSearchParams();
     formData.append('strategy', selectedStrategy);
+    
+    console.log('Sending strategy:', selectedStrategy);
 
     fetch(url, {
       method: 'POST',

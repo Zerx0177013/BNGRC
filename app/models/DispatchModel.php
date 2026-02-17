@@ -442,4 +442,160 @@ class DispatchModel
         
         return $this->simulateDispatchOnly($idsDons);
     }
+
+    /**
+     * Dispatch proportionnel : répartit les stocks disponibles proportionnellement aux besoins de chaque ville
+     * Pour chaque article, calcule la proportion de chaque ville et distribue le stock en conséquence
+     */
+    public function dispatchProportional()
+    {
+        return $this->executeDispatchProportional(true);
+    }
+
+    /**
+     * Simulation du dispatch proportionnel (sans insertion en base)
+     */
+    public function simulateDispatchProportional()
+    {
+        return $this->executeDispatchProportional(false);
+    }
+
+    /**
+     * Logique commune pour le dispatch proportionnel
+     * @param bool $saveToDb Si true, enregistre en base, sinon simulation uniquement
+     */
+    private function executeDispatchProportional($saveToDb = true)
+    {
+        $results = [];
+        
+        // Récupérer les dépendances
+        $articleModel = new \app\models\ArticleModel($this->db);
+        $besoinModel = new \app\models\BesoinModel($this->db);
+        
+        // 1. Récupérer la liste des articles disponibles avec stock
+        $articlesDisponibles = $articleModel->getArticlesDisponiblesAvecStock();
+        
+        // 2. Pour chaque article disponible
+        foreach ($articlesDisponibles as $article) {
+            $idArticle = $article['id_article'];
+            $stockDisponible = (float)$article['stock_disponible'];
+            
+            // 3. Récupérer les besoins restants pour cet article
+            $besoinsParVille = $besoinModel->getBesoinsRestantsParArticle($idArticle);
+            
+            if (empty($besoinsParVille)) {
+                continue;
+            }
+            
+            // 4. Calculer la somme totale des quantités demandées
+            $sommeDemandes = $this->calculerSommeDemandes($besoinsParVille);
+            
+            if ($sommeDemandes <= 0) {
+                continue;
+            }
+            
+            // 5. Pour chaque ville, calculer la proportion et dispatcher
+            foreach ($besoinsParVille as $besoin) {
+                $dispatchResult = $this->traiterDispatchProportionnel(
+                    $besoin,
+                    $idArticle,
+                    $stockDisponible,
+                    $sommeDemandes,
+                    $articleModel,
+                    $saveToDb
+                );
+                
+                if ($dispatchResult) {
+                    $results[] = $dispatchResult;
+                }
+            }
+        }
+        
+        return $results;
+    }
+
+    /**
+     * Calcule la somme totale des demandes
+     */
+    private function calculerSommeDemandes(array $besoinsParVille)
+    {
+        $somme = 0;
+        foreach ($besoinsParVille as $besoin) {
+            $somme += (float)$besoin['quantite_demandee'];
+        }
+        return $somme;
+    }
+
+    /**
+     * Traite le dispatch proportionnel pour un besoin donné
+     */
+    private function traiterDispatchProportionnel($besoin, $idArticle, $stockDisponible, $sommeDemandes, $articleModel, $saveToDb)
+    {
+        $quantiteDemandee = (float)$besoin['quantite_demandee'];
+        $proportion = $quantiteDemandee / $sommeDemandes;
+        
+        // Arrondi inférieur
+        $quantiteAttribuee = floor($proportion * $stockDisponible);
+        
+        if ($quantiteAttribuee <= 0) {
+            return null;
+        }
+        
+        // S'assurer qu'on ne dépasse pas le besoin
+        $quantiteAttribuee = min($quantiteAttribuee, $quantiteDemandee);
+        
+        // Récupérer un don disponible pour cet article
+        $don = $this->getDonDisponiblePourArticle($idArticle);
+        
+        if (!$don) {
+            return null;
+        }
+        
+        // Enregistrer en base si demandé
+        if ($saveToDb) {
+            $this->insertDispatch(
+                $don['id_don'],
+                $besoin['id_besoin'],
+                $quantiteAttribuee,
+                $besoin['id_ville']
+            );
+        }
+        
+        // Récupérer la catégorie
+        $nomCategorie = $articleModel->getCategorieByArticle($idArticle);
+        
+        return [
+            'id_don' => $don['id_don'],
+            'id_besoin' => $besoin['id_besoin'],
+            'id_ville' => $besoin['id_ville'],
+            'ville' => $besoin['nom_ville'],
+            'id_article' => $idArticle,
+            'nom_categorie' => $nomCategorie,
+            'quantite_attribuee' => $quantiteAttribuee,
+            'proportion' => round($proportion * 100, 2) . '%'
+        ];
+    }
+
+    /**
+     * Récupère un don disponible pour un article donné
+     */
+    private function getDonDisponiblePourArticle($idArticle)
+    {
+        $sql = '
+            SELECT d.id_don,
+                   d.quantite - COALESCE((
+                       SELECT SUM(disp.quantite_attribuee) 
+                       FROM bngrc_dispatch_ETU003918 disp 
+                       WHERE disp.id_don = d.id_don
+                   ), 0) as quantite_restante
+            FROM bngrc_don_ETU003918 d
+            WHERE d.id_article = :id_article
+            HAVING quantite_restante > 0
+            ORDER BY d.date_don ASC
+            LIMIT 1
+        ';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':id_article' => $idArticle]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }

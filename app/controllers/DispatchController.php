@@ -39,11 +39,13 @@ class DispatchController {
 
 		try {
 			$results = [];
+			$strategyName = '';
 			
 			switch ($strategy) {
 				case 'direct':
 					// Utilise dispatchAllDonsChronologically
 					$results = $model->dispatchAllDonsChronologically();
+					$strategyName = 'Direct (chronologique)';
 					break;
 					
 				case 'smallest':
@@ -55,12 +57,10 @@ class DispatchController {
 					return;
 					
 				case 'proportional':
-					// Proportionnalité - à implémenter
-					$this->app->json([
-						'success' => false, 
-						'message' => 'Stratégie "Proportionnalité" en cours de développement.'
-					]);
-					return;
+					// Proportionnalité - dispatch proportionnel
+					$results = $model->dispatchProportional();
+					$strategyName = 'Proportionnelle';
+					break;
 					
 				default:
 					$this->app->json(['success' => false, 'message' => 'Stratégie inconnue.'], 400);
@@ -70,14 +70,14 @@ class DispatchController {
 			if (empty($results)) {
 				$this->app->json([
 					'success' => false, 
-					'message' => 'Aucun besoin restant à satisfaire.'
+					'message' => 'La méthode ' . $strategyName . ' ne peut rien dispatcher. Aucun don disponible ou aucun besoin restant à satisfaire.'
 				]);
 				return;
 			}
 
 			$this->app->json([
 				'success' => true, 
-				'message' => 'Dispatch effectué avec succès.', 
+				'message' => 'Dispatch effectué avec succès (Stratégie: ' . $strategyName . ').', 
 				'results' => $results,
 				'count' => count($results)
 			]);
@@ -157,11 +157,13 @@ class DispatchController {
 
 		try {
 			$simulatedResults = [];
+			$strategyName = '';
 			
 			switch ($strategy) {
 				case 'direct':
 					// Simulation avec tous les dons chronologiquement
 					$simulatedResults = $model->simulateDispatchAllChronologically();
+					$strategyName = 'Direct (chronologique)';
 					break;
 					
 				case 'smallest':
@@ -173,12 +175,10 @@ class DispatchController {
 					return;
 					
 				case 'proportional':
-					// Proportionnalité - à implémenter
-					$this->app->json([
-						'success' => false, 
-						'message' => 'Stratégie "Proportionnalité" en cours de développement.'
-					]);
-					return;
+					// Proportionnalité - simulation proportionnelle
+					$simulatedResults = $model->simulateDispatchProportional();
+					$strategyName = 'Proportionnelle';
+					break;
 					
 				default:
 					$this->app->json(['success' => false, 'message' => 'Stratégie inconnue.'], 400);
@@ -188,7 +188,7 @@ class DispatchController {
 			if (empty($simulatedResults)) {
 				$this->app->json([
 					'success' => false, 
-					'message' => 'Aucun besoin restant à satisfaire.'
+					'message' => 'La méthode ' . $strategyName . ' ne peut rien dispatcher. Aucun don disponible ou aucun besoin restant à satisfaire.'
 				]);
 				return;
 			}

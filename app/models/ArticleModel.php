@@ -122,4 +122,45 @@ class ArticleModel
         $stmt = $this->db->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    /**
+     * Récupère les articles disponibles avec leur stock restant dans les dons
+     */
+    public function getArticlesDisponiblesAvecStock()
+    {
+        $sql = '
+            SELECT 
+                d.id_article,
+                a.nom_article,
+                SUM(d.quantite - COALESCE((
+                    SELECT SUM(disp.quantite_attribuee) 
+                    FROM bngrc_dispatch_ETU003918 disp 
+                    WHERE disp.id_don = d.id_don
+                ), 0)) as stock_disponible
+            FROM bngrc_don_ETU003918 d
+            JOIN bngrc_article_ETU003918 a ON d.id_article = a.id_article
+            GROUP BY d.id_article, a.nom_article
+            HAVING stock_disponible > 0
+        ';
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Récupère la catégorie d'un article
+     */
+    public function getCategorieByArticle($idArticle)
+    {
+        $sql = '
+            SELECT c.nom_categorie
+            FROM bngrc_article_ETU003918 a
+            JOIN bngrc_categorie_besoin_ETU003918 c ON a.id_categorie = c.id_categorie
+            WHERE a.id_article = :id_article
+        ';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':id_article' => $idArticle]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? $result['nom_categorie'] : 'Inconnu';
+    }
 }
+

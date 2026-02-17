@@ -138,4 +138,30 @@ class BesoinModel
             'matrix' => $besoinMatrix
         ];
     }
+
+    /**
+     * Récupère les besoins restants pour un article donné
+     */
+    public function getBesoinsRestantsParArticle($idArticle)
+    {
+        $sql = '
+            SELECT 
+                b.id_besoin,
+                b.id_ville,
+                v.nom_ville,
+                (b.quantite - COALESCE((
+                    SELECT SUM(disp.quantite_attribuee) 
+                    FROM bngrc_dispatch_ETU003918 disp 
+                    WHERE disp.id_besoin = b.id_besoin
+                ), 0)) as quantite_demandee
+            FROM bngrc_besoin_ETU003918 b
+            JOIN bngrc_ville_ETU003918 v ON b.id_ville = v.id_ville
+            WHERE b.id_article = :id_article
+            HAVING quantite_demandee > 0
+        ';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':id_article' => $idArticle]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
+
