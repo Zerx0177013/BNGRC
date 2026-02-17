@@ -1,5 +1,6 @@
 <?php
 include __DIR__ . '/header.php';
+include __DIR__ . '/sidebar.php';
 
 $catColors = [
     'Nature'     => ['bg' => 'bg-info',    'textbg' => 'text-bg-info',    'icon' => 'bi bi-tree-fill'],
@@ -42,6 +43,15 @@ foreach ($articles as $art) {
         <div class="app-content">
           <div class="container-fluid">
 
+            <!-- Bouton ajouter article -->
+            <div class="row mb-3">
+              <div class="col-12">
+                <a href="<?= BASE_URL ?>/articles/add" class="btn btn-primary">
+                  <i class="bi bi-plus-circle me-1"></i> Ajouter un article
+                </a>
+              </div>
+            </div>
+
             <!-- ========== CATÉGORIES (3 info-boxes normales en haut) ========== -->
             <div class="row">
               <?php foreach ($countByCategorie as $catName => $count):
@@ -66,20 +76,29 @@ foreach ($articles as $art) {
             <?php foreach ($articlesByCategorie as $catName => $catArticles):
               $style = $catColors[$catName] ?? ['bg' => 'bg-secondary', 'textbg' => 'text-bg-secondary', 'icon' => 'bi bi-question-circle'];
             ?>
-            <h5 class="mt-3 mb-2">
-              <span class="badge <?= $style['bg'] ?>"><?= htmlspecialchars($catName) ?></span>
-            </h5>
+            <div class="row mt-4">
+              <div class="col-12">
+                <h5 class="mb-3">
+                  <span class="badge <?= $style['bg'] ?>">
+                    <i class="<?= $style['icon'] ?> me-1"></i>
+                    <?= htmlspecialchars($catName) ?>
+                  </span>
+                </h5>
+              </div>
+            </div>
             <div class="row">
               <?php foreach ($catArticles as $art): ?>
               <div class="col-lg-4 col-md-6">
-                <div class="card mb-3 border-start border-4 border-<?= str_replace('bg-', '', $style['bg']) ?>">
-                  <div class="card-body p-3 d-flex align-items-center">
-                    <span class="info-box-icon <?= $style['textbg'] ?> shadow-sm me-3" style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;border-radius:.375rem;">
-                      <i class="<?= $style['icon'] ?>"></i>
-                    </span>
-                    <div>
-                      <h6 class="mb-0"><?= htmlspecialchars($art['nom_article']) ?></h6>
-                      <span class="text-muted"><?= number_format($art['prix_unitaire'], 0, ',', ' ') ?> <small>Ar</small></span>
+                <div class="card mb-3 shadow-sm border-start border-4 border-<?= str_replace('bg-', '', $style['bg']) ?>">
+                  <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                      <span class="info-box-icon <?= $style['textbg'] ?> shadow-sm me-3" style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;border-radius:.375rem;">
+                        <i class="<?= $style['icon'] ?>"></i>
+                      </span>
+                      <div class="flex-grow-1">
+                        <h6 class="mb-1"><?= htmlspecialchars($art['nom_article']) ?></h6>
+                        <span class="text-muted fw-bold"><?= number_format($art['prix_unitaire'], 0, ',', ' ') ?> <small>Ar</small></span>
+                      </div>
                     </div>
                   </div>
                 </div>
