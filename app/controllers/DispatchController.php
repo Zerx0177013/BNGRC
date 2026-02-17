@@ -30,24 +30,47 @@ class DispatchController {
 		$model = new DispatchModel($pdo);
 
 		parse_str(file_get_contents('php://input'), $postData);
-		$idsDons = isset($postData['dons']) ? $postData['dons'] : (isset($_POST['dons']) ? $_POST['dons'] : []);
+		$strategy = isset($postData['strategy']) ? $postData['strategy'] : (isset($_POST['strategy']) ? $_POST['strategy'] : null);
 
-		if (empty($idsDons)) {
-			$this->app->json(['success' => false, 'message' => 'Aucun don sélectionné.'], 400);
+		if (empty($strategy)) {
+			$this->app->json(['success' => false, 'message' => 'Aucune stratégie sélectionnée.'], 400);
 			return;
 		}
 
-		if (!is_array($idsDons)) {
-			$idsDons = [$idsDons];
-		}
-
 		try {
-			$results = $model->simulerDispatch($idsDons);
+			$results = [];
+			
+			switch ($strategy) {
+				case 'direct':
+					// Utilise dispatchAllDonsChronologically
+					$results = $model->dispatchAllDonsChronologically();
+					break;
+					
+				case 'smallest':
+					// Du plus petit - à implémenter
+					$this->app->json([
+						'success' => false, 
+						'message' => 'Stratégie "Du plus petit" en cours de développement.'
+					]);
+					return;
+					
+				case 'proportional':
+					// Proportionnalité - à implémenter
+					$this->app->json([
+						'success' => false, 
+						'message' => 'Stratégie "Proportionnalité" en cours de développement.'
+					]);
+					return;
+					
+				default:
+					$this->app->json(['success' => false, 'message' => 'Stratégie inconnue.'], 400);
+					return;
+			}
 
 			if (empty($results)) {
 				$this->app->json([
 					'success' => false, 
-					'message' => 'Aucun besoin restant à satisfaire pour les dons sélectionnés.'
+					'message' => 'Aucun besoin restant à satisfaire.'
 				]);
 				return;
 			}
@@ -125,24 +148,47 @@ class DispatchController {
 		$donModel = new \app\models\DonModel($pdo);
 
 		parse_str(file_get_contents('php://input'), $postData);
-		$idsDons = isset($postData['dons']) ? $postData['dons'] : (isset($_POST['dons']) ? $_POST['dons'] : []);
+		$strategy = isset($postData['strategy']) ? $postData['strategy'] : (isset($_POST['strategy']) ? $_POST['strategy'] : null);
 
-		if (empty($idsDons)) {
-			$this->app->json(['success' => false, 'message' => 'Aucun don sélectionné.'], 400);
+		if (empty($strategy)) {
+			$this->app->json(['success' => false, 'message' => 'Aucune stratégie sélectionnée.'], 400);
 			return;
 		}
 
-		if (!is_array($idsDons)) {
-			$idsDons = [$idsDons];
-		}
-
 		try {
-			$simulatedResults = $model->simulateDispatchOnly($idsDons);
+			$simulatedResults = [];
+			
+			switch ($strategy) {
+				case 'direct':
+					// Simulation avec tous les dons chronologiquement
+					$simulatedResults = $model->simulateDispatchAllChronologically();
+					break;
+					
+				case 'smallest':
+					// Du plus petit - à implémenter
+					$this->app->json([
+						'success' => false, 
+						'message' => 'Stratégie "Du plus petit" en cours de développement.'
+					]);
+					return;
+					
+				case 'proportional':
+					// Proportionnalité - à implémenter
+					$this->app->json([
+						'success' => false, 
+						'message' => 'Stratégie "Proportionnalité" en cours de développement.'
+					]);
+					return;
+					
+				default:
+					$this->app->json(['success' => false, 'message' => 'Stratégie inconnue.'], 400);
+					return;
+			}
 
 			if (empty($simulatedResults)) {
 				$this->app->json([
 					'success' => false, 
-					'message' => 'Aucun besoin restant à satisfaire pour les dons sélectionnés.'
+					'message' => 'Aucun besoin restant à satisfaire.'
 				]);
 				return;
 			}

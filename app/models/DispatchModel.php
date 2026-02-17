@@ -410,4 +410,36 @@ class DispatchModel
         
         return $this->simulerDispatch($idsDons);
     }
+
+    public function simulateDispatchAllChronologically()
+    {
+        $sql = '
+            SELECT d.id_don
+            FROM bngrc_don_ETU003918 d
+            JOIN bngrc_article_ETU003918 a ON d.id_article = a.id_article
+            WHERE EXISTS (
+                SELECT 1 FROM bngrc_besoin_ETU003918 b
+                WHERE b.id_article = d.id_article
+                AND b.quantite > COALESCE(
+                    (SELECT SUM(d2.quantite_attribuee) FROM bngrc_dispatch_ETU003918 d2 WHERE d2.id_besoin = b.id_besoin),
+                    0
+                )
+            )
+            AND d.quantite > COALESCE(
+                (SELECT SUM(disp.quantite_attribuee) FROM bngrc_dispatch_ETU003918 disp WHERE disp.id_don = d.id_don),
+                0
+            )
+            ORDER BY d.date_don ASC
+        ';
+        $stmt = $this->db->query($sql);
+        $dons = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $idsDons = array_column($dons, 'id_don');
+        
+        if (empty($idsDons)) {
+            return [];
+        }
+        
+        return $this->simulateDispatchOnly($idsDons);
+    }
 }
