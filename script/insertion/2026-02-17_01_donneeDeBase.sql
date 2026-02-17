@@ -34,7 +34,7 @@ INSERT INTO bngrc_ville_ETU003918 (id_ville, nom_ville, id_region) VALUES
 INSERT INTO bngrc_categorie_besoin_ETU003918 (id_categorie, nom_categorie) VALUES
 (1, 'nature'),
 (2, 'materiel'),
-(3, 'argent');
+(3, 'Argent');
 
 -- ========== ARTICLES ==========
 -- Category: nature (id_categorie = 1)
@@ -179,3 +179,7 @@ INSERT INTO bngrc_don_ETU003918 (id_article, quantite, date_don) VALUES
 (10, 20000000.00, '2026-02-19 00:00:00'),
 (6, 500.00, '2026-02-19 00:00:00'),
 (4, 88.00, '2026-02-17 00:00:00');
+
+
+INSERT INTO bngrc_config_ETU003918 (valeur) VALUES
+(10.00);
