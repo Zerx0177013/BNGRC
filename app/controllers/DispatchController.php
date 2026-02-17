@@ -86,6 +86,32 @@ class DispatchController {
 		}
 	}
 
+	public function executeDispatchAllChronologically(): void {
+		$pdo = $this->app->db();
+		$model = new DispatchModel($pdo);
+
+		try {
+			$results = $model->dispatchAllDonsChronologically();
+
+			if (empty($results)) {
+				$this->app->json([
+					'success' => false, 
+					'message' => 'Aucun don à dispatcher ou tous les dons sont déjà complètement dispatches.'
+				]);
+				return;
+			}
+
+			$this->app->json([
+				'success' => true, 
+				'message' => 'Tous les dons ont été dispatches avec succès par ordre chronologique.', 
+				'results' => $results,
+				'count' => count($results)
+			]);
+		} catch (\Exception $e) {
+			$this->app->json(['success' => false, 'message' => 'Erreur lors du dispatch : ' . $e->getMessage()], 500);
+		}
+	}
+
 	public function renderSimulationPage(): void {
 		$this->app->render('simulation', [
 			'currentPage' => 'dispatch',
