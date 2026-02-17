@@ -26,24 +26,24 @@
     <!--end::Accessibility Features-->
 
     <!--begin::Stylesheets-->
-    <!--begin::Preload AdminLTE-->
-    <link rel="preload" href="<?= BASE_URL ?>/assets/css/adminlte.css" as="style" />
-    <!--end::Preload AdminLTE-->
-    <!--begin::Fonts-->
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/source-sans-3.css" media="print" onload="this.media = 'all'" />
-    <!--end::Fonts-->
-    <!--begin::Third Party Plugin(OverlayScrollbars)-->
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/overlayscrollbars.min.css" />
-    <!--end::Third Party Plugin(OverlayScrollbars)-->
-    <!--begin::Third Party Plugin(Bootstrap Icons)-->
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/bootstrap-icons.min.css" />
-    <!--end::Third Party Plugin(Bootstrap Icons)-->
-    <!--begin::Required Plugin(AdminLTE)-->
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/adminlte.css" />
-    <!--end::Required Plugin(AdminLTE)-->
-    <!--begin::ApexCharts CSS-->
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/apexcharts.css" />
-    <!--end::ApexCharts CSS-->
+  <!--begin::Preload AdminLTE-->
+  <link rel="preload" href="<?= BASE_URL ?>/public/assets/css/adminlte.css" as="style" />
+  <!--end::Preload AdminLTE-->
+  <!--begin::Fonts-->
+  <link rel="stylesheet" href="<?= BASE_URL ?>/public/assets/css/source-sans-3.css" media="print" onload="this.media = 'all'" />
+  <!--end::Fonts-->
+  <!--begin::Third Party Plugin(OverlayScrollbars)--> 
+  <link rel="stylesheet" href="<?= BASE_URL ?>/public/assets/css/overlayscrollbars.min.css" />
+  <!--end::Third Party Plugin(OverlayScrollbars)--> 
+  <!--begin::Third Party Plugin(Bootstrap Icons)--> 
+  <link rel="stylesheet" href="<?= BASE_URL ?>/public/assets/css/bootstrap-icons.min.css" />
+  <!--end::Third Party Plugin(Bootstrap Icons)--> 
+  <!--begin::Required Plugin(AdminLTE)--> 
+  <link rel="stylesheet" href="<?= BASE_URL ?>/public/assets/css/adminlte.css" />
+  <!--end::Required Plugin(AdminLTE)--> 
+  <!--begin::ApexCharts CSS-->
+  <link rel="stylesheet" href="<?= BASE_URL ?>/public/assets/css/apexcharts.css" />
+  <!--end::ApexCharts CSS-->
     <!--end::Stylesheets-->
   </head>
 

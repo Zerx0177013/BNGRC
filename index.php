@@ -24,5 +24,10 @@
    Cessna 402  (Wings)
    by Dick Williams, rjw1@tyrell.net
 */
+
+// Définir BASE_URL dynamiquement de manière robuste
+$scriptDir = dirname($_SERVER['SCRIPT_NAME']);
+define('BASE_URL', ($scriptDir === '/' || $scriptDir === '\\') ? '' : rtrim($scriptDir, '/'));
+
 $ds = DIRECTORY_SEPARATOR;
-require(__DIR__. $ds . '..' . $ds . 'app' . $ds . 'config' . $ds . 'bootstrap.php');
+require(__DIR__. $ds . 'app' . $ds . 'config' . $ds . 'bootstrap.php');

@@ -113,6 +113,6 @@
       </div>
 
       <script>var BASE_URL = '<?= BASE_URL ?>';</script>
-      <script src="<?= BASE_URL ?>/assets/js/regions.js"></script>
+  <script src="<?= BASE_URL ?>/public/assets/js/regions.js"></script>
 
 <?php include __DIR__ . '/footer.php'; ?>

@@ -130,6 +130,6 @@
       </div>
 
       <script>var BASE_URL = '<?= BASE_URL ?>';</script>
-      <script src="<?= BASE_URL ?>/assets/js/dispatch-history.js"></script>
+  <script src="<?= BASE_URL ?>/public/assets/js/dispatch-history.js"></script>
 
 <?php include __DIR__ . '/footer.php'; ?>

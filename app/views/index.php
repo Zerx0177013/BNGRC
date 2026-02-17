@@ -295,4 +295,4 @@ $catColors = [
       );
       comparison_chart.render();
     </script>
-    <script src="<?= BASE_URL ?>/assets/js/dashboard.js"></script>
+  <script src="<?= BASE_URL ?>/public/assets/js/dashboard.js"></script>

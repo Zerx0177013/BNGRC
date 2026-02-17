@@ -6,7 +6,7 @@
           <a href="<?= BASE_URL ?>/" class="brand-link">
             <!--begin::Brand Image-->
             <img
-              src="<?= BASE_URL ?>/assets/img/mandeLogo.jpeg"
+              src="<?= BASE_URL ?>/public/assets/img/mandeLogo.jpeg"
               alt="BNGRC Logo"
               class="brand-image shadow"
               style="border-radius: 8px; object-fit: contain; width: 50px; height: 50px; max-width: none;" />
