@@ -203,8 +203,9 @@ class DispatchModel
     
     public function clearAllDispatches()
     {
-        $sql = 'DELETE FROM bngrc_dispatch_ETU003918';
-        return $this->db->exec($sql);
+        $this->db->exec('DELETE FROM bngrc_achat_ETU003918');
+        $this->db->exec('DELETE FROM bngrc_dispatch_ETU003918');
+        return true;
     }
 
     public function simulateDispatchOnly($idsDons)
