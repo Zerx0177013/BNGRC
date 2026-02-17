@@ -177,3 +177,7 @@ INSERT INTO bngrc_don_ETU003918 (id_article, quantite, date_don) VALUES
 (10, 20000000.00, '2026-02-19 00:00:00'),
 (6, 500.00, '2026-02-19 00:00:00'),
 (4, 88.00, '2026-02-17 00:00:00');
+
+
+INSERT INTO bngrc_config_ETU003918 (valeur) VALUES
+(10.00);

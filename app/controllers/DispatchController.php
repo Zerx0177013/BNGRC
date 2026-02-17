@@ -101,7 +101,7 @@ class DispatchController {
 
 		try {
 			$model->clearAllDispatches();
-			$this->app->json(['success' => true, 'message' => 'Tous les dispatches ont été supprimés.']);
+			$this->app->json(['success' => true, 'message' => 'Tous les dispatches et achats ont été supprimés.']);
 		} catch (\Exception $e) {
 			$this->app->json(['success' => false, 'message' => 'Erreur : ' . $e->getMessage()], 500);
 		}
