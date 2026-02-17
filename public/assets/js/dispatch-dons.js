@@ -5,6 +5,7 @@
   var checkboxes = null;
   var btnDispatch = null;
   var btnSimulate = null;
+  var btnClearDispatch = null;
   var selectedCount = null;
   var alertContainer = null;
 
@@ -13,6 +14,7 @@
     checkboxes = document.querySelectorAll('.don-checkbox');
     btnDispatch = document.getElementById('btnDispatch');
     btnSimulate = document.getElementById('btnSimulate');
+  btnClearDispatch = document.getElementById('btnClearDispatch');
     selectedCount = document.getElementById('selectedCount');
     alertContainer = document.getElementById('alertContainer');
 
@@ -40,6 +42,9 @@
     if (btnDispatch) {
       btnDispatch.addEventListener('click', handleDispatch);
     }
+    if (btnClearDispatch) {
+      btnClearDispatch.addEventListener('click', handleClearDispatch);
+    }
   }
 
   function updateUI() {
@@ -60,6 +65,35 @@
       var allChecked = Array.from(checkboxes).every(function(cb) { return cb.checked; });
       checkAll.checked = allChecked;
     }
+  }
+
+  function handleClearDispatch() {
+    if (!confirm('Voulez-vous vraiment supprimer tous les dispatches ? Cette action est irréversible.')) return;
+
+    btnClearDispatch.disabled = true;
+    btnClearDispatch.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Suppression...';
+
+    fetch(window.BASE_URL + '/dispatch/clear', {
+      method: 'DELETE'
+    })
+    .then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    })
+    .then(function (data) {
+      if (data.success) {
+        showAlert('success', data.message || 'Tous les dispatches ont été supprimés.');
+        setTimeout(function () { window.location.reload(); }, 1200);
+      } else {
+        throw new Error(data.message || 'Erreur lors de la suppression.');
+      }
+    })
+    .catch(function (err) {
+      console.error('Clear error:', err);
+      showAlert('danger', 'Erreur: ' + err.message);
+      btnClearDispatch.disabled = false;
+      btnClearDispatch.innerHTML = '<i class="bi bi-trash me-1"></i> Réinitialiser';
+    });
   }
 
   function handleSimulate() {

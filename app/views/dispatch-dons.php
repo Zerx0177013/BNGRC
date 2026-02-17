@@ -41,6 +41,9 @@
                   <button type="button" class="btn btn-primary btn-sm" id="btnDispatch" disabled>
                     <i class="bi bi-truck me-1"></i> Dispatcher les dons sélectionnés
                   </button>
+                  <button type="button" class="btn btn-danger btn-sm ms-2" id="btnClearDispatch">
+                    <i class="bi bi-trash me-1"></i> Réinitialiser
+                  </button>
                 </div>
               </div>
               <div class="card-body">
