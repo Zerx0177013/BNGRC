@@ -8,4 +8,5 @@ public/assets/images/items/*
 /AdminLTE-master
 /Impact
 script/insertion/load_data.sh
+script/load.sh
 public/.htaccess

@@ -4,8 +4,6 @@
 -- =============================================================
 USE bngrc;
 SET FOREIGN_KEY_CHECKS = 0;
-
-SET FOREIGN_KEY_CHECKS = 0;
 DELETE FROM bngrc_region_ETU003918;
 DELETE FROM bngrc_ville_ETU003918;
 DELETE FROM bngrc_categorie_besoin_ETU003918;
@@ -34,7 +32,7 @@ INSERT INTO bngrc_ville_ETU003918 (id_ville, nom_ville, id_region) VALUES
 INSERT INTO bngrc_categorie_besoin_ETU003918 (id_categorie, nom_categorie) VALUES
 (1, 'nature'),
 (2, 'materiel'),
-(3, 'argent');
+(3, 'Argent');
 
 -- ========== ARTICLES ==========
 -- Category: nature (id_categorie = 1)
