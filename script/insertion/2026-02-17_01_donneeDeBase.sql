@@ -3,6 +3,7 @@
 --  Date: 2026-02-17
 -- =============================================================
 USE bngrc;
+SET FOREIGN_KEY_CHECKS = 0;
 
 SET FOREIGN_KEY_CHECKS = 0;
 DELETE FROM bngrc_region_ETU003918;
