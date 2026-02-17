@@ -53,7 +53,7 @@ foreach ($articles as $art) {
                     <i class="<?= $style['icon'] ?>"></i>
                   </span>
                   <div class="info-box-content">
-                    <span class="info-box-text"><?= htmlspecialchars($catName) ?></span>
+                    <span class="info-box-text"><?= e($catName) ?></span>
                     <span class="info-box-number"><?= $count ?> <small>article<?= $count > 1 ? 's' : '' ?></small></span>
                   </div>
                 </div>
@@ -67,7 +67,7 @@ foreach ($articles as $art) {
               $style = $catColors[$catName] ?? ['bg' => 'bg-secondary', 'textbg' => 'text-bg-secondary', 'icon' => 'bi bi-question-circle'];
             ?>
             <h5 class="mt-3 mb-2">
-              <span class="badge <?= $style['bg'] ?>"><?= htmlspecialchars($catName) ?></span>
+              <span class="badge <?= $style['bg'] ?>"><?= e($catName) ?></span>
             </h5>
             <div class="row">
               <?php foreach ($catArticles as $art): ?>
@@ -78,7 +78,7 @@ foreach ($articles as $art) {
                       <i class="<?= $style['icon'] ?>"></i>
                     </span>
                     <div>
-                      <h6 class="mb-0"><?= htmlspecialchars($art['nom_article']) ?></h6>
+                      <h6 class="mb-0"><?= e($art['nom_article']) ?></h6>
                       <span class="text-muted"><?= number_format($art['prix_unitaire'], 0, ',', ' ') ?> <small>Ar</small></span>
                     </div>
                   </div>

@@ -54,10 +54,10 @@
                           <?php foreach ($articles as $article): ?>
                             <option 
                               value="<?= $article['id_article'] ?>"
-                              data-villes="<?= htmlspecialchars($article['villes_besoins']) ?>"
+                              data-villes="<?= e($article['villes_besoins']) ?>"
                               data-besoin-restant="<?= $article['quantite_besoin_restante'] ?>"
                             >
-                              <?= htmlspecialchars($article['nom_article']) ?> — <?= htmlspecialchars($article['nom_categorie']) ?> (besoin restant: <?= number_format($article['quantite_besoin_restante'], 2, ',', ' ') ?>)
+                              <?= e($article['nom_article']) ?> — <?= e($article['nom_categorie']) ?> (besoin restant: <?= number_format($article['quantite_besoin_restante'], 2, ',', ' ') ?>)
                             </option>
                           <?php endforeach; ?>
                         </select>
@@ -76,7 +76,7 @@
                               value="<?= $besoin['id_besoin'] ?>"
                               data-article-id="<?= $besoin['id_article'] ?>"
                             >
-                              <?= htmlspecialchars($besoin['nom_ville']) ?> — <?= htmlspecialchars($besoin['nom_article']) ?> (<?= number_format($besoin['quantite'], 2) ?> requis)
+                              <?= e($besoin['nom_ville']) ?> — <?= e($besoin['nom_article']) ?> (<?= number_format($besoin['quantite'], 2) ?> requis)
                             </option>
                           <?php endforeach; ?>
                         </select>

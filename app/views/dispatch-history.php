@@ -69,10 +69,10 @@
                         <?php foreach ($dispatches as $dispatch): ?>
                           <tr>
                             <td><?= $dispatch['id_dispatch'] ?></td>
-                            <td><?= htmlspecialchars($dispatch['nom_article']) ?></td>
+                            <td><?= e($dispatch['nom_article']) ?></td>
                             <td>
                               <span class="text-info fw-semibold">
-                                <?= htmlspecialchars($dispatch['nom_ville']) ?>
+                                <?= e($dispatch['nom_ville']) ?>
                               </span>
                             </td>
                             <td><?= $dispatch['id_don'] ?></td>

@@ -61,10 +61,10 @@
                       <?php foreach ($villes as $index => $ville): ?>
                         <tr id="ville-row-<?= $ville['id_ville'] ?>">
                           <td><?= $index + 1 ?></td>
-                          <td><?= htmlspecialchars($ville['nom_ville']) ?></td>
+                          <td><?= e($ville['nom_ville']) ?></td>
                           <td>
                             <span class="text-info fw-semibold">
-                              <?= htmlspecialchars($ville['nom_region'] ?? 'N/A') ?>
+                              <?= e($ville['nom_region'] ?? 'N/A') ?>
                             </span>
                           </td>
                           <td class="text-center">
@@ -76,7 +76,7 @@
                             <button type="button" 
                                     class="btn btn-danger btn-sm btn-delete"
                                     data-id="<?= $ville['id_ville'] ?>"
-                                    data-name="<?= htmlspecialchars($ville['nom_ville']) ?>"
+                                    data-name="<?= e($ville['nom_ville']) ?>"
                                     title="Supprimer">
                               <i class="bi bi-trash"></i>
                             </button>

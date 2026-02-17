@@ -53,7 +53,7 @@
                               value="<?= $ville['id_ville'] ?>"
                               <?= (isset($besoin) && $besoin['id_ville'] == $ville['id_ville']) ? 'selected' : '' ?>
                             >
-                              <?= htmlspecialchars($ville['nom_ville']) ?> (<?= htmlspecialchars($ville['nom_region']) ?>)
+                              <?= e($ville['nom_ville']) ?> (<?= e($ville['nom_region']) ?>)
                             </option>
                           <?php endforeach; ?>
                         </select>
@@ -70,7 +70,7 @@
                               data-prix="<?= $article['prix_unitaire'] ?>"
                               <?= (isset($besoin) && $besoin['id_article'] == $article['id_article']) ? 'selected' : '' ?>
                             >
-                              <?= htmlspecialchars($article['nom_article']) ?> — <?= htmlspecialchars($article['nom_categorie']) ?> (<?= number_format($article['prix_unitaire'], 2, ',', ' ') ?> Ar)
+                              <?= e($article['nom_article']) ?> — <?= e($article['nom_categorie']) ?> (<?= number_format($article['prix_unitaire'], 2, ',', ' ') ?> Ar)
                             </option>
                           <?php endforeach; ?>
                         </select>

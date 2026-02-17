@@ -80,7 +80,7 @@
                         <?php foreach ($dons as $index => $don): ?>
                           <tr>
                             <td><?= $don['id_don'] ?></td>
-                            <td><?= htmlspecialchars($don['nom_article']) ?></td>
+                            <td><?= e($don['nom_article']) ?></td>
                             <td><?php
                               $cat = strtolower($don['nom_categorie']);
                               $textClass = match(true) {
@@ -88,7 +88,7 @@
                                 str_contains($cat, 'mat')    => 'text-warning',
                                 default                      => 'text-info',
                               };
-                            ?><span class="<?= $textClass ?> fw-semibold"><?= htmlspecialchars($don['nom_categorie']) ?></span></td>
+                            ?><span class="<?= $textClass ?> fw-semibold"><?= e($don['nom_categorie']) ?></span></td>
                             <td><?= number_format($don['quantite'], 2, ',', ' ') ?></td>
                             <td>
                               <span class="text-success fw-semibold">

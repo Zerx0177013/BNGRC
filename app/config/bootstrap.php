@@ -13,6 +13,16 @@ if(file_exists(__DIR__. $ds . 'config.php') === false) {
 // BASE_URL vide car l'application est à la racine du serveur
 define('BASE_URL', '');
 
+/**
+ * Helper function pour htmlspecialchars qui gère les valeurs null
+ * Evite l'erreur PHP 8.1+ "Passing null to parameter #1 ($string) of type string is deprecated"
+ */
+if (!function_exists('e')) {
+    function e($string, $flags = ENT_QUOTES, $encoding = 'UTF-8') {
+        return htmlspecialchars($string ?? '', $flags, $encoding);
+    }
+}
+
 // It is better practice to not use static methods for everything. It makes your
 // app much more difficult to unit test easily.
 // This is important as it connects any static calls to the same $app object

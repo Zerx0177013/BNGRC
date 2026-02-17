@@ -49,7 +49,7 @@ $catColors = [
                               $catStyle = $catColors[$art['nom_categorie']] ?? ['bg' => 'secondary', 'text' => 'text-secondary'];
                             ?>
                             <th class="text-center bg-<?= $catStyle['bg'] ?> bg-opacity-10" style="font-size:0.7rem;padding:4px;">
-                              <?= htmlspecialchars(substr($art['nom_article'], 0, 10)) ?>
+                              <?= e(substr($art['nom_article'], 0, 10)) ?>
                             </th>
                             <?php endforeach; ?>
                           </tr>
@@ -63,13 +63,13 @@ $catColors = [
                           ?>
                           <tr class="table-active">
                             <td colspan="<?= count($besoinsData['articles']) + 1 ?>" class="fw-bold" style="font-size:0.75rem;">
-                              <i class="bi bi-geo-alt-fill text-primary"></i><?= htmlspecialchars($currentRegion) ?>
+                              <i class="bi bi-geo-alt-fill text-primary"></i><?= e($currentRegion) ?>
                             </td>
                           </tr>
                           <?php endif; ?>
                           
                           <tr>
-                            <td class="ps-2"><?= htmlspecialchars($ville['nom_ville']) ?></td>
+                            <td class="ps-2"><?= e($ville['nom_ville']) ?></td>
                             <?php foreach ($besoinsData['articles'] as $art): 
                               $qte = $besoinsData['matrix'][$ville['id_ville']][$art['id_article']] ?? 0;
                               $catStyle = $catColors[$art['nom_categorie']] ?? ['bg' => 'secondary', 'text' => 'text-secondary'];
@@ -108,7 +108,7 @@ $catColors = [
                       <tbody>
                         <?php foreach ($donsParArticle as $don): ?>
                           <tr>
-                            <td><?= htmlspecialchars($don['nom_article']) ?></td>
+                            <td><?= e($don['nom_article']) ?></td>
                             <td><?= number_format($don['total_quantite'], 0, ',', ' ') ?></td>
                             <td><?php
                               $cat = strtolower($don['nom_categorie']);
@@ -117,7 +117,7 @@ $catColors = [
                                 str_contains($cat, 'mat')    => 'text-warning',
                                 default                      => 'text-info',
                               };
-                            ?><span class="<?= $textClass ?> fw-semibold"><?= htmlspecialchars($don['nom_categorie']) ?></span></td>
+                            ?><span class="<?= $textClass ?> fw-semibold"><?= e($don['nom_categorie']) ?></span></td>
                           </tr>
                         <?php endforeach; ?>
                       </tbody>
@@ -146,7 +146,7 @@ $catColors = [
                               $catStyle = $catColors[$art['nom_categorie']] ?? ['bg' => 'secondary', 'text' => 'text-secondary'];
                             ?>
                             <th class="text-center bg-<?= $catStyle['bg'] ?> bg-opacity-10" style="font-size:0.7rem;padding:4px;">
-                              <?= htmlspecialchars(substr($art['nom_article'], 0, 10)) ?>
+                              <?= e(substr($art['nom_article'], 0, 10)) ?>
                             </th>
                             <?php endforeach; ?>
                           </tr>
@@ -160,13 +160,13 @@ $catColors = [
                           ?>
                           <tr class="table-active">
                             <td colspan="<?= count($dispatchesData['articles']) + 1 ?>" class="fw-bold" style="font-size:0.75rem;">
-                              <i class="bi bi-geo-alt-fill text-primary"></i><?= htmlspecialchars($currentRegion) ?>
+                              <i class="bi bi-geo-alt-fill text-primary"></i><?= e($currentRegion) ?>
                             </td>
                           </tr>
                           <?php endif; ?>
                           
                           <tr>
-                            <td class="ps-2"><?= htmlspecialchars($ville['nom_ville']) ?></td>
+                            <td class="ps-2"><?= e($ville['nom_ville']) ?></td>
                             <?php foreach ($dispatchesData['articles'] as $art): 
                               $qte = $dispatchesData['matrix'][$ville['id_ville']][$art['id_article']] ?? 0;
                               $catStyle = $catColors[$art['nom_categorie']] ?? ['bg' => 'secondary', 'text' => 'text-secondary'];

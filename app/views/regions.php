@@ -60,7 +60,7 @@
                       <?php foreach ($regions as $index => $region): ?>
                         <tr id="region-row-<?= $region['id_region'] ?>">
                           <td><?= $index + 1 ?></td>
-                          <td><?= htmlspecialchars($region['nom_region']) ?></td>
+                          <td><?= e($region['nom_region']) ?></td>
                           <td class="text-center">
                             <a href="<?= BASE_URL ?>/regions/<?= $region['id_region'] ?>/edit" 
                                class="btn btn-warning btn-sm me-1"
@@ -70,7 +70,7 @@
                             <button type="button" 
                                     class="btn btn-danger btn-sm btn-delete"
                                     data-id="<?= $region['id_region'] ?>"
-                                    data-name="<?= htmlspecialchars($region['nom_region']) ?>"
+                                    data-name="<?= e($region['nom_region']) ?>"
                                     title="Supprimer">
                               <i class="bi bi-trash"></i>
                             </button>

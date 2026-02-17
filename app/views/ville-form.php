@@ -52,7 +52,7 @@
                           id="name" 
                           name="name" 
                           required
-                          value="<?= isset($ville) ? htmlspecialchars($ville['nom_ville']) : '' ?>"
+                          value="<?= isset($ville) ? e($ville['nom_ville']) : '' ?>"
                           placeholder="Ex: Antananarivo"
                         >
                       </div>
@@ -67,7 +67,7 @@
                               value="<?= $region['id_region'] ?>"
                               <?= (isset($ville) && $ville['id_region'] == $region['id_region']) ? 'selected' : '' ?>
                             >
-                              <?= htmlspecialchars($region['nom_region']) ?>
+                              <?= e($region['nom_region']) ?>
                             </option>
                           <?php endforeach; ?>
                         </select>

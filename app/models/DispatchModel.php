@@ -947,12 +947,25 @@ class DispatchModel
                 continue;
             }
             
-            // 5. Pour chaque ville, calculer la proportion et dispatcher
-            foreach ($besoinsParVille as $besoin) {
-                $dispatchResult = $this->traiterDispatchProportionnel(
+            // 5. Calculer les attributions avec la méthode des restes
+            $attributions = $this->calculerAttributionsProportionnelles(
+                $besoinsParVille,
+                $stockDisponible,
+                $sommeDemandes
+            );
+            
+            // 6. Pour chaque ville, dispatcher selon l'attribution calculée
+            foreach ($besoinsParVille as $index => $besoin) {
+                $quantiteAttribuee = $attributions[$index];
+                
+                if ($quantiteAttribuee <= 0) {
+                    continue;
+                }
+                
+                $dispatchResult = $this->executerDispatchProportionnel(
                     $besoin,
                     $idArticle,
-                    $stockDisponible,
+                    $quantiteAttribuee,
                     $sommeDemandes,
                     $articleModel,
                     $saveToDb
@@ -980,22 +993,84 @@ class DispatchModel
     }
 
     /**
-     * Traite le dispatch proportionnel pour un besoin donné
+     * Calcule les attributions proportionnelles avec la méthode des restes
+     * pour s'assurer que tout le stock est distribué
      */
-    private function traiterDispatchProportionnel($besoin, $idArticle, $stockDisponible, $sommeDemandes, $articleModel, $saveToDb)
+    private function calculerAttributionsProportionnelles(array $besoinsParVille, $stockDisponible, $sommeDemandes)
+    {
+        $attributions = [];
+        $restes = [];
+        $totalAttribue = 0;
+        
+        // Première passe : calculer les quantités avec floor() et stocker les restes
+        foreach ($besoinsParVille as $index => $besoin) {
+            $quantiteDemandee = (float)$besoin['quantite_demandee'];
+            $proportion = $quantiteDemandee / $sommeDemandes;
+            $quantiteExacte = $proportion * $stockDisponible;
+            
+            // Arrondi inférieur
+            $quantiteArrondie = floor($quantiteExacte);
+            
+            // S'assurer qu'on ne dépasse pas le besoin
+            $quantiteArrondie = min($quantiteArrondie, $quantiteDemandee);
+            
+            $attributions[$index] = $quantiteArrondie;
+            $totalAttribue += $quantiteArrondie;
+            
+            // Stocker la partie décimale (reste)
+            $restes[$index] = $quantiteExacte - $quantiteArrondie;
+        }
+        
+        // Calculer le reste à distribuer
+        $resteADistribuer = $stockDisponible - $totalAttribue;
+        
+        // Deuxième passe : distribuer le reste aux villes avec les plus grandes parties décimales
+        if ($resteADistribuer > 0) {
+            // Créer un tableau avec index => [reste, demande] pour le tri
+            $restesAvecDemandes = [];
+            foreach ($restes as $index => $reste) {
+                $restesAvecDemandes[$index] = [
+                    'reste' => $reste,
+                    'demande' => (float)$besoinsParVille[$index]['quantite_demandee']
+                ];
+            }
+            
+            // Trier par reste décroissant, puis par demande décroissante en cas d'égalité
+            uasort($restesAvecDemandes, function($a, $b) {
+                $diff = $b['reste'] - $a['reste']; // Ordre décroissant des restes
+                if (abs($diff) < 0.0001) { // Si restes égaux (avec tolérance)
+                    // Privilégier la plus grande demande
+                    return $b['demande'] <=> $a['demande'];
+                }
+                return $diff <=> 0;
+            });
+            
+            // Distribuer +1 aux villes ayant les plus grands restes
+            $i = 0;
+            foreach ($restesAvecDemandes as $index => $data) {
+                if ($i >= $resteADistribuer) {
+                    break;
+                }
+                
+                // Ne pas dépasser la demande de la ville
+                $quantiteDemandee = (float)$besoinsParVille[$index]['quantite_demandee'];
+                if ($attributions[$index] < $quantiteDemandee) {
+                    $attributions[$index]++;
+                    $i++;
+                }
+            }
+        }
+        
+        return $attributions;
+    }
+
+    /**
+     * Exécute le dispatch proportionnel pour un besoin donné avec une quantité pré-calculée
+     */
+    private function executerDispatchProportionnel($besoin, $idArticle, $quantiteAttribuee, $sommeDemandes, $articleModel, $saveToDb)
     {
         $quantiteDemandee = (float)$besoin['quantite_demandee'];
         $proportion = $quantiteDemandee / $sommeDemandes;
-        
-        // Arrondi inférieur
-        $quantiteAttribuee = floor($proportion * $stockDisponible);
-        
-        if ($quantiteAttribuee <= 0) {
-            return null;
-        }
-        
-        // S'assurer qu'on ne dépasse pas le besoin
-        $quantiteAttribuee = min($quantiteAttribuee, $quantiteDemandee);
         
         // Récupérer un don disponible pour cet article
         $don = $this->getDonDisponiblePourArticle($idArticle);

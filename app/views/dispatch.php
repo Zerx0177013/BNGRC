@@ -30,8 +30,8 @@
                     <div class="card-header">
                       <h3 class="card-title">
                         <i class="bi bi-geo-alt-fill me-2"></i>
-                        <?= htmlspecialchars($ville['nom_ville']) ?>
-                        <small class="text-secondary ms-2">— <?= htmlspecialchars($ville['nom_region']) ?></small>
+                        <?= e($ville['nom_ville']) ?>
+                        <small class="text-secondary ms-2">— <?= e($ville['nom_region']) ?></small>
                       </h3>
                     </div>
                     <!-- /.card-header -->
@@ -51,7 +51,7 @@
                             <?php foreach ($ville['besoins'] as $besoin): ?>
                               <tr>
                                 <td><?= $besoin['id_besoin'] ?></td>
-                                <td><?= htmlspecialchars($besoin['nom_article']) ?></td>
+                                <td><?= e($besoin['nom_article']) ?></td>
                                 <td><?php
                                   $cat = strtolower($besoin['nom_categorie']);
                                   $textClass = match(true) {
@@ -59,7 +59,7 @@
                                     str_contains($cat, 'mat')    => 'text-warning',
                                     default                      => 'text-info',
                                   };
-                                ?><span class="<?= $textClass ?> fw-semibold"><?= htmlspecialchars($besoin['nom_categorie']) ?></span></td>
+                                ?><span class="<?= $textClass ?> fw-semibold"><?= e($besoin['nom_categorie']) ?></span></td>
                                 <td><?= number_format($besoin['quantite'], 2, ',', ' ') ?></td>
                                 <td><?= number_format($besoin['montant_total'], 2, ',', ' ') ?> Ar</td>
                               </tr>

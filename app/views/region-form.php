@@ -52,7 +52,7 @@
                           id="name" 
                           name="name" 
                           required
-                          value="<?= isset($region) ? htmlspecialchars($region['nom_region']) : '' ?>"
+                          value="<?= isset($region) ? e($region['nom_region']) : '' ?>"
                           placeholder="Ex: Analamanga"
                         >
                       </div>

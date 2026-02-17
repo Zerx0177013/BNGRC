@@ -38,7 +38,7 @@
                     <option value="">Toutes les villes</option>
                     <?php foreach ($villes as $ville): ?>
                       <option value="<?= $ville['id_ville'] ?>" <?= (isset($selectedVille) && $selectedVille == $ville['id_ville']) ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($ville['nom_ville']) ?>
+                        <?= e($ville['nom_ville']) ?>
                       </option>
                     <?php endforeach; ?>
                   </select>
