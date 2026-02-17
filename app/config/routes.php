@@ -97,7 +97,9 @@ $router->group('', function (Router $router) use ($app) {
 		$router->get('/history', [$dispatchController, 'renderDispatchHistory']);
 		$router->get('/simulation', [$dispatchController, 'renderSimulationPage']);
 		$router->post('/simulate-data', [$dispatchController, 'getSimulationData']);
+		$router->post('/simulate-data-valeur', [$dispatchController, 'getSimulationDataWithValeur']);
 		$router->post('/execute', [$dispatchController, 'executeDispatch']);
+		$router->post('/execute-chronologically-valeur', [$dispatchController, 'executeDispatchAllChronologicallyWithValeur']);
 		$router->delete('/clear', [$dispatchController, 'clearDispatches']);
 	});
 
