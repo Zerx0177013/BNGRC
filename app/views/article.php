@@ -3,9 +3,9 @@ include __DIR__ . '/header.php';
 include __DIR__ . '/sidebar.php';
 
 $catColors = [
-    'Nature'     => ['bg' => 'bg-info',    'textbg' => 'text-bg-info',    'icon' => 'bi bi-tree-fill'],
-    'Matériaux'  => ['bg' => 'bg-warning',  'textbg' => 'text-bg-warning',  'icon' => 'bi bi-tools'],
-    'Argent'     => ['bg' => 'bg-success',  'textbg' => 'text-bg-success',  'icon' => 'bi bi-cash-stack'],
+    'nature'     => ['bg' => 'bg-info',    'textbg' => 'text-bg-info',    'icon' => 'bi bi-tree-fill', 'label' => 'Nature'],
+    'materiel'   => ['bg' => 'bg-warning',  'textbg' => 'text-bg-warning',  'icon' => 'bi bi-tools', 'label' => 'Matériel'],
+    'argent'     => ['bg' => 'bg-success',  'textbg' => 'text-bg-success',  'icon' => 'bi bi-cash-stack', 'label' => 'Argent'],
 ];
 
 $countByCategorie = [];
@@ -63,7 +63,7 @@ foreach ($articles as $art) {
                     <i class="<?= $style['icon'] ?>"></i>
                   </span>
                   <div class="info-box-content">
-                    <span class="info-box-text"><?= htmlspecialchars($catName) ?></span>
+                    <span class="info-box-text"><?= htmlspecialchars($style['label'] ?? ucfirst($catName)) ?></span>
                     <span class="info-box-number"><?= $count ?> <small>article<?= $count > 1 ? 's' : '' ?></small></span>
                   </div>
                 </div>
@@ -81,7 +81,7 @@ foreach ($articles as $art) {
                 <h5 class="mb-3">
                   <span class="badge <?= $style['bg'] ?>">
                     <i class="<?= $style['icon'] ?> me-1"></i>
-                    <?= htmlspecialchars($catName) ?>
+                    <?= htmlspecialchars($style['label'] ?? ucfirst($catName)) ?>
                   </span>
                 </h5>
               </div>
